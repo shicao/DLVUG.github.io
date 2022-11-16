@@ -10,10 +10,10 @@ hero:
   actions:
     - theme: brand
       text: 研究
-      link: /guide/what-is-vitepress
+      link: /publications/
     - theme: alt
       text: 成员
-      link: https://github.com/vuejs/vitepress
+      link: /members/
 features:
   - icon: ⚡️
     title: 研究1
