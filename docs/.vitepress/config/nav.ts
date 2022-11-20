@@ -10,9 +10,9 @@ export const nav = [
     items: [
       {
         // 子菜单的名字
-        text: "Section A Title",
+        text: "教程",
         items: [
-          { text: "Section A Item A", link: "..." },
+          { text: "VitePress", link: "/others/tutorials/VitePress.md" },
           { text: "Section B Item B", link: "..." },
         ],
       },
