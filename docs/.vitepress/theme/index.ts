@@ -1,24 +1,9 @@
 import DefaultTheme from "vitepress/theme";
-
-// import "./style/index.scss";
-
-/**
- * 使用第三方组件库
- * 详情参考：https://github.com/FightingDesign/fighting-design
- */
-// import FightingDesign from "fighting-design";
-// import "fighting-design/dist/index.css";
+import Particles from "vue3-particles";
 
 export default {
   ...DefaultTheme,
-  // enhanceApp({ app }) {
-  //   app.use(FightingDesign);
-  // },
-  enhanceApp(ctx) {
-    // extend default theme custom behaviour.
-    DefaultTheme.enhanceApp(ctx);
-
-    //   // register your custom global components
-    //   // ctx.app.component('MyGlobalComponent' /* ... */)
+  enhanceApp({ app }) {
+    app.use(Particles);
   },
 };

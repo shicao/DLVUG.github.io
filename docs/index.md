@@ -26,3 +26,8 @@ features:
     details: 简介3
 ---
 
+<script setup>
+import myparticles from '@theme/components/myParticles.vue'
+</script>
+
+<myparticles/>
