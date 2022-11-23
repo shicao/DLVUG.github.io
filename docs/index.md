@@ -29,5 +29,4 @@ features:
 <script setup>
 import myparticles from '@theme/components/myParticles.vue'
 </script>
-
 <myparticles/>
