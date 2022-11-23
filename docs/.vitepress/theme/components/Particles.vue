@@ -8,7 +8,8 @@ API文档https://particles.js.org/docs/interfaces/Options_Interfaces_IOptions.IO
 import Particles from "vue3-particles";
 
 import type { Engine } from "tsparticles-engine";
-import { loadFull } from "tsparticles"
+// import { loadFull } from "tsparticles"
+import { loadSlim } from "tsparticles-slim"
 export default {
     // 使用空的options: {}，加载默认设置：像素为3的白色静态粒子
     // options: {}，
@@ -68,7 +69,7 @@ export default {
     },
     methods: {
         async particlesInit(engine: Engine) {
-            await loadFull(engine);
+            await loadSlim(engine);
         }
     },
 };
