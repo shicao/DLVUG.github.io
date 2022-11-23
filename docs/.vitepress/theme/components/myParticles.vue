@@ -5,6 +5,8 @@ import CustomParticles from "./Particles.vue"
 <template>
 
     <main>
-        <CustomParticles />
+        <ClientOnly>
+            <CustomParticles />
+        </ClientOnly>
     </main>
 </template>
