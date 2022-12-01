@@ -38,4 +38,3 @@ import myparticles from '@theme/components/myParticles.vue'
 }
 
 </style>
-
