@@ -1169,7 +1169,7 @@
   "resolved" "https://registry.npmmirror.com/vue-demi/-/vue-demi-0.13.11.tgz"
   "version" "0.13.11"
 
-"vue@^3.0.0-0 || ^2.6.0", "vue@^3.2.25", "vue@^3.2.41", "vue@^3.2.45", "vue@3.2.45":
+"vue@^3.0.0-0 || ^2.6.0", "vue@^3.2.0", "vue@^3.2.25", "vue@^3.2.41", "vue@^3.2.45", "vue@3.2.45":
   "integrity" "sha512-9Nx/Mg2b2xWlXykmCwiTUCWHbWIj53bnkizBxKai1g61f2Xit700A1ljowpTIM11e3uipOeiPcSqnmBg6gyiaA=="
   "resolved" "https://registry.npmmirror.com/vue/-/vue-3.2.45.tgz"
   "version" "3.2.45"
@@ -1187,6 +1187,11 @@
   dependencies:
     "tsparticles-engine" "^2.5.2"
     "vue" "^3.2.41"
+
+"vuetify@^3.0.3":
+  "integrity" "sha512-ODqnS2ux/qUjn/E7W600mvy096nUSSf1mEgYN9o1IpfeNOC7RsakPD37t3zmtift54YTrE/upjSpILg3piYKmQ=="
+  "resolved" "https://registry.npmmirror.com/vuetify/-/vuetify-3.0.3.tgz"
+  "version" "3.0.3"
 
 "web-resource-inliner@^6.0.1":
   "integrity" "sha512-kfqDxt5dTB1JhqsCUQVFDj0rmY+4HLwGQIsLPbyrsN9y9WV/1oFDSx3BQ4GfCv9X+jVeQ7rouTqwK53rA/7t8A=="
