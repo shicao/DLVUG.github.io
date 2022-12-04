@@ -1,6 +1,6 @@
 研究成果
 
 <script setup>
-import myparticles from '@theme/components/myParticles.vue'
+import particles from '@theme/components/Particles.vue'
 </script>
-<myparticles/>
+<particles/>
