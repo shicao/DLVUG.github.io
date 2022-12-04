@@ -28,7 +28,9 @@ features:
 
 <script setup>
 import particles from '@theme/components/Particles.vue'
+import zoumadeng from '@theme/components/zoumadeng.vue'
 </script>
+
 
 <particles/>
 
@@ -39,3 +41,5 @@ import particles from '@theme/components/Particles.vue'
   --vp-home-hero-name-background: -webkit-linear-gradient(120deg, #bd34fe, #41d1ff);
 }
 </style>
+<zoumadeng/>
+
