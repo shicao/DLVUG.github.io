@@ -1,12 +1,12 @@
 <template>
-    <Particles id="tsparticles" :options="options" :particlesInit="particlesInit" />
+    <ClientOnly>
+        <Particles id="tsparticles" :options="options" :particlesInit="particlesInit" />
+    </ClientOnly>
 </template>
 <!-- https://github.com/matteobruni/tsparticles
 视频教程https://particles.js.org/video.html
 API文档https://particles.js.org/docs/interfaces/Options_Interfaces_IOptions.IOptions.html -->
 <script lang="ts">
-import Particles from "vue3-particles";
-
 import type { Engine } from "tsparticles-engine";
 // import { loadFull } from "tsparticles"
 import { loadSlim } from "tsparticles-slim"

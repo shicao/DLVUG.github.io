@@ -27,14 +27,15 @@ features:
 ---
 
 <script setup>
-import myparticles from '@theme/components/myParticles.vue'
+import particles from '@theme/components/Particles.vue'
 </script>
-<myparticles/>
+
+<particles/>
+
 
 <style>
 :root {
   --vp-home-hero-name-color: transparent;
   --vp-home-hero-name-background: -webkit-linear-gradient(120deg, #bd34fe, #41d1ff);
 }
-
 </style>
