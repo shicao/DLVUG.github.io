@@ -28,7 +28,7 @@ features:
 
 <script setup>
 import particles from '@theme/components/Particles.vue'
-import zoumadeng from '@theme/components/zoumadeng.vue'
+import zoumadeng from '@theme/components/ZouMaDeng.vue'
 </script>
 
 
