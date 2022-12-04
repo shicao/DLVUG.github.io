@@ -1,6 +1,8 @@
 研究成果
 
 <script setup>
-import particles from '@theme/components/Particles.vue'
+import timeline from '@theme/components/TimeLine.vue'
 </script>
-<particles/>
+
+<timeline/>
+
