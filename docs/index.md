@@ -14,25 +14,13 @@ hero:
     - theme: alt
       text: 成员
       link: /members/
-features:
-  - icon: ⚡️
-    title: 研究1
-    details: 简介1
-  - icon: 🖖
-    title: 研究2
-    details: 简介2
-  - icon: 🛠️
-    title: 研究3
-    details: 简介3
 ---
 
 <script setup>
-import particles from '@theme/components/Particles.vue'
-import zoumadeng from '@theme/components/ZouMaDeng.vue'
+import ZouMaDeng from '@theme/components/ZouMaDeng.vue'
 </script>
 
-
-<particles/>
+<MyParticles/>
 
 
 <style>
@@ -41,5 +29,5 @@ import zoumadeng from '@theme/components/ZouMaDeng.vue'
   --vp-home-hero-name-background: -webkit-linear-gradient(120deg, #bd34fe, #41d1ff);
 }
 </style>
-<zoumadeng/>
+<ZouMaDeng/>
 
