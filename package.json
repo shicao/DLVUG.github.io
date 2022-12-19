@@ -6,7 +6,6 @@
   "devDependencies": {
     "@types/node": "^18.11.9",
     "sass": "^1.56.1",
-    "vitepress": "^1.0.0-alpha.29",
     "vue": "^3.2.45"
   },
   "scripts": {
@@ -23,6 +22,7 @@
     "prismjs": "^1.29.0",
     "tsparticles-engine": "^2.5.2",
     "tsparticles-slim": "^2.5.3",
+    "vitepress": "1.0.0-alpha.32",
     "vue3-particles": "^2.5.3"
   }
 }
