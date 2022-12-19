@@ -16,9 +16,6 @@ hero:
       link: /members/
 ---
 
-<script setup>
-import ZouMaDeng from '@theme/components/ZouMaDeng.vue'
-</script>
 
 <MyParticles/>
 
@@ -29,5 +26,5 @@ import ZouMaDeng from '@theme/components/ZouMaDeng.vue'
   --vp-home-hero-name-background: -webkit-linear-gradient(120deg, #bd34fe, #41d1ff);
 }
 </style>
-<ZouMaDeng/>
+
 

@@ -10,6 +10,8 @@ export default {
     siteTitle: "DLVUG",
     nav,
     sidebar,
+    lastUpdatedText: "更新时间",
+    lastUpdated: true,
   },
   markdown: {
     lineNumbers: true,
