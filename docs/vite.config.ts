@@ -1,4 +1,6 @@
 import { defineConfig } from "vite";
+// 搜索插件
+// https://github.com/emersonbottero/vitepress-plugin-search/issues/11#issuecomment-1304778903
 import { SearchPlugin } from "vitepress-plugin-search";
 
 export default defineConfig({
