@@ -1,8 +1,12 @@
+<script lang="ts" setup>
+const fits = ['fill', 'contain', 'cover', 'none', 'scale-down']
+const urls = ["/imgs/lunbotu/ruangu.jpg", "/imgs/lunbotu/1.jpg", "/imgs/lunbotu/2.jpg", "/imgs/lunbotu/3.jpg", "/imgs/lunbotu/4.jpg", "/imgs/lunbotu/5.jpg"]
+</script>
 <!-- https://element-plus.gitee.io/zh-CN/component/carousel.html -->
 <template>
-    <el-carousel :interval="4000" type="card" height="300px">
-        <el-carousel-item v-for="item in 6" :key="item">
-            <h3 text="2xl" justify="center">{{ item }}</h3>
+    <el-carousel :interval="2000" type="card" height="400px">
+        <el-carousel-item v-for="url in urls" :key="url">
+            <el-image :src="url" :preview-src-list="urls" :initial-index="4" fit="cover" />
         </el-carousel-item>
     </el-carousel>
 </template>
