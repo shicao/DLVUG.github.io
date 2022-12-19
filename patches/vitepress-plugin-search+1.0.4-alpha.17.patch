@@ -1,5 +1,5 @@
 diff --git a/node_modules/vitepress-plugin-search/dist/Search.vue b/node_modules/vitepress-plugin-search/dist/Search.vue
-index cc8bffe..d613b8d 100644
+index cc8bffe..d645f75 100644
 --- a/node_modules/vitepress-plugin-search/dist/Search.vue
 +++ b/node_modules/vitepress-plugin-search/dist/Search.vue
 @@ -39,7 +39,7 @@ const result = computed(() => {
@@ -11,7 +11,7 @@ index cc8bffe..d613b8d 100644
      }
      return search as any[];
    }
-@@ -116,117 +116,73 @@ function cleanSearch() {
+@@ -116,109 +116,65 @@ function cleanSearch() {
          <div v-show="open" class="modal-back" @click="open = false">
            <div class="modal" @click.stop>
              <form class="DocSearch-Form">
@@ -106,7 +106,7 @@ index cc8bffe..d613b8d 100644
                </div>
              </div>
 -            <img class="flex-logo" src="./flex-logo.svg" alt="flex logo"/>
-+            <img class="flex-logo" src="./flex-logo.svg" alt="flex logo" />
++            <!-- <img class="flex-logo" src="./flex-logo.svg" alt="flex logo" /> -->
            </div>
          </div>
        </Teleport>
@@ -140,15 +140,15 @@ index cc8bffe..d613b8d 100644
 -          <span class="DocSearch-Button-Placeholder">{{buttonLabel}}</span>
 +          <span class="DocSearch-Button-Placeholder">{{ buttonLabel }}</span>
          </span>
--        <span class="DocSearch-Button-Keys">
-+        <!-- <span class="DocSearch-Button-Keys">
-           <span class="DocSearch-Button-Key" ref="metaKey">Meta</span>
-           <span class="DocSearch-Button-Key">K</span>
--        </span>
-+        </span> -->
+         <span class="DocSearch-Button-Keys">
+-          <span class="DocSearch-Button-Key" ref="metaKey">Meta</span>
+-          <span class="DocSearch-Button-Key">K</span>
++          <!-- <span class="DocSearch-Button-Key" ref="metaKey">Meta</span>
++          <span class="DocSearch-Button-Key">K</span> -->
+         </span>
        </button>
      </div>
-   </div>
+@@ -226,7 +182,7 @@ function cleanSearch() {
  </template>
  
  <style>
