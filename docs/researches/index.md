@@ -1,9 +1,14 @@
-<el-container>
-  <el-main><ZouMaDeng/></el-main>
-</el-container>
+---
+layout: page
+---
+
+<MyParticles/>
 
 
 
 <script setup>
-import ZouMaDeng from '@theme/components/ZouMaDeng.vue'
+import ZouMaDeng from '@theme/components/MyParticles.vue'
+import ZouMaDeng from '@theme/components/PublicationsTimeLine.vue'
 </script>
+
+<PublicationsTimeLine/>
