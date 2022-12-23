@@ -1,8 +1,6 @@
----
-layout: page
----
-
-
+<el-container>
+  <el-main><ZouMaDeng/></el-main>
+</el-container>
 
 
 
