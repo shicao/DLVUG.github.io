@@ -9,6 +9,6 @@ layout: page
 
 
 <script setup>
-import ZouMaDeng from '../.vitepress/theme/components/ZouMaDeng.vue'
+import ZouMaDeng from '@theme/components/ZouMa.vue'
 </script>
 
