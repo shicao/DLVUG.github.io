@@ -14,19 +14,17 @@ hero:
     - theme: alt
       text: 成员
       link: /members/
-features:
-  - icon: ⚡️
-    title: 研究1
-    details: 简介1
-  - icon: 🖖
-    title: 研究2
-    details: 简介2
-  - icon: 🛠️
-    title: 研究3
-    details: 简介3
 ---
 
-<script setup>
-import myparticles from '@theme/components/myParticles.vue'
-</script>
-<myparticles/>
+
+<MyParticles/>
+
+
+<style>
+:root {
+  --vp-home-hero-name-color: transparent;
+  --vp-home-hero-name-background: -webkit-linear-gradient(120deg, #bd34fe, #41d1ff);
+}
+</style>
+
+
