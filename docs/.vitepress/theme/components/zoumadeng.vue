@@ -6,7 +6,7 @@ const urls = ["/imgs/lunbotu/ruangu.jpg", "/imgs/lunbotu/1.jpg", "/imgs/lunbotu/
 <template>
     <el-carousel :interval="2000" type="card" height="400px">
         <el-carousel-item v-for="url in urls" :key="url">
-            <el-image :src="url" :preview-src-list="urls" :initial-index="4" fit="cover" />
+            <el-image :src="url" :initial-index="4" fit="cover" />
         </el-carousel-item>
     </el-carousel>
 </template>
