@@ -7,8 +7,8 @@ layout: page
 
 
 <script setup>
-import ZouMaDeng from '@theme/components/MyParticles.vue'
-import ZouMaDeng from '@theme/components/PublicationsTimeLine.vue'
+import MyParticles from '@theme/components/MyParticles.vue'
+import PublicationsTimeLine from '@theme/components/PublicationsTimeLine.vue'
 </script>
 
 <PublicationsTimeLine/>
