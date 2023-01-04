@@ -181,9 +181,7 @@ var Vector = class extends Vector3d {
 var _random = Math.random;
 var easings = /* @__PURE__ */ new Map();
 function getEasing(name) {
-  var _a;
-  const noEasing = (value) => value;
-  return (_a = easings.get(name)) !== null && _a !== void 0 ? _a : noEasing;
+  return easings.get(name) || ((value) => value);
 }
 function getRandom() {
   return clamp(_random(), 0, 1 - 1e-16);
@@ -230,7 +228,7 @@ function getValue(options) {
 }
 function getDistances(pointA, pointB) {
   const dx = pointA.x - pointB.x, dy = pointA.y - pointB.y;
-  return { dx, dy, distance: Math.sqrt(dx * dx + dy * dy) };
+  return { dx, dy, distance: Math.sqrt(dx ** 2 + dy ** 2) };
 }
 function getDistance(pointA, pointB) {
   return getDistances(pointA, pointB).distance;
@@ -484,13 +482,13 @@ function rectBounce(particle, divBounds) {
   }
 }
 function executeOnSingleOrMultiple(obj, callback) {
-  return obj instanceof Array ? obj.map((item) => callback(item)) : callback(obj);
+  return obj instanceof Array ? obj.map((item, index) => callback(item, index)) : callback(obj, 0);
 }
 function itemFromSingleOrMultiple(obj, index, useIndex) {
   return obj instanceof Array ? itemFromArray(obj, index, useIndex) : obj;
 }
 function findItemFromSingleOrMultiple(obj, callback) {
-  return obj instanceof Array ? obj.find((t) => callback(t)) : callback(obj) ? obj : void 0;
+  return obj instanceof Array ? obj.find((t, index) => callback(t, index)) : callback(obj, 0) ? obj : void 0;
 }
 
 // node_modules/tsparticles-engine/esm/Utils/ColorUtils.js
@@ -732,11 +730,14 @@ function setColorAnimation(colorValue, colorAnimation, reduceFactor) {
   if (colorValue.enable) {
     colorValue.velocity = getRangeValue(colorAnimation.speed) / 100 * reduceFactor;
     colorValue.decay = 1 - getRangeValue(colorAnimation.decay);
-    colorValue.status = 0;
+    colorValue.status = "increasing";
+    colorValue.loops = 0;
+    colorValue.maxLoops = getRangeValue(colorAnimation.count);
     if (!colorAnimation.sync) {
       colorValue.velocity *= getRandom();
       colorValue.value *= getRandom();
     }
+    colorValue.initialValue = colorValue.value;
   } else {
     colorValue.velocity = 0;
   }
@@ -764,7 +765,7 @@ function clear(context, dimension) {
   context.clearRect(0, 0, dimension.width, dimension.height);
 }
 function drawParticle(data) {
-  var _a, _b, _c, _d, _e, _f;
+  var _a, _b, _c, _d, _e;
   const { container, context, particle, delta, colorStyles, backgroundMask, composite, radius, opacity, shadow, transform } = data;
   const pos = particle.getPosition(), angle = particle.rotation + (particle.pathRotation ? particle.velocity.angle : 0), rotateData = {
     sin: Math.sin(angle),
@@ -790,13 +791,13 @@ function drawParticle(data) {
   if (colorStyles.fill) {
     context.fillStyle = colorStyles.fill;
   }
-  const stroke = particle.stroke;
-  context.lineWidth = (_e = particle.strokeWidth) !== null && _e !== void 0 ? _e : 0;
+  const strokeWidth = (_e = particle.strokeWidth) !== null && _e !== void 0 ? _e : 0;
+  context.lineWidth = strokeWidth;
   if (colorStyles.stroke) {
     context.strokeStyle = colorStyles.stroke;
   }
   drawShape(container, context, particle, radius, opacity, delta);
-  if (((_f = stroke === null || stroke === void 0 ? void 0 : stroke.width) !== null && _f !== void 0 ? _f : 0) > 0) {
+  if (strokeWidth > 0) {
     context.stroke();
   }
   if (particle.close) {
@@ -950,8 +951,8 @@ var Canvas = class {
       return;
     }
     this.draw((ctx) => {
-      var _a2, _b, _c, _d, _e;
-      const options = this.container.actualOptions, zIndexOptions = particle.options.zIndex, zOpacityFactor = (1 - particle.zIndexFactor) ** zIndexOptions.opacityRate, opacity = (_c = (_a2 = particle.bubble.opacity) !== null && _a2 !== void 0 ? _a2 : (_b = particle.opacity) === null || _b === void 0 ? void 0 : _b.value) !== null && _c !== void 0 ? _c : 1, strokeOpacity = (_e = (_d = particle.stroke) === null || _d === void 0 ? void 0 : _d.opacity) !== null && _e !== void 0 ? _e : opacity, zOpacity = opacity * zOpacityFactor, zStrokeOpacity = strokeOpacity * zOpacityFactor, transform = {}, colorStyles = {
+      var _a2, _b, _c, _d;
+      const options = this.container.actualOptions, zIndexOptions = particle.options.zIndex, zOpacityFactor = (1 - particle.zIndexFactor) ** zIndexOptions.opacityRate, opacity = (_c = (_a2 = particle.bubble.opacity) !== null && _a2 !== void 0 ? _a2 : (_b = particle.opacity) === null || _b === void 0 ? void 0 : _b.value) !== null && _c !== void 0 ? _c : 1, strokeOpacity = (_d = particle.strokeOpacity) !== null && _d !== void 0 ? _d : opacity, zOpacity = opacity * zOpacityFactor, zStrokeOpacity = strokeOpacity * zOpacityFactor, transform = {}, colorStyles = {
         fill: fColor ? getStyleFromHsl(fColor, zOpacity) : void 0
       };
       colorStyles.stroke = sColor ? getStyleFromHsl(sColor, zStrokeOpacity) : colorStyles.fill;
@@ -1247,19 +1248,21 @@ var EventListeners = class {
   constructor(container) {
     this.container = container;
     this.canPush = true;
-    this.mouseMoveHandler = (e) => this.mouseTouchMove(e);
-    this.touchStartHandler = (e) => this.mouseTouchMove(e);
-    this.touchMoveHandler = (e) => this.mouseTouchMove(e);
-    this.touchEndHandler = () => this.mouseTouchFinish();
-    this.mouseLeaveHandler = () => this.mouseTouchFinish();
-    this.touchCancelHandler = () => this.mouseTouchFinish();
-    this.touchEndClickHandler = (e) => this.mouseTouchClick(e);
-    this.mouseUpHandler = (e) => this.mouseTouchClick(e);
-    this.mouseDownHandler = () => this.mouseDown();
-    this.visibilityChangeHandler = () => this.handleVisibilityChange();
-    this.themeChangeHandler = (e) => this.handleThemeChange(e);
-    this.oldThemeChangeHandler = (e) => this.handleThemeChange(e);
-    this.resizeHandler = () => this.handleWindowResize();
+    this.handlers = {
+      mouseMove: (e) => this.mouseTouchMove(e),
+      touchStart: (e) => this.mouseTouchMove(e),
+      touchMove: (e) => this.mouseTouchMove(e),
+      touchEnd: () => this.mouseTouchFinish(),
+      mouseLeave: () => this.mouseTouchFinish(),
+      touchCancel: () => this.mouseTouchFinish(),
+      touchEndClick: (e) => this.mouseTouchClick(e),
+      mouseUp: (e) => this.mouseTouchClick(e),
+      mouseDown: () => this.mouseDown(),
+      visibilityChange: () => this.handleVisibilityChange(),
+      themeChange: (e) => this.handleThemeChange(e),
+      oldThemeChange: (e) => this.handleThemeChange(e),
+      resize: () => this.handleWindowResize()
+    };
   }
   addListeners() {
     this.manageListeners(true);
@@ -1270,12 +1273,12 @@ var EventListeners = class {
   doMouseTouchClick(e) {
     const container = this.container, options = container.actualOptions;
     if (this.canPush) {
-      const mousePos = container.interactivity.mouse.position;
+      const mouseInteractivity = container.interactivity.mouse, mousePos = mouseInteractivity.position;
       if (!mousePos) {
         return;
       }
-      container.interactivity.mouse.clickPosition = Object.assign({}, mousePos);
-      container.interactivity.mouse.clickTime = new Date().getTime();
+      mouseInteractivity.clickPosition = Object.assign({}, mousePos);
+      mouseInteractivity.clickTime = new Date().getTime();
       const onClick = options.interactivity.events.onClick;
       executeOnSingleOrMultiple(onClick.mode, (mode) => this.handleClickMode(mode));
     }
@@ -1287,9 +1290,9 @@ var EventListeners = class {
     this.container.handleClickMode(mode);
   }
   handleThemeChange(e) {
-    const mediaEvent = e, themeName = mediaEvent.matches ? this.container.options.defaultThemes.dark : this.container.options.defaultThemes.light, theme = this.container.options.themes.find((theme2) => theme2.name === themeName);
+    const mediaEvent = e, container = this.container, options = container.options, defaultThemes = options.defaultThemes, themeName = mediaEvent.matches ? defaultThemes.dark : defaultThemes.light, theme = options.themes.find((theme2) => theme2.name === themeName);
     if (theme && theme.default.auto) {
-      this.container.loadTheme(themeName);
+      container.loadTheme(themeName);
     }
   }
   handleVisibilityChange() {
@@ -1318,11 +1321,11 @@ var EventListeners = class {
     this.resizeTimeout = setTimeout(async () => {
       var _a;
       return (_a = this.container.canvas) === null || _a === void 0 ? void 0 : _a.windowResize();
-    }, 500);
+    }, this.container.actualOptions.interactivity.events.resize.delay * 1e3);
   }
   manageListeners(add) {
     var _a;
-    const container = this.container, options = container.actualOptions, detectType = options.interactivity.detectsOn;
+    const handlers = this.handlers, container = this.container, options = container.actualOptions, detectType = options.interactivity.detectsOn;
     let mouseLeaveTmpEvent = mouseLeaveEvent;
     if (detectType === "window") {
       container.interactivity.element = window;
@@ -1336,12 +1339,12 @@ var EventListeners = class {
     const mediaMatch = safeMatchMedia("(prefers-color-scheme: dark)");
     if (mediaMatch) {
       if (mediaMatch.addEventListener !== void 0) {
-        manageListener(mediaMatch, "change", this.themeChangeHandler, add);
+        manageListener(mediaMatch, "change", handlers.themeChange, add);
       } else if (mediaMatch.addListener !== void 0) {
         if (add) {
-          mediaMatch.addListener(this.oldThemeChangeHandler);
+          mediaMatch.addListener(handlers.oldThemeChange);
         } else {
-          mediaMatch.removeListener(this.oldThemeChangeHandler);
+          mediaMatch.removeListener(handlers.oldThemeChange);
         }
       }
     }
@@ -1351,18 +1354,18 @@ var EventListeners = class {
     }
     const html = interactivityEl;
     if (options.interactivity.events.onHover.enable || options.interactivity.events.onClick.enable) {
-      manageListener(interactivityEl, mouseMoveEvent, this.mouseMoveHandler, add);
-      manageListener(interactivityEl, touchStartEvent, this.touchStartHandler, add);
-      manageListener(interactivityEl, touchMoveEvent, this.touchMoveHandler, add);
+      manageListener(interactivityEl, mouseMoveEvent, handlers.mouseMove, add);
+      manageListener(interactivityEl, touchStartEvent, handlers.touchStart, add);
+      manageListener(interactivityEl, touchMoveEvent, handlers.touchMove, add);
       if (!options.interactivity.events.onClick.enable) {
-        manageListener(interactivityEl, touchEndEvent, this.touchEndHandler, add);
+        manageListener(interactivityEl, touchEndEvent, handlers.touchEnd, add);
       } else {
-        manageListener(interactivityEl, touchEndEvent, this.touchEndClickHandler, add);
-        manageListener(interactivityEl, mouseUpEvent, this.mouseUpHandler, add);
-        manageListener(interactivityEl, mouseDownEvent, this.mouseDownHandler, add);
+        manageListener(interactivityEl, touchEndEvent, handlers.touchEndClick, add);
+        manageListener(interactivityEl, mouseUpEvent, handlers.mouseUp, add);
+        manageListener(interactivityEl, mouseDownEvent, handlers.mouseDown, add);
       }
-      manageListener(interactivityEl, mouseLeaveTmpEvent, this.mouseLeaveHandler, add);
-      manageListener(interactivityEl, touchCancelEvent, this.touchCancelHandler, add);
+      manageListener(interactivityEl, mouseLeaveTmpEvent, handlers.mouseLeave, add);
+      manageListener(interactivityEl, touchCancelEvent, handlers.touchCancel, add);
     }
     if (container.canvas.element) {
       container.canvas.element.style.pointerEvents = html === container.canvas.element ? "initial" : "none";
@@ -1386,11 +1389,11 @@ var EventListeners = class {
           this.resizeObserver.observe(container.canvas.element);
         }
       } else {
-        manageListener(window, resizeEvent, this.resizeHandler, add);
+        manageListener(window, resizeEvent, handlers.resize, add);
       }
     }
     if (document) {
-      manageListener(document, visibilityChangeEvent, this.visibilityChangeHandler, add, false);
+      manageListener(document, visibilityChangeEvent, handlers.visibilityChange, add, false);
     }
   }
   mouseDown() {
@@ -1773,13 +1776,32 @@ var HoverEvent = class {
   }
 };
 
+// node_modules/tsparticles-engine/esm/Options/Classes/Interactivity/Events/ResizeEvent.js
+var ResizeEvent = class {
+  constructor() {
+    this.delay = 0.5;
+    this.enable = true;
+  }
+  load(data) {
+    if (data === void 0) {
+      return;
+    }
+    if (data.delay !== void 0) {
+      this.delay = data.delay;
+    }
+    if (data.enable !== void 0) {
+      this.enable = data.enable;
+    }
+  }
+};
+
 // node_modules/tsparticles-engine/esm/Options/Classes/Interactivity/Events/Events.js
 var Events = class {
   constructor() {
     this.onClick = new ClickEvent();
     this.onDiv = new DivEvent();
     this.onHover = new HoverEvent();
-    this.resize = true;
+    this.resize = new ResizeEvent();
   }
   get onclick() {
     return this.onClick;
@@ -1814,8 +1836,10 @@ var Events = class {
       });
     }
     this.onHover.load((_c = data.onHover) !== null && _c !== void 0 ? _c : data.onhover);
-    if (data.resize !== void 0) {
-      this.resize = data.resize;
+    if (typeof data.resize === "boolean") {
+      this.resize.enable = data.resize;
+    } else {
+      this.resize.load(data.resize);
     }
   }
 };
@@ -2434,7 +2458,7 @@ var Move = class {
     this.attract.load(data.attract);
     this.center.load(data.center);
     if (data.decay !== void 0) {
-      this.decay = data.decay;
+      this.decay = setRangeValue(data.decay);
     }
     if (data.direction !== void 0) {
       this.direction = data.direction;
@@ -2590,8 +2614,20 @@ var Opacity = class extends ValueWithRandom {
 var ParticlesDensity = class {
   constructor() {
     this.enable = false;
-    this.area = 800;
-    this.factor = 1e3;
+    this.width = 1920;
+    this.height = 1080;
+  }
+  get area() {
+    return this.width;
+  }
+  set area(value) {
+    this.width = value;
+  }
+  get factor() {
+    return this.height;
+  }
+  set factor(value) {
+    this.height = value;
   }
   get value_area() {
     return this.area;
@@ -2600,19 +2636,20 @@ var ParticlesDensity = class {
     this.area = value;
   }
   load(data) {
-    var _a;
+    var _a, _b, _c;
     if (!data) {
       return;
     }
     if (data.enable !== void 0) {
       this.enable = data.enable;
     }
-    const area = (_a = data.area) !== null && _a !== void 0 ? _a : data.value_area;
-    if (area !== void 0) {
-      this.area = area;
+    const width = (_b = (_a = data.width) !== null && _a !== void 0 ? _a : data.area) !== null && _b !== void 0 ? _b : data.value_area;
+    if (width !== void 0) {
+      this.width = width;
     }
-    if (data.factor !== void 0) {
-      this.factor = data.factor;
+    const height = (_c = data.height) !== null && _c !== void 0 ? _c : data.factor;
+    if (height !== void 0) {
+      this.height = height;
     }
   }
 };
@@ -2854,10 +2891,10 @@ var Stroke = class {
       this.color = AnimatableColor.create(this.color, data.color);
     }
     if (data.width !== void 0) {
-      this.width = data.width;
+      this.width = setRangeValue(data.width);
     }
     if (data.opacity !== void 0) {
-      this.opacity = data.opacity;
+      this.opacity = setRangeValue(data.opacity);
     }
   }
 };
@@ -3098,9 +3135,14 @@ var Options = class {
     this.responsive.sort((a, b) => a.maxWidth - b.maxWidth);
     if (data.themes !== void 0) {
       for (const theme of data.themes) {
-        const optTheme = new Theme();
-        optTheme.load(theme);
-        this.themes.push(optTheme);
+        const existingTheme = this.themes.find((t) => t.name === theme.name);
+        if (!existingTheme) {
+          const optTheme = new Theme();
+          optTheme.load(theme);
+          this.themes.push(optTheme);
+        } else {
+          existingTheme.load(theme);
+        }
       }
     }
     this.defaultThemes.dark = (_d = this._findDefaultTheme("dark")) === null || _d === void 0 ? void 0 : _d.name;
@@ -3162,10 +3204,10 @@ var InteractionManager = class {
     this._particleInteractors = [];
     for (const interactor of this._interactors) {
       switch (interactor.type) {
-        case 0:
+        case "external":
           this._externalInteractors.push(interactor);
           break;
-        case 1:
+        case "particles":
           this._particleInteractors.push(interactor);
           break;
       }
@@ -3214,6 +3256,7 @@ var Particle = class {
     this.init(id, position, overrideOptions, group);
   }
   destroy(override) {
+    var _a;
     if (this.unbreakable || this.destroyed) {
       return;
     }
@@ -3230,6 +3273,7 @@ var Particle = class {
         updater.particleDestroyed(this, override);
       }
     }
+    (_a = this.pathGenerator) === null || _a === void 0 ? void 0 : _a.reset(this);
   }
   draw(delta) {
     const container = this.container;
@@ -3239,20 +3283,8 @@ var Particle = class {
     container.canvas.drawParticle(this, delta);
   }
   getFillColor() {
-    var _a, _b;
-    const color = (_a = this.bubble.color) !== null && _a !== void 0 ? _a : getHslFromAnimation(this.color);
-    if (color && this.roll && (this.backColor || this.roll.alter)) {
-      const backFactor = this.roll.horizontal && this.roll.vertical ? 2 : 1, backSum = this.roll.horizontal ? Math.PI / 2 : 0, rolled = Math.floor((((_b = this.roll.angle) !== null && _b !== void 0 ? _b : 0) + backSum) / (Math.PI / backFactor)) % 2;
-      if (rolled) {
-        if (this.backColor) {
-          return this.backColor;
-        }
-        if (this.roll.alter) {
-          return alterHsl(color, this.roll.alter.type, this.roll.alter.value);
-        }
-      }
-    }
-    return color;
+    var _a;
+    return this._getRollColor((_a = this.bubble.color) !== null && _a !== void 0 ? _a : getHslFromAnimation(this.color));
   }
   getMass() {
     return this.getRadius() ** 2 * Math.PI / 2;
@@ -3269,8 +3301,8 @@ var Particle = class {
     return (_a = this.bubble.radius) !== null && _a !== void 0 ? _a : this.size.value;
   }
   getStrokeColor() {
-    var _a, _b;
-    return (_b = (_a = this.bubble.color) !== null && _a !== void 0 ? _a : getHslFromAnimation(this.strokeColor)) !== null && _b !== void 0 ? _b : this.getFillColor();
+    var _a;
+    return this._getRollColor((_a = this.bubble.color) !== null && _a !== void 0 ? _a : getHslFromAnimation(this.strokeColor));
   }
   init(id, position, overrideOptions, group) {
     var _a, _b, _c, _d, _e, _f, _g, _h, _j;
@@ -3329,24 +3361,25 @@ var Particle = class {
       maxLoops: getRangeValue(sizeOptions.animation.count)
     };
     if (sizeAnimation.enable) {
-      this.size.status = 0;
+      this.size.status = "increasing";
       this.size.decay = 1 - getRangeValue(sizeAnimation.decay);
       switch (sizeAnimation.startValue) {
         case "min":
           this.size.value = this.size.min;
-          this.size.status = 0;
+          this.size.status = "increasing";
           break;
         case "random":
-          this.size.value = randomInRange(this.size) * pxRatio;
-          this.size.status = getRandom() >= 0.5 ? 0 : 1;
+          this.size.value = randomInRange(this.size);
+          this.size.status = getRandom() >= 0.5 ? "increasing" : "decreasing";
           break;
         case "max":
         default:
           this.size.value = this.size.max;
-          this.size.status = 1;
+          this.size.status = "decreasing";
           break;
       }
     }
+    this.size.initialValue = this.size.value;
     this.bubble = {
       inRange: false
     };
@@ -3463,9 +3496,7 @@ var Particle = class {
     return pos;
   }
   _calculateVelocity() {
-    const baseVelocity = getParticleBaseVelocity(this.direction);
-    const res = baseVelocity.copy();
-    const moveOptions = this.options.move;
+    const baseVelocity = getParticleBaseVelocity(this.direction), res = baseVelocity.copy(), moveOptions = this.options.move;
     if (moveOptions.direction === "inside" || moveOptions.direction === "outside") {
       return res;
     }
@@ -3502,6 +3533,23 @@ var Particle = class {
       }
     }
     return overlaps;
+  }
+  _getRollColor(color) {
+    var _a;
+    if (!color || !this.roll || !this.backColor && !this.roll.alter) {
+      return color;
+    }
+    const backFactor = this.roll.horizontal && this.roll.vertical ? 2 : 1, backSum = this.roll.horizontal ? Math.PI / 2 : 0, rolled = Math.floor((((_a = this.roll.angle) !== null && _a !== void 0 ? _a : 0) + backSum) / (Math.PI / backFactor)) % 2;
+    if (!rolled) {
+      return color;
+    }
+    if (this.backColor) {
+      return this.backColor;
+    }
+    if (this.roll.alter) {
+      return alterHsl(color, this.roll.alter.type, this.roll.alter.value);
+    }
+    return color;
   }
   _loadShapeData(shapeOptions, reduceDuplicates) {
     const shapeData = shapeOptions.options[this.shape];
@@ -3938,6 +3986,8 @@ var defaultPathGenerator = {
   init: () => {
   },
   update: () => {
+  },
+  reset: () => {
   }
 };
 var Container = class {
@@ -4350,9 +4400,6 @@ var Container = class {
 };
 
 // node_modules/tsparticles-engine/esm/Core/Loader.js
-function fetchError(statusCode) {
-  console.error(`tsParticles - Error ${statusCode} while retrieving config file`);
-}
 async function getDataFromUrl(jsonUrl, index) {
   const url = itemFromSingleOrMultiple(jsonUrl, index);
   if (!url) {
@@ -4362,7 +4409,7 @@ async function getDataFromUrl(jsonUrl, index) {
   if (response.ok) {
     return response.json();
   }
-  fetchError(response.status);
+  console.error(`tsParticles - Error ${response.status} while retrieving config file`);
 }
 var Loader = class {
   constructor(engine) {
@@ -4527,10 +4574,12 @@ var Plugins = class {
       this.presets.set(presetKey, options);
     }
   }
-  addShapeDrawer(type, drawer) {
-    if (!this.getShapeDrawer(type)) {
-      this.drawers.set(type, drawer);
-    }
+  addShapeDrawer(types, drawer) {
+    executeOnSingleOrMultiple(types, (type) => {
+      if (!this.getShapeDrawer(type)) {
+        this.drawers.set(type, drawer);
+      }
+    });
   }
   destroy(container) {
     this.updaters.delete(container);
@@ -4701,7 +4750,7 @@ var HslColorManager = class {
   handleColor(color) {
     var _a;
     const colorValue = color.value, hslColor = (_a = colorValue.hsl) !== null && _a !== void 0 ? _a : color.value;
-    if (hslColor.h !== void 0 && hslColor.l !== void 0) {
+    if (hslColor.h !== void 0 && hslColor.s !== void 0 && hslColor.l !== void 0) {
       return hslToRgb(hslColor);
     }
   }
@@ -4772,7 +4821,7 @@ var RgbColorManager = class {
 var ExternalInteractorBase = class {
   constructor(container) {
     this.container = container;
-    this.type = 0;
+    this.type = "external";
   }
 };
 
@@ -4780,7 +4829,7 @@ var ExternalInteractorBase = class {
 var ParticlesInteractorBase = class {
   constructor(container) {
     this.container = container;
-    this.type = 1;
+    this.type = "particles";
   }
 };
 
@@ -4855,13 +4904,13 @@ function updateAngle(particle, delta) {
     return;
   }
   switch (rotate.status) {
-    case 0:
+    case "increasing":
       rotate.value += speed;
       if (rotate.value > max) {
         rotate.value -= max;
       }
       break;
-    case 1:
+    case "decreasing":
     default:
       rotate.value -= speed;
       if (rotate.value < 0) {
@@ -4895,10 +4944,10 @@ var RotateUpdater = class {
     switch (rotateDirection) {
       case "counter-clockwise":
       case "counterClockwise":
-        particle.rotate.status = 1;
+        particle.rotate.status = "decreasing";
         break;
       case "clockwise":
-        particle.rotate.status = 0;
+        particle.rotate.status = "increasing";
         break;
     }
     const rotateAnimation = rotateOptions.animation;
@@ -5093,10 +5142,25 @@ async function loadBaseMover(engine) {
 // node_modules/tsparticles-shape-circle/esm/CircleDrawer.js
 var CircleDrawer = class {
   draw(context, particle, radius) {
-    context.arc(0, 0, radius, 0, Math.PI * 2, false);
+    if (!particle.circleRange) {
+      particle.circleRange = { min: 0, max: Math.PI * 2 };
+    }
+    const circleRange = particle.circleRange;
+    context.arc(0, 0, radius, circleRange.min, circleRange.max, false);
   }
   getSidesCount() {
     return 12;
+  }
+  particleInit(container, particle) {
+    var _a;
+    const shapeData = particle.shapeData, angle = (_a = shapeData === null || shapeData === void 0 ? void 0 : shapeData.angle) !== null && _a !== void 0 ? _a : {
+      max: 360,
+      min: 0
+    };
+    particle.circleRange = typeof angle !== "object" ? {
+      min: 0,
+      max: angle * Math.PI / 180
+    } : { min: angle.min * Math.PI / 180, max: angle.max * Math.PI / 180 };
   }
 };
 
@@ -5109,20 +5173,30 @@ async function loadCircleShape(engine) {
 function updateColorValue(delta, value, valueAnimation, max, decrease) {
   var _a, _b;
   const colorValue = value;
-  if (!colorValue || !valueAnimation.enable) {
+  if (!colorValue || !valueAnimation.enable || colorValue.loops !== void 0 && colorValue.maxLoops !== void 0 && colorValue.maxLoops > 0 && colorValue.loops >= colorValue.maxLoops) {
     return;
   }
   const offset = randomInRange(valueAnimation.offset), velocity = ((_a = value.velocity) !== null && _a !== void 0 ? _a : 0) * delta.factor + offset * 3.6, decay = (_b = value.decay) !== null && _b !== void 0 ? _b : 1;
-  if (!decrease || colorValue.status === 0) {
+  if (!decrease || colorValue.status === "increasing") {
     colorValue.value += velocity;
-    if (decrease && colorValue.value > max) {
-      colorValue.status = 1;
-      colorValue.value -= colorValue.value % max;
+    if (colorValue.value > max) {
+      if (!colorValue.loops) {
+        colorValue.loops = 0;
+      }
+      colorValue.loops++;
+      if (decrease) {
+        colorValue.status = "decreasing";
+        colorValue.value -= colorValue.value % max;
+      }
     }
   } else {
     colorValue.value -= velocity;
     if (colorValue.value < 0) {
-      colorValue.status = 0;
+      if (!colorValue.loops) {
+        colorValue.loops = 0;
+      }
+      colorValue.loops++;
+      colorValue.status = "increasing";
       colorValue.value += colorValue.value;
     }
   }
@@ -5136,14 +5210,15 @@ function updateColorValue(delta, value, valueAnimation, max, decrease) {
 function updateColor(particle, delta) {
   var _a, _b, _c;
   const animationOptions = particle.options.color.animation;
-  if (((_a = particle.color) === null || _a === void 0 ? void 0 : _a.h) !== void 0) {
-    updateColorValue(delta, particle.color.h, animationOptions.h, 360, false);
+  const h = (_a = particle.color) === null || _a === void 0 ? void 0 : _a.h, s = (_b = particle.color) === null || _b === void 0 ? void 0 : _b.s, l = (_c = particle.color) === null || _c === void 0 ? void 0 : _c.l;
+  if (h) {
+    updateColorValue(delta, h, animationOptions.h, 360, false);
   }
-  if (((_b = particle.color) === null || _b === void 0 ? void 0 : _b.s) !== void 0) {
-    updateColorValue(delta, particle.color.s, animationOptions.s, 100, true);
+  if (s) {
+    updateColorValue(delta, s, animationOptions.s, 100, true);
   }
-  if (((_c = particle.color) === null || _c === void 0 ? void 0 : _c.l) !== void 0) {
-    updateColorValue(delta, particle.color.l, animationOptions.l, 100, true);
+  if (l) {
+    updateColorValue(delta, l, animationOptions.l, 100, true);
   }
 }
 var ColorUpdater = class {
@@ -6755,9 +6830,7 @@ var ImageDrawer = class {
 
 // node_modules/tsparticles-shape-image/esm/index.js
 async function loadImageShape(engine) {
-  const imageDrawer = new ImageDrawer();
-  await engine.addShape("image", imageDrawer);
-  await engine.addShape("images", imageDrawer);
+  await engine.addShape(["image", "images"], new ImageDrawer());
 }
 
 // node_modules/tsparticles-updater-life/esm/Options/Classes/LifeDelay.js
@@ -6952,9 +7025,9 @@ function updateOpacity(particle, delta) {
     return;
   }
   switch (particle.opacity.status) {
-    case 0:
+    case "increasing":
       if (particle.opacity.value >= maxValue) {
-        particle.opacity.status = 1;
+        particle.opacity.status = "decreasing";
         if (!particle.opacity.loops) {
           particle.opacity.loops = 0;
         }
@@ -6963,9 +7036,9 @@ function updateOpacity(particle, delta) {
         particle.opacity.value += ((_e = particle.opacity.velocity) !== null && _e !== void 0 ? _e : 0) * delta.factor;
       }
       break;
-    case 1:
+    case "decreasing":
       if (particle.opacity.value <= minValue) {
-        particle.opacity.status = 0;
+        particle.opacity.status = "increasing";
         if (!particle.opacity.loops) {
           particle.opacity.loops = 0;
         }
@@ -7000,23 +7073,23 @@ var OpacityUpdater = class {
     const opacityAnimation = opacityOptions.animation;
     if (opacityAnimation.enable) {
       particle.opacity.decay = 1 - getRangeValue(opacityAnimation.decay);
-      particle.opacity.status = 0;
+      particle.opacity.status = "increasing";
       const opacityRange = opacityOptions.value;
       particle.opacity.min = getRangeMin(opacityRange);
       particle.opacity.max = getRangeMax(opacityRange);
       switch (opacityAnimation.startValue) {
         case "min":
           particle.opacity.value = particle.opacity.min;
-          particle.opacity.status = 0;
+          particle.opacity.status = "increasing";
           break;
         case "random":
           particle.opacity.value = randomInRange(particle.opacity);
-          particle.opacity.status = getRandom() >= 0.5 ? 0 : 1;
+          particle.opacity.status = getRandom() >= 0.5 ? "increasing" : "decreasing";
           break;
         case "max":
         default:
           particle.opacity.value = particle.opacity.max;
-          particle.opacity.status = 1;
+          particle.opacity.status = "decreasing";
           break;
       }
       particle.opacity.velocity = getRangeValue(opacityAnimation.speed) / 100 * this.container.retina.reduceFactor;
@@ -7024,6 +7097,7 @@ var OpacityUpdater = class {
         particle.opacity.velocity *= getRandom();
       }
     }
+    particle.opacity.initialValue = particle.opacity.value;
   }
   isEnabled(particle) {
     var _a, _b, _c, _d;
@@ -7700,6 +7774,7 @@ var Linker = class extends ParticlesInteractorBase {
   clear() {
   }
   init() {
+    this.linkContainer.particles.linksColor = void 0;
     this.linkContainer.particles.linksColors = /* @__PURE__ */ new Map();
   }
   async interact(p1) {
@@ -7872,13 +7947,13 @@ var LinkInstance = class {
   }
   drawParticle(context, particle) {
     var _a;
-    const container = this.container, pOptions = particle.options;
+    const pOptions = particle.options;
     if (!particle.links || particle.links.length <= 0) {
       return;
     }
     const p1Links = particle.links.filter((l) => pOptions.links && this.getLinkFrequency(particle, l.destination) <= pOptions.links.frequency);
     for (const link of p1Links) {
-      this.drawTriangles(container, pOptions, particle, link, p1Links);
+      this.drawTriangles(pOptions, particle, link, p1Links);
       if (link.opacity > 0 && ((_a = particle.retina.linksWidth) !== null && _a !== void 0 ? _a : 0) > 0) {
         this.drawLinkLine(particle, link);
       }
@@ -7954,7 +8029,7 @@ var LinkInstance = class {
       drawLinkTriangle(ctx, pos1, pos2, pos3, options.backgroundMask.enable, options.backgroundMask.composite, colorTriangle, opacityTriangle);
     });
   }
-  drawTriangles(container, options, p1, link, p1Links) {
+  drawTriangles(options, p1, link, p1Links) {
     var _a, _b, _c;
     const p2 = link.destination;
     if (!(((_a = options.links) === null || _a === void 0 ? void 0 : _a.triangles.enable) && ((_b = p2.options.links) === null || _b === void 0 ? void 0 : _b.triangles.enable))) {
@@ -8011,12 +8086,7 @@ async function loadParticlesLinksInteraction(engine) {
 // node_modules/tsparticles-shape-polygon/esm/PolygonDrawerBase.js
 var PolygonDrawerBase = class {
   draw(context, particle, radius) {
-    const start = this.getCenter(particle, radius);
-    const side = this.getSidesData(particle, radius);
-    const sideCount = side.count.numerator * side.count.denominator;
-    const decimalSides = side.count.numerator / side.count.denominator;
-    const interiorAngleDegrees = 180 * (decimalSides - 2) / decimalSides;
-    const interiorAngle = Math.PI - Math.PI * interiorAngleDegrees / 180;
+    const start = this.getCenter(particle, radius), side = this.getSidesData(particle, radius), sideCount = side.count.numerator * side.count.denominator, decimalSides = side.count.numerator / side.count.denominator, interiorAngleDegrees = 180 * (decimalSides - 2) / decimalSides, interiorAngle = Math.PI - Math.PI * interiorAngleDegrees / 180;
     if (!context) {
       return;
     }
@@ -8031,24 +8101,21 @@ var PolygonDrawerBase = class {
   }
   getSidesCount(particle) {
     var _a, _b;
-    const polygon = particle.shapeData;
-    return (_b = (_a = polygon === null || polygon === void 0 ? void 0 : polygon.sides) !== null && _a !== void 0 ? _a : polygon === null || polygon === void 0 ? void 0 : polygon.nb_sides) !== null && _b !== void 0 ? _b : 5;
+    const polygon = particle.shapeData, sides = Math.round(getRangeValue((_b = (_a = polygon === null || polygon === void 0 ? void 0 : polygon.sides) !== null && _a !== void 0 ? _a : polygon === null || polygon === void 0 ? void 0 : polygon.nb_sides) !== null && _b !== void 0 ? _b : 5));
+    return sides;
   }
 };
 
 // node_modules/tsparticles-shape-polygon/esm/PolygonDrawer.js
 var PolygonDrawer = class extends PolygonDrawerBase {
   getCenter(particle, radius) {
-    const sides = this.getSidesCount(particle);
     return {
-      x: -radius / (sides / 3.5),
+      x: -radius / (particle.sides / 3.5),
       y: -radius / (2.66 / 3.5)
     };
   }
   getSidesData(particle, radius) {
-    var _a, _b;
-    const polygon = particle.shapeData;
-    const sides = (_b = (_a = polygon === null || polygon === void 0 ? void 0 : polygon.sides) !== null && _a !== void 0 ? _a : polygon === null || polygon === void 0 ? void 0 : polygon.nb_sides) !== null && _b !== void 0 ? _b : 5;
+    const sides = particle.sides;
     return {
       count: {
         denominator: 1,
@@ -8115,9 +8182,9 @@ function updateSize(particle, delta) {
     return;
   }
   switch (particle.size.status) {
-    case 0:
+    case "increasing":
       if (particle.size.value >= maxValue) {
-        particle.size.status = 1;
+        particle.size.status = "decreasing";
         if (!particle.size.loops) {
           particle.size.loops = 0;
         }
@@ -8126,9 +8193,9 @@ function updateSize(particle, delta) {
         particle.size.value += sizeVelocity;
       }
       break;
-    case 1:
+    case "decreasing":
       if (particle.size.value <= minValue) {
-        particle.size.status = 0;
+        particle.size.status = "increasing";
         if (!particle.size.loops) {
           particle.size.loops = 0;
         }
@@ -8190,15 +8257,14 @@ var SquareDrawer = class {
 // node_modules/tsparticles-shape-square/esm/index.js
 async function loadSquareShape(engine) {
   const drawer = new SquareDrawer();
-  await engine.addShape("edge", drawer);
-  await engine.addShape("square", drawer);
+  await engine.addShape(["edge", "square"], drawer);
 }
 
 // node_modules/tsparticles-shape-star/esm/StarDrawer.js
 var StarDrawer = class {
   draw(context, particle, radius) {
     var _a;
-    const star = particle.shapeData, sides = this.getSidesCount(particle), inset = (_a = star === null || star === void 0 ? void 0 : star.inset) !== null && _a !== void 0 ? _a : 2;
+    const sides = particle.sides, inset = (_a = particle.starInset) !== null && _a !== void 0 ? _a : 2;
     context.moveTo(0, 0 - radius);
     for (let i = 0; i < sides; i++) {
       context.rotate(Math.PI / sides);
@@ -8210,7 +8276,12 @@ var StarDrawer = class {
   getSidesCount(particle) {
     var _a, _b;
     const star = particle.shapeData;
-    return (_b = (_a = star === null || star === void 0 ? void 0 : star.sides) !== null && _a !== void 0 ? _a : star === null || star === void 0 ? void 0 : star.nb_sides) !== null && _b !== void 0 ? _b : 5;
+    return Math.round(getRangeValue((_b = (_a = star === null || star === void 0 ? void 0 : star.sides) !== null && _a !== void 0 ? _a : star === null || star === void 0 ? void 0 : star.nb_sides) !== null && _b !== void 0 ? _b : 5));
+  }
+  particleInit(container, particle) {
+    var _a;
+    const star = particle.shapeData, inset = getRangeValue((_a = star === null || star === void 0 ? void 0 : star.inset) !== null && _a !== void 0 ? _a : 2);
+    particle.starInset = inset;
   }
 };
 
@@ -8223,20 +8294,30 @@ async function loadStarShape(engine) {
 function updateColorValue2(delta, value, valueAnimation, max, decrease) {
   var _a, _b;
   const colorValue = value;
-  if (!colorValue || !colorValue.enable) {
+  if (!colorValue || !colorValue.enable || colorValue.loops !== void 0 && colorValue.maxLoops !== void 0 && colorValue.maxLoops > 0 && colorValue.loops >= colorValue.maxLoops) {
     return;
   }
   const offset = randomInRange(valueAnimation.offset), velocity = ((_a = value.velocity) !== null && _a !== void 0 ? _a : 0) * delta.factor + offset * 3.6, decay = (_b = value.decay) !== null && _b !== void 0 ? _b : 1;
-  if (!decrease || colorValue.status === 0) {
+  if (!decrease || colorValue.status === "increasing") {
     colorValue.value += velocity;
-    if (decrease && colorValue.value > max) {
-      colorValue.status = 1;
-      colorValue.value -= colorValue.value % max;
+    if (colorValue.value > max) {
+      if (!colorValue.loops) {
+        colorValue.loops = 0;
+      }
+      colorValue.loops++;
+      if (decrease) {
+        colorValue.status = "decreasing";
+        colorValue.value -= colorValue.value % max;
+      }
     }
   } else {
     colorValue.value -= velocity;
     if (colorValue.value < 0) {
-      colorValue.status = 0;
+      if (!colorValue.loops) {
+        colorValue.loops = 0;
+      }
+      colorValue.loops++;
+      colorValue.status = "increasing";
       colorValue.value += colorValue.value;
     }
   }
@@ -8248,21 +8329,20 @@ function updateColorValue2(delta, value, valueAnimation, max, decrease) {
   }
 }
 function updateStrokeColor(particle, delta) {
-  var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k;
-  if (!((_a = particle.stroke) === null || _a === void 0 ? void 0 : _a.color)) {
+  if (!particle.strokeColor || !particle.strokeAnimation) {
     return;
   }
-  const animationOptions = particle.stroke.color.animation, h = (_c = (_b = particle.strokeColor) === null || _b === void 0 ? void 0 : _b.h) !== null && _c !== void 0 ? _c : (_d = particle.color) === null || _d === void 0 ? void 0 : _d.h;
+  const h = particle.strokeColor.h;
   if (h) {
-    updateColorValue2(delta, h, animationOptions.h, 360, false);
+    updateColorValue2(delta, h, particle.strokeAnimation.h, 360, false);
   }
-  const s = (_f = (_e = particle.strokeColor) === null || _e === void 0 ? void 0 : _e.s) !== null && _f !== void 0 ? _f : (_g = particle.color) === null || _g === void 0 ? void 0 : _g.s;
+  const s = particle.strokeColor.s;
   if (s) {
-    updateColorValue2(delta, s, animationOptions.s, 100, true);
+    updateColorValue2(delta, s, particle.strokeAnimation.s, 100, true);
   }
-  const l = (_j = (_h = particle.strokeColor) === null || _h === void 0 ? void 0 : _h.l) !== null && _j !== void 0 ? _j : (_k = particle.color) === null || _k === void 0 ? void 0 : _k.l;
+  const l = particle.strokeColor.l;
   if (l) {
-    updateColorValue2(delta, l, animationOptions.l, 100, true);
+    updateColorValue2(delta, l, particle.strokeAnimation.l, 100, true);
   }
 }
 var StrokeColorUpdater = class {
@@ -8270,19 +8350,21 @@ var StrokeColorUpdater = class {
     this.container = container;
   }
   init(particle) {
-    var _a, _b;
+    var _a, _b, _c;
     const container = this.container;
-    particle.stroke = itemFromSingleOrMultiple(particle.options.stroke, particle.id, particle.options.reduceDuplicates);
-    particle.strokeWidth = particle.stroke.width * container.retina.pixelRatio;
-    const strokeHslColor = (_a = rangeColorToHsl(particle.stroke.color)) !== null && _a !== void 0 ? _a : particle.getFillColor();
+    const stroke = itemFromSingleOrMultiple(particle.options.stroke, particle.id, particle.options.reduceDuplicates);
+    particle.strokeWidth = getRangeValue(stroke.width) * container.retina.pixelRatio;
+    particle.strokeOpacity = getRangeValue((_a = stroke.opacity) !== null && _a !== void 0 ? _a : 1);
+    particle.strokeAnimation = (_b = stroke.color) === null || _b === void 0 ? void 0 : _b.animation;
+    const strokeHslColor = (_c = rangeColorToHsl(stroke.color)) !== null && _c !== void 0 ? _c : particle.getFillColor();
     if (strokeHslColor) {
-      particle.strokeColor = getHslAnimationFromHsl(strokeHslColor, (_b = particle.stroke.color) === null || _b === void 0 ? void 0 : _b.animation, container.retina.reduceFactor);
+      particle.strokeColor = getHslAnimationFromHsl(strokeHslColor, particle.strokeAnimation, container.retina.reduceFactor);
     }
   }
   isEnabled(particle) {
-    var _a, _b, _c, _d;
-    const color = (_a = particle.stroke) === null || _a === void 0 ? void 0 : _a.color;
-    return !particle.destroyed && !particle.spawning && !!color && (((_b = particle.strokeColor) === null || _b === void 0 ? void 0 : _b.h.value) !== void 0 && color.animation.h.enable || ((_c = particle.strokeColor) === null || _c === void 0 ? void 0 : _c.s.value) !== void 0 && color.animation.s.enable || ((_d = particle.strokeColor) === null || _d === void 0 ? void 0 : _d.l.value) !== void 0 && color.animation.l.enable);
+    var _a, _b, _c;
+    const color = particle.strokeAnimation;
+    return !particle.destroyed && !particle.spawning && !!color && (((_a = particle.strokeColor) === null || _a === void 0 ? void 0 : _a.h.value) !== void 0 && particle.strokeColor.h.enable || ((_b = particle.strokeColor) === null || _b === void 0 ? void 0 : _b.s.value) !== void 0 && particle.strokeColor.s.enable || ((_c = particle.strokeColor) === null || _c === void 0 ? void 0 : _c.l.value) !== void 0 && particle.strokeColor.l.enable);
   }
   update(particle, delta) {
     if (!this.isEnabled(particle)) {
@@ -8345,10 +8427,7 @@ var TextDrawer = class {
 
 // node_modules/tsparticles-shape-text/esm/index.js
 async function loadTextShape(engine) {
-  const drawer = new TextDrawer();
-  for (const type of validTypes) {
-    await engine.addShape(type, drawer);
-  }
+  await engine.addShape(validTypes, new TextDrawer());
 }
 
 // node_modules/tsparticles-slim/esm/index.js

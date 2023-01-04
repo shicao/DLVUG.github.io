@@ -41,7 +41,7 @@ import {
   warning_filled_default,
   zoom_in_default,
   zoom_out_default
-} from "./chunk-PANYJGUH.js";
+} from "./chunk-YI4G4546.js";
 import {
   Comment,
   Fragment,
@@ -3820,9 +3820,9 @@ function mapToArray(map2) {
 var mapToArray_default = mapToArray;
 
 // node_modules/lodash-es/_setToArray.js
-function setToArray(set4) {
-  var index = -1, result2 = Array(set4.size);
-  set4.forEach(function(value) {
+function setToArray(set3) {
+  var index = -1, result2 = Array(set3.size);
+  set3.forEach(function(value) {
     result2[++index] = value;
   });
   return result2;
@@ -4804,9 +4804,9 @@ function baseToPairs(object4, props) {
 var baseToPairs_default = baseToPairs;
 
 // node_modules/lodash-es/_setToPairs.js
-function setToPairs(set4) {
-  var index = -1, result2 = Array(set4.size);
-  set4.forEach(function(value) {
+function setToPairs(set3) {
+  var index = -1, result2 = Array(set3.size);
+  set3.forEach(function(value) {
     result2[++index] = [value, value];
   });
   return result2;
@@ -7571,9 +7571,9 @@ function baseUniq(array4, iteratee2, comparator) {
     isCommon = false;
     includes2 = arrayIncludesWith_default;
   } else if (length >= LARGE_ARRAY_SIZE3) {
-    var set4 = iteratee2 ? null : createSet_default(array4);
-    if (set4) {
-      return setToArray_default(set4);
+    var set3 = iteratee2 ? null : createSet_default(array4);
+    if (set3) {
+      return setToArray_default(set3);
     }
     isCommon = false;
     includes2 = cacheHas_default;
@@ -8889,6 +8889,9 @@ var whenMouse = (handler) => {
   return (e) => e.pointerType === "mouse" ? handler(e) : void 0;
 };
 
+// node_modules/vue-demi/lib/index.mjs
+var isVue2 = false;
+
 // node_modules/@vueuse/shared/index.mjs
 var __defProp$9 = Object.defineProperty;
 var __defProps$6 = Object.defineProperties;
@@ -8934,55 +8937,73 @@ function resolveUnref(r) {
 }
 function createFilterWrapper(filter2, fn2) {
   function wrapper(...args) {
-    filter2(() => fn2.apply(this, args), { fn: fn2, thisArg: this, args });
+    return new Promise((resolve, reject2) => {
+      Promise.resolve(filter2(() => fn2.apply(this, args), { fn: fn2, thisArg: this, args })).then(resolve).catch(reject2);
+    });
   }
   return wrapper;
 }
 function debounceFilter(ms, options = {}) {
   let timer;
   let maxTimer;
+  let lastRejector = noop2;
+  const _clearTimeout = (timer2) => {
+    clearTimeout(timer2);
+    lastRejector();
+    lastRejector = noop2;
+  };
   const filter2 = (invoke2) => {
     const duration = resolveUnref(ms);
     const maxDuration = resolveUnref(options.maxWait);
     if (timer)
-      clearTimeout(timer);
+      _clearTimeout(timer);
     if (duration <= 0 || maxDuration !== void 0 && maxDuration <= 0) {
       if (maxTimer) {
-        clearTimeout(maxTimer);
+        _clearTimeout(maxTimer);
         maxTimer = null;
       }
-      return invoke2();
+      return Promise.resolve(invoke2());
     }
-    if (maxDuration && !maxTimer) {
-      maxTimer = setTimeout(() => {
-        if (timer)
-          clearTimeout(timer);
+    return new Promise((resolve, reject2) => {
+      lastRejector = options.rejectOnCancel ? reject2 : resolve;
+      if (maxDuration && !maxTimer) {
+        maxTimer = setTimeout(() => {
+          if (timer)
+            _clearTimeout(timer);
+          maxTimer = null;
+          resolve(invoke2());
+        }, maxDuration);
+      }
+      timer = setTimeout(() => {
+        if (maxTimer)
+          _clearTimeout(maxTimer);
         maxTimer = null;
-        invoke2();
-      }, maxDuration);
-    }
-    timer = setTimeout(() => {
-      if (maxTimer)
-        clearTimeout(maxTimer);
-      maxTimer = null;
-      invoke2();
-    }, duration);
+        resolve(invoke2());
+      }, duration);
+    });
   };
   return filter2;
 }
-function throttleFilter(ms, trailing = true, leading = true) {
+function throttleFilter(ms, trailing = true, leading = true, rejectOnCancel = false) {
   let lastExec = 0;
   let timer;
   let isLeading = true;
+  let lastRejector = noop2;
+  let lastValue;
   const clear = () => {
     if (timer) {
       clearTimeout(timer);
       timer = void 0;
+      lastRejector();
+      lastRejector = noop2;
     }
   };
-  const filter2 = (invoke2) => {
+  const filter2 = (_invoke) => {
     const duration = resolveUnref(ms);
     const elapsed = Date.now() - lastExec;
+    const invoke2 = () => {
+      return lastValue = _invoke();
+    };
     clear();
     if (duration <= 0) {
       lastExec = Date.now();
@@ -8992,16 +9013,20 @@ function throttleFilter(ms, trailing = true, leading = true) {
       lastExec = Date.now();
       invoke2();
     } else if (trailing) {
-      timer = setTimeout(() => {
-        lastExec = Date.now();
-        isLeading = true;
-        clear();
-        invoke2();
-      }, duration - elapsed);
+      return new Promise((resolve, reject2) => {
+        lastRejector = rejectOnCancel ? reject2 : resolve;
+        timer = setTimeout(() => {
+          lastExec = Date.now();
+          isLeading = true;
+          resolve(invoke2());
+          clear();
+        }, duration - elapsed);
+      });
     }
     if (!leading && !timer)
       timer = setTimeout(() => isLeading = true, duration);
     isLeading = false;
+    return lastValue;
   };
   return filter2;
 }
@@ -9026,8 +9051,8 @@ function refDebounced(value, ms = 200, options = {}) {
   watch(value, () => updater());
   return debounced;
 }
-function useThrottleFn(fn2, ms = 200, trailing = false, leading = true) {
-  return createFilterWrapper(throttleFilter(ms, trailing, leading), fn2);
+function useThrottleFn(fn2, ms = 200, trailing = false, leading = true, rejectOnCancel = false) {
+  return createFilterWrapper(throttleFilter(ms, trailing, leading, rejectOnCancel), fn2);
 }
 function tryOnMounted(fn2, sync = true) {
   if (getCurrentInstance())
@@ -9074,9 +9099,6 @@ function useTimeoutFn(cb, interval, options = {}) {
     stop
   };
 }
-
-// node_modules/@vueuse/core/node_modules/vue-demi/lib/index.mjs
-var isVue22 = false;
 
 // node_modules/@vueuse/core/index.mjs
 function unrefElement(elRef) {
@@ -9130,27 +9152,33 @@ function useEventListener(...args) {
   return stop;
 }
 function onClickOutside(target2, handler, options = {}) {
-  const { window: window2 = defaultWindow, ignore, capture = true, detectIframe = false } = options;
+  const { window: window2 = defaultWindow, ignore = [], capture = true, detectIframe = false } = options;
   if (!window2)
     return;
   let shouldListen = true;
   let fallback;
+  const shouldIgnore = (event) => {
+    return ignore.some((target22) => {
+      if (typeof target22 === "string") {
+        return Array.from(window2.document.querySelectorAll(target22)).some((el) => el === event.target || event.composedPath().includes(el));
+      } else {
+        const el = unrefElement(target22);
+        return el && (event.target === el || event.composedPath().includes(el));
+      }
+    });
+  };
   const listener = (event) => {
     window2.clearTimeout(fallback);
     const el = unrefElement(target2);
     if (!el || el === event.target || event.composedPath().includes(el))
       return;
+    if (event.detail === 0)
+      shouldListen = !shouldIgnore(event);
     if (!shouldListen) {
       shouldListen = true;
       return;
     }
     handler(event);
-  };
-  const shouldIgnore = (event) => {
-    return ignore && ignore.some((target22) => {
-      const el = unrefElement(target22);
-      return el && (event.target === el || event.composedPath().includes(el));
-    });
   };
   const cleanup = [
     useEventListener(window2, "click", listener, { passive: true, capture }),
@@ -9304,7 +9332,7 @@ function useElementBounding(target2, options = {}) {
   useResizeObserver(target2, update2);
   watch(() => unrefElement(target2), (ele) => !ele && update2());
   if (windowScroll)
-    useEventListener("scroll", update2, { passive: true });
+    useEventListener("scroll", update2, { capture: true, passive: true });
   if (windowResize)
     useEventListener("resize", update2, { passive: true });
   tryOnMounted(() => {
@@ -9402,7 +9430,7 @@ function useVModel(props, key, emit, options = {}) {
   const _emit = emit || (vm == null ? void 0 : vm.emit) || ((_a2 = vm == null ? void 0 : vm.$emit) == null ? void 0 : _a2.bind(vm)) || ((_c = (_b = vm == null ? void 0 : vm.proxy) == null ? void 0 : _b.$emit) == null ? void 0 : _c.bind(vm == null ? void 0 : vm.proxy));
   let event = eventName;
   if (!key) {
-    if (isVue22) {
+    if (isVue2) {
       const modelOptions = (_e = (_d = vm == null ? void 0 : vm.proxy) == null ? void 0 : _d.$options) == null ? void 0 : _e.model;
       key = (modelOptions == null ? void 0 : modelOptions.value) || "value";
       if (!eventName)
@@ -10154,10 +10182,10 @@ var useDisabled = (fallback) => {
 };
 
 // node_modules/element-plus/es/hooks/use-deprecated/index.mjs
-var useDeprecated = ({ from, replacement, scope, version: version3, ref: ref2, type: type4 = "API" }, condition) => {
+var useDeprecated = ({ from, replacement, scope, version: version4, ref: ref2, type: type4 = "API" }, condition) => {
   watch(() => unref(condition), (val) => {
     if (val) {
-      debugWarn(scope, `[${type4}] ${from} is about to be deprecated in version ${version3}, please use ${replacement} instead.
+      debugWarn(scope, `[${type4}] ${from} is about to be deprecated in version ${version4}, please use ${replacement} instead.
 For more detail, please visit: ${ref2}
 `);
     }
@@ -10761,6 +10789,676 @@ var usePreventGlobal = (indicator, evt, cb) => {
   }, { immediate: true });
 };
 
+// node_modules/@popperjs/core/dist/index.mjs
+var E = "top";
+var R = "bottom";
+var W = "right";
+var P = "left";
+var me = "auto";
+var G = [E, R, W, P];
+var U = "start";
+var J = "end";
+var Xe = "clippingParents";
+var je = "viewport";
+var K = "popper";
+var Ye = "reference";
+var De = G.reduce(function(t, e) {
+  return t.concat([e + "-" + U, e + "-" + J]);
+}, []);
+var Ee = [].concat(G, [me]).reduce(function(t, e) {
+  return t.concat([e, e + "-" + U, e + "-" + J]);
+}, []);
+var Ge = "beforeRead";
+var Je = "read";
+var Ke = "afterRead";
+var Qe = "beforeMain";
+var Ze = "main";
+var et = "afterMain";
+var tt = "beforeWrite";
+var nt = "write";
+var rt = "afterWrite";
+var ot = [Ge, Je, Ke, Qe, Ze, et, tt, nt, rt];
+function C(t) {
+  return t ? (t.nodeName || "").toLowerCase() : null;
+}
+function H(t) {
+  if (t == null)
+    return window;
+  if (t.toString() !== "[object Window]") {
+    var e = t.ownerDocument;
+    return e && e.defaultView || window;
+  }
+  return t;
+}
+function Q(t) {
+  var e = H(t).Element;
+  return t instanceof e || t instanceof Element;
+}
+function B(t) {
+  var e = H(t).HTMLElement;
+  return t instanceof e || t instanceof HTMLElement;
+}
+function Pe(t) {
+  if (typeof ShadowRoot == "undefined")
+    return false;
+  var e = H(t).ShadowRoot;
+  return t instanceof e || t instanceof ShadowRoot;
+}
+function Mt(t) {
+  var e = t.state;
+  Object.keys(e.elements).forEach(function(n) {
+    var r = e.styles[n] || {}, o2 = e.attributes[n] || {}, i = e.elements[n];
+    !B(i) || !C(i) || (Object.assign(i.style, r), Object.keys(o2).forEach(function(a2) {
+      var s2 = o2[a2];
+      s2 === false ? i.removeAttribute(a2) : i.setAttribute(a2, s2 === true ? "" : s2);
+    }));
+  });
+}
+function Rt(t) {
+  var e = t.state, n = { popper: { position: e.options.strategy, left: "0", top: "0", margin: "0" }, arrow: { position: "absolute" }, reference: {} };
+  return Object.assign(e.elements.popper.style, n.popper), e.styles = n, e.elements.arrow && Object.assign(e.elements.arrow.style, n.arrow), function() {
+    Object.keys(e.elements).forEach(function(r) {
+      var o2 = e.elements[r], i = e.attributes[r] || {}, a2 = Object.keys(e.styles.hasOwnProperty(r) ? e.styles[r] : n[r]), s2 = a2.reduce(function(f2, c2) {
+        return f2[c2] = "", f2;
+      }, {});
+      !B(o2) || !C(o2) || (Object.assign(o2.style, s2), Object.keys(i).forEach(function(f2) {
+        o2.removeAttribute(f2);
+      }));
+    });
+  };
+}
+var Ae = { name: "applyStyles", enabled: true, phase: "write", fn: Mt, effect: Rt, requires: ["computeStyles"] };
+function q(t) {
+  return t.split("-")[0];
+}
+var X = Math.max;
+var ve = Math.min;
+var Z = Math.round;
+function ee(t, e) {
+  e === void 0 && (e = false);
+  var n = t.getBoundingClientRect(), r = 1, o2 = 1;
+  if (B(t) && e) {
+    var i = t.offsetHeight, a2 = t.offsetWidth;
+    a2 > 0 && (r = Z(n.width) / a2 || 1), i > 0 && (o2 = Z(n.height) / i || 1);
+  }
+  return { width: n.width / r, height: n.height / o2, top: n.top / o2, right: n.right / r, bottom: n.bottom / o2, left: n.left / r, x: n.left / r, y: n.top / o2 };
+}
+function ke(t) {
+  var e = ee(t), n = t.offsetWidth, r = t.offsetHeight;
+  return Math.abs(e.width - n) <= 1 && (n = e.width), Math.abs(e.height - r) <= 1 && (r = e.height), { x: t.offsetLeft, y: t.offsetTop, width: n, height: r };
+}
+function it(t, e) {
+  var n = e.getRootNode && e.getRootNode();
+  if (t.contains(e))
+    return true;
+  if (n && Pe(n)) {
+    var r = e;
+    do {
+      if (r && t.isSameNode(r))
+        return true;
+      r = r.parentNode || r.host;
+    } while (r);
+  }
+  return false;
+}
+function N(t) {
+  return H(t).getComputedStyle(t);
+}
+function Wt(t) {
+  return ["table", "td", "th"].indexOf(C(t)) >= 0;
+}
+function I(t) {
+  return ((Q(t) ? t.ownerDocument : t.document) || window.document).documentElement;
+}
+function ge(t) {
+  return C(t) === "html" ? t : t.assignedSlot || t.parentNode || (Pe(t) ? t.host : null) || I(t);
+}
+function at2(t) {
+  return !B(t) || N(t).position === "fixed" ? null : t.offsetParent;
+}
+function Bt(t) {
+  var e = navigator.userAgent.toLowerCase().indexOf("firefox") !== -1, n = navigator.userAgent.indexOf("Trident") !== -1;
+  if (n && B(t)) {
+    var r = N(t);
+    if (r.position === "fixed")
+      return null;
+  }
+  var o2 = ge(t);
+  for (Pe(o2) && (o2 = o2.host); B(o2) && ["html", "body"].indexOf(C(o2)) < 0; ) {
+    var i = N(o2);
+    if (i.transform !== "none" || i.perspective !== "none" || i.contain === "paint" || ["transform", "perspective"].indexOf(i.willChange) !== -1 || e && i.willChange === "filter" || e && i.filter && i.filter !== "none")
+      return o2;
+    o2 = o2.parentNode;
+  }
+  return null;
+}
+function se(t) {
+  for (var e = H(t), n = at2(t); n && Wt(n) && N(n).position === "static"; )
+    n = at2(n);
+  return n && (C(n) === "html" || C(n) === "body" && N(n).position === "static") ? e : n || Bt(t) || e;
+}
+function Le(t) {
+  return ["top", "bottom"].indexOf(t) >= 0 ? "x" : "y";
+}
+function fe(t, e, n) {
+  return X(t, ve(e, n));
+}
+function St(t, e, n) {
+  var r = fe(t, e, n);
+  return r > n ? n : r;
+}
+function st() {
+  return { top: 0, right: 0, bottom: 0, left: 0 };
+}
+function ft(t) {
+  return Object.assign({}, st(), t);
+}
+function ct(t, e) {
+  return e.reduce(function(n, r) {
+    return n[r] = t, n;
+  }, {});
+}
+var Tt = function(t, e) {
+  return t = typeof t == "function" ? t(Object.assign({}, e.rects, { placement: e.placement })) : t, ft(typeof t != "number" ? t : ct(t, G));
+};
+function Ht(t) {
+  var e, n = t.state, r = t.name, o2 = t.options, i = n.elements.arrow, a2 = n.modifiersData.popperOffsets, s2 = q(n.placement), f2 = Le(s2), c2 = [P, W].indexOf(s2) >= 0, u2 = c2 ? "height" : "width";
+  if (!(!i || !a2)) {
+    var m2 = Tt(o2.padding, n), v2 = ke(i), l2 = f2 === "y" ? E : P, h3 = f2 === "y" ? R : W, p2 = n.rects.reference[u2] + n.rects.reference[f2] - a2[f2] - n.rects.popper[u2], g = a2[f2] - n.rects.reference[f2], x2 = se(i), y = x2 ? f2 === "y" ? x2.clientHeight || 0 : x2.clientWidth || 0 : 0, $ = p2 / 2 - g / 2, d2 = m2[l2], b2 = y - v2[u2] - m2[h3], w2 = y / 2 - v2[u2] / 2 + $, O2 = fe(d2, w2, b2), j = f2;
+    n.modifiersData[r] = (e = {}, e[j] = O2, e.centerOffset = O2 - w2, e);
+  }
+}
+function Ct(t) {
+  var e = t.state, n = t.options, r = n.element, o2 = r === void 0 ? "[data-popper-arrow]" : r;
+  o2 != null && (typeof o2 == "string" && (o2 = e.elements.popper.querySelector(o2), !o2) || !it(e.elements.popper, o2) || (e.elements.arrow = o2));
+}
+var pt = { name: "arrow", enabled: true, phase: "main", fn: Ht, effect: Ct, requires: ["popperOffsets"], requiresIfExists: ["preventOverflow"] };
+function te(t) {
+  return t.split("-")[1];
+}
+var qt = { top: "auto", right: "auto", bottom: "auto", left: "auto" };
+function Vt(t) {
+  var e = t.x, n = t.y, r = window, o2 = r.devicePixelRatio || 1;
+  return { x: Z(e * o2) / o2 || 0, y: Z(n * o2) / o2 || 0 };
+}
+function ut(t) {
+  var e, n = t.popper, r = t.popperRect, o2 = t.placement, i = t.variation, a2 = t.offsets, s2 = t.position, f2 = t.gpuAcceleration, c2 = t.adaptive, u2 = t.roundOffsets, m2 = t.isFixed, v2 = a2.x, l2 = v2 === void 0 ? 0 : v2, h3 = a2.y, p2 = h3 === void 0 ? 0 : h3, g = typeof u2 == "function" ? u2({ x: l2, y: p2 }) : { x: l2, y: p2 };
+  l2 = g.x, p2 = g.y;
+  var x2 = a2.hasOwnProperty("x"), y = a2.hasOwnProperty("y"), $ = P, d2 = E, b2 = window;
+  if (c2) {
+    var w2 = se(n), O2 = "clientHeight", j = "clientWidth";
+    if (w2 === H(n) && (w2 = I(n), N(w2).position !== "static" && s2 === "absolute" && (O2 = "scrollHeight", j = "scrollWidth")), w2 = w2, o2 === E || (o2 === P || o2 === W) && i === J) {
+      d2 = R;
+      var A2 = m2 && w2 === b2 && b2.visualViewport ? b2.visualViewport.height : w2[O2];
+      p2 -= A2 - r.height, p2 *= f2 ? 1 : -1;
+    }
+    if (o2 === P || (o2 === E || o2 === R) && i === J) {
+      $ = W;
+      var k = m2 && w2 === b2 && b2.visualViewport ? b2.visualViewport.width : w2[j];
+      l2 -= k - r.width, l2 *= f2 ? 1 : -1;
+    }
+  }
+  var D2 = Object.assign({ position: s2 }, c2 && qt), S2 = u2 === true ? Vt({ x: l2, y: p2 }) : { x: l2, y: p2 };
+  if (l2 = S2.x, p2 = S2.y, f2) {
+    var L;
+    return Object.assign({}, D2, (L = {}, L[d2] = y ? "0" : "", L[$] = x2 ? "0" : "", L.transform = (b2.devicePixelRatio || 1) <= 1 ? "translate(" + l2 + "px, " + p2 + "px)" : "translate3d(" + l2 + "px, " + p2 + "px, 0)", L));
+  }
+  return Object.assign({}, D2, (e = {}, e[d2] = y ? p2 + "px" : "", e[$] = x2 ? l2 + "px" : "", e.transform = "", e));
+}
+function Nt(t) {
+  var e = t.state, n = t.options, r = n.gpuAcceleration, o2 = r === void 0 ? true : r, i = n.adaptive, a2 = i === void 0 ? true : i, s2 = n.roundOffsets, f2 = s2 === void 0 ? true : s2, c2 = { placement: q(e.placement), variation: te(e.placement), popper: e.elements.popper, popperRect: e.rects.popper, gpuAcceleration: o2, isFixed: e.options.strategy === "fixed" };
+  e.modifiersData.popperOffsets != null && (e.styles.popper = Object.assign({}, e.styles.popper, ut(Object.assign({}, c2, { offsets: e.modifiersData.popperOffsets, position: e.options.strategy, adaptive: a2, roundOffsets: f2 })))), e.modifiersData.arrow != null && (e.styles.arrow = Object.assign({}, e.styles.arrow, ut(Object.assign({}, c2, { offsets: e.modifiersData.arrow, position: "absolute", adaptive: false, roundOffsets: f2 })))), e.attributes.popper = Object.assign({}, e.attributes.popper, { "data-popper-placement": e.placement });
+}
+var Me = { name: "computeStyles", enabled: true, phase: "beforeWrite", fn: Nt, data: {} };
+var ye = { passive: true };
+function It(t) {
+  var e = t.state, n = t.instance, r = t.options, o2 = r.scroll, i = o2 === void 0 ? true : o2, a2 = r.resize, s2 = a2 === void 0 ? true : a2, f2 = H(e.elements.popper), c2 = [].concat(e.scrollParents.reference, e.scrollParents.popper);
+  return i && c2.forEach(function(u2) {
+    u2.addEventListener("scroll", n.update, ye);
+  }), s2 && f2.addEventListener("resize", n.update, ye), function() {
+    i && c2.forEach(function(u2) {
+      u2.removeEventListener("scroll", n.update, ye);
+    }), s2 && f2.removeEventListener("resize", n.update, ye);
+  };
+}
+var Re = { name: "eventListeners", enabled: true, phase: "write", fn: function() {
+}, effect: It, data: {} };
+var _t = { left: "right", right: "left", bottom: "top", top: "bottom" };
+function be(t) {
+  return t.replace(/left|right|bottom|top/g, function(e) {
+    return _t[e];
+  });
+}
+var zt = { start: "end", end: "start" };
+function lt2(t) {
+  return t.replace(/start|end/g, function(e) {
+    return zt[e];
+  });
+}
+function We(t) {
+  var e = H(t), n = e.pageXOffset, r = e.pageYOffset;
+  return { scrollLeft: n, scrollTop: r };
+}
+function Be(t) {
+  return ee(I(t)).left + We(t).scrollLeft;
+}
+function Ft(t) {
+  var e = H(t), n = I(t), r = e.visualViewport, o2 = n.clientWidth, i = n.clientHeight, a2 = 0, s2 = 0;
+  return r && (o2 = r.width, i = r.height, /^((?!chrome|android).)*safari/i.test(navigator.userAgent) || (a2 = r.offsetLeft, s2 = r.offsetTop)), { width: o2, height: i, x: a2 + Be(t), y: s2 };
+}
+function Ut(t) {
+  var e, n = I(t), r = We(t), o2 = (e = t.ownerDocument) == null ? void 0 : e.body, i = X(n.scrollWidth, n.clientWidth, o2 ? o2.scrollWidth : 0, o2 ? o2.clientWidth : 0), a2 = X(n.scrollHeight, n.clientHeight, o2 ? o2.scrollHeight : 0, o2 ? o2.clientHeight : 0), s2 = -r.scrollLeft + Be(t), f2 = -r.scrollTop;
+  return N(o2 || n).direction === "rtl" && (s2 += X(n.clientWidth, o2 ? o2.clientWidth : 0) - i), { width: i, height: a2, x: s2, y: f2 };
+}
+function Se(t) {
+  var e = N(t), n = e.overflow, r = e.overflowX, o2 = e.overflowY;
+  return /auto|scroll|overlay|hidden/.test(n + o2 + r);
+}
+function dt(t) {
+  return ["html", "body", "#document"].indexOf(C(t)) >= 0 ? t.ownerDocument.body : B(t) && Se(t) ? t : dt(ge(t));
+}
+function ce(t, e) {
+  var n;
+  e === void 0 && (e = []);
+  var r = dt(t), o2 = r === ((n = t.ownerDocument) == null ? void 0 : n.body), i = H(r), a2 = o2 ? [i].concat(i.visualViewport || [], Se(r) ? r : []) : r, s2 = e.concat(a2);
+  return o2 ? s2 : s2.concat(ce(ge(a2)));
+}
+function Te(t) {
+  return Object.assign({}, t, { left: t.x, top: t.y, right: t.x + t.width, bottom: t.y + t.height });
+}
+function Xt(t) {
+  var e = ee(t);
+  return e.top = e.top + t.clientTop, e.left = e.left + t.clientLeft, e.bottom = e.top + t.clientHeight, e.right = e.left + t.clientWidth, e.width = t.clientWidth, e.height = t.clientHeight, e.x = e.left, e.y = e.top, e;
+}
+function ht(t, e) {
+  return e === je ? Te(Ft(t)) : Q(e) ? Xt(e) : Te(Ut(I(t)));
+}
+function Yt(t) {
+  var e = ce(ge(t)), n = ["absolute", "fixed"].indexOf(N(t).position) >= 0, r = n && B(t) ? se(t) : t;
+  return Q(r) ? e.filter(function(o2) {
+    return Q(o2) && it(o2, r) && C(o2) !== "body";
+  }) : [];
+}
+function Gt(t, e, n) {
+  var r = e === "clippingParents" ? Yt(t) : [].concat(e), o2 = [].concat(r, [n]), i = o2[0], a2 = o2.reduce(function(s2, f2) {
+    var c2 = ht(t, f2);
+    return s2.top = X(c2.top, s2.top), s2.right = ve(c2.right, s2.right), s2.bottom = ve(c2.bottom, s2.bottom), s2.left = X(c2.left, s2.left), s2;
+  }, ht(t, i));
+  return a2.width = a2.right - a2.left, a2.height = a2.bottom - a2.top, a2.x = a2.left, a2.y = a2.top, a2;
+}
+function mt(t) {
+  var e = t.reference, n = t.element, r = t.placement, o2 = r ? q(r) : null, i = r ? te(r) : null, a2 = e.x + e.width / 2 - n.width / 2, s2 = e.y + e.height / 2 - n.height / 2, f2;
+  switch (o2) {
+    case E:
+      f2 = { x: a2, y: e.y - n.height };
+      break;
+    case R:
+      f2 = { x: a2, y: e.y + e.height };
+      break;
+    case W:
+      f2 = { x: e.x + e.width, y: s2 };
+      break;
+    case P:
+      f2 = { x: e.x - n.width, y: s2 };
+      break;
+    default:
+      f2 = { x: e.x, y: e.y };
+  }
+  var c2 = o2 ? Le(o2) : null;
+  if (c2 != null) {
+    var u2 = c2 === "y" ? "height" : "width";
+    switch (i) {
+      case U:
+        f2[c2] = f2[c2] - (e[u2] / 2 - n[u2] / 2);
+        break;
+      case J:
+        f2[c2] = f2[c2] + (e[u2] / 2 - n[u2] / 2);
+        break;
+    }
+  }
+  return f2;
+}
+function ne(t, e) {
+  e === void 0 && (e = {});
+  var n = e, r = n.placement, o2 = r === void 0 ? t.placement : r, i = n.boundary, a2 = i === void 0 ? Xe : i, s2 = n.rootBoundary, f2 = s2 === void 0 ? je : s2, c2 = n.elementContext, u2 = c2 === void 0 ? K : c2, m2 = n.altBoundary, v2 = m2 === void 0 ? false : m2, l2 = n.padding, h3 = l2 === void 0 ? 0 : l2, p2 = ft(typeof h3 != "number" ? h3 : ct(h3, G)), g = u2 === K ? Ye : K, x2 = t.rects.popper, y = t.elements[v2 ? g : u2], $ = Gt(Q(y) ? y : y.contextElement || I(t.elements.popper), a2, f2), d2 = ee(t.elements.reference), b2 = mt({ reference: d2, element: x2, strategy: "absolute", placement: o2 }), w2 = Te(Object.assign({}, x2, b2)), O2 = u2 === K ? w2 : d2, j = { top: $.top - O2.top + p2.top, bottom: O2.bottom - $.bottom + p2.bottom, left: $.left - O2.left + p2.left, right: O2.right - $.right + p2.right }, A2 = t.modifiersData.offset;
+  if (u2 === K && A2) {
+    var k = A2[o2];
+    Object.keys(j).forEach(function(D2) {
+      var S2 = [W, R].indexOf(D2) >= 0 ? 1 : -1, L = [E, R].indexOf(D2) >= 0 ? "y" : "x";
+      j[D2] += k[L] * S2;
+    });
+  }
+  return j;
+}
+function Jt(t, e) {
+  e === void 0 && (e = {});
+  var n = e, r = n.placement, o2 = n.boundary, i = n.rootBoundary, a2 = n.padding, s2 = n.flipVariations, f2 = n.allowedAutoPlacements, c2 = f2 === void 0 ? Ee : f2, u2 = te(r), m2 = u2 ? s2 ? De : De.filter(function(h3) {
+    return te(h3) === u2;
+  }) : G, v2 = m2.filter(function(h3) {
+    return c2.indexOf(h3) >= 0;
+  });
+  v2.length === 0 && (v2 = m2);
+  var l2 = v2.reduce(function(h3, p2) {
+    return h3[p2] = ne(t, { placement: p2, boundary: o2, rootBoundary: i, padding: a2 })[q(p2)], h3;
+  }, {});
+  return Object.keys(l2).sort(function(h3, p2) {
+    return l2[h3] - l2[p2];
+  });
+}
+function Kt(t) {
+  if (q(t) === me)
+    return [];
+  var e = be(t);
+  return [lt2(t), e, lt2(e)];
+}
+function Qt(t) {
+  var e = t.state, n = t.options, r = t.name;
+  if (!e.modifiersData[r]._skip) {
+    for (var o2 = n.mainAxis, i = o2 === void 0 ? true : o2, a2 = n.altAxis, s2 = a2 === void 0 ? true : a2, f2 = n.fallbackPlacements, c2 = n.padding, u2 = n.boundary, m2 = n.rootBoundary, v2 = n.altBoundary, l2 = n.flipVariations, h3 = l2 === void 0 ? true : l2, p2 = n.allowedAutoPlacements, g = e.options.placement, x2 = q(g), y = x2 === g, $ = f2 || (y || !h3 ? [be(g)] : Kt(g)), d2 = [g].concat($).reduce(function(z, V) {
+      return z.concat(q(V) === me ? Jt(e, { placement: V, boundary: u2, rootBoundary: m2, padding: c2, flipVariations: h3, allowedAutoPlacements: p2 }) : V);
+    }, []), b2 = e.rects.reference, w2 = e.rects.popper, O2 = /* @__PURE__ */ new Map(), j = true, A2 = d2[0], k = 0; k < d2.length; k++) {
+      var D2 = d2[k], S2 = q(D2), L = te(D2) === U, re = [E, R].indexOf(S2) >= 0, oe = re ? "width" : "height", M2 = ne(e, { placement: D2, boundary: u2, rootBoundary: m2, altBoundary: v2, padding: c2 }), T2 = re ? L ? W : P : L ? R : E;
+      b2[oe] > w2[oe] && (T2 = be(T2));
+      var pe = be(T2), _2 = [];
+      if (i && _2.push(M2[S2] <= 0), s2 && _2.push(M2[T2] <= 0, M2[pe] <= 0), _2.every(function(z) {
+        return z;
+      })) {
+        A2 = D2, j = false;
+        break;
+      }
+      O2.set(D2, _2);
+    }
+    if (j)
+      for (var ue = h3 ? 3 : 1, xe = function(z) {
+        var V = d2.find(function(de) {
+          var ae = O2.get(de);
+          if (ae)
+            return ae.slice(0, z).every(function(Y2) {
+              return Y2;
+            });
+        });
+        if (V)
+          return A2 = V, "break";
+      }, ie = ue; ie > 0; ie--) {
+        var le = xe(ie);
+        if (le === "break")
+          break;
+      }
+    e.placement !== A2 && (e.modifiersData[r]._skip = true, e.placement = A2, e.reset = true);
+  }
+}
+var vt = { name: "flip", enabled: true, phase: "main", fn: Qt, requiresIfExists: ["offset"], data: { _skip: false } };
+function gt2(t, e, n) {
+  return n === void 0 && (n = { x: 0, y: 0 }), { top: t.top - e.height - n.y, right: t.right - e.width + n.x, bottom: t.bottom - e.height + n.y, left: t.left - e.width - n.x };
+}
+function yt(t) {
+  return [E, W, R, P].some(function(e) {
+    return t[e] >= 0;
+  });
+}
+function Zt(t) {
+  var e = t.state, n = t.name, r = e.rects.reference, o2 = e.rects.popper, i = e.modifiersData.preventOverflow, a2 = ne(e, { elementContext: "reference" }), s2 = ne(e, { altBoundary: true }), f2 = gt2(a2, r), c2 = gt2(s2, o2, i), u2 = yt(f2), m2 = yt(c2);
+  e.modifiersData[n] = { referenceClippingOffsets: f2, popperEscapeOffsets: c2, isReferenceHidden: u2, hasPopperEscaped: m2 }, e.attributes.popper = Object.assign({}, e.attributes.popper, { "data-popper-reference-hidden": u2, "data-popper-escaped": m2 });
+}
+var bt = { name: "hide", enabled: true, phase: "main", requiresIfExists: ["preventOverflow"], fn: Zt };
+function en(t, e, n) {
+  var r = q(t), o2 = [P, E].indexOf(r) >= 0 ? -1 : 1, i = typeof n == "function" ? n(Object.assign({}, e, { placement: t })) : n, a2 = i[0], s2 = i[1];
+  return a2 = a2 || 0, s2 = (s2 || 0) * o2, [P, W].indexOf(r) >= 0 ? { x: s2, y: a2 } : { x: a2, y: s2 };
+}
+function tn(t) {
+  var e = t.state, n = t.options, r = t.name, o2 = n.offset, i = o2 === void 0 ? [0, 0] : o2, a2 = Ee.reduce(function(u2, m2) {
+    return u2[m2] = en(m2, e.rects, i), u2;
+  }, {}), s2 = a2[e.placement], f2 = s2.x, c2 = s2.y;
+  e.modifiersData.popperOffsets != null && (e.modifiersData.popperOffsets.x += f2, e.modifiersData.popperOffsets.y += c2), e.modifiersData[r] = a2;
+}
+var wt = { name: "offset", enabled: true, phase: "main", requires: ["popperOffsets"], fn: tn };
+function nn(t) {
+  var e = t.state, n = t.name;
+  e.modifiersData[n] = mt({ reference: e.rects.reference, element: e.rects.popper, strategy: "absolute", placement: e.placement });
+}
+var He = { name: "popperOffsets", enabled: true, phase: "read", fn: nn, data: {} };
+function rn(t) {
+  return t === "x" ? "y" : "x";
+}
+function on(t) {
+  var e = t.state, n = t.options, r = t.name, o2 = n.mainAxis, i = o2 === void 0 ? true : o2, a2 = n.altAxis, s2 = a2 === void 0 ? false : a2, f2 = n.boundary, c2 = n.rootBoundary, u2 = n.altBoundary, m2 = n.padding, v2 = n.tether, l2 = v2 === void 0 ? true : v2, h3 = n.tetherOffset, p2 = h3 === void 0 ? 0 : h3, g = ne(e, { boundary: f2, rootBoundary: c2, padding: m2, altBoundary: u2 }), x2 = q(e.placement), y = te(e.placement), $ = !y, d2 = Le(x2), b2 = rn(d2), w2 = e.modifiersData.popperOffsets, O2 = e.rects.reference, j = e.rects.popper, A2 = typeof p2 == "function" ? p2(Object.assign({}, e.rects, { placement: e.placement })) : p2, k = typeof A2 == "number" ? { mainAxis: A2, altAxis: A2 } : Object.assign({ mainAxis: 0, altAxis: 0 }, A2), D2 = e.modifiersData.offset ? e.modifiersData.offset[e.placement] : null, S2 = { x: 0, y: 0 };
+  if (w2) {
+    if (i) {
+      var L, re = d2 === "y" ? E : P, oe = d2 === "y" ? R : W, M2 = d2 === "y" ? "height" : "width", T2 = w2[d2], pe = T2 + g[re], _2 = T2 - g[oe], ue = l2 ? -j[M2] / 2 : 0, xe = y === U ? O2[M2] : j[M2], ie = y === U ? -j[M2] : -O2[M2], le = e.elements.arrow, z = l2 && le ? ke(le) : { width: 0, height: 0 }, V = e.modifiersData["arrow#persistent"] ? e.modifiersData["arrow#persistent"].padding : st(), de = V[re], ae = V[oe], Y2 = fe(0, O2[M2], z[M2]), jt = $ ? O2[M2] / 2 - ue - Y2 - de - k.mainAxis : xe - Y2 - de - k.mainAxis, Dt = $ ? -O2[M2] / 2 + ue + Y2 + ae + k.mainAxis : ie + Y2 + ae + k.mainAxis, Oe = e.elements.arrow && se(e.elements.arrow), Et = Oe ? d2 === "y" ? Oe.clientTop || 0 : Oe.clientLeft || 0 : 0, Ce = (L = D2 == null ? void 0 : D2[d2]) != null ? L : 0, Pt = T2 + jt - Ce - Et, At = T2 + Dt - Ce, qe = fe(l2 ? ve(pe, Pt) : pe, T2, l2 ? X(_2, At) : _2);
+      w2[d2] = qe, S2[d2] = qe - T2;
+    }
+    if (s2) {
+      var Ve, kt = d2 === "x" ? E : P, Lt = d2 === "x" ? R : W, F2 = w2[b2], he = b2 === "y" ? "height" : "width", Ne = F2 + g[kt], Ie = F2 - g[Lt], $e = [E, P].indexOf(x2) !== -1, _e = (Ve = D2 == null ? void 0 : D2[b2]) != null ? Ve : 0, ze = $e ? Ne : F2 - O2[he] - j[he] - _e + k.altAxis, Fe = $e ? F2 + O2[he] + j[he] - _e - k.altAxis : Ie, Ue = l2 && $e ? St(ze, F2, Fe) : fe(l2 ? ze : Ne, F2, l2 ? Fe : Ie);
+      w2[b2] = Ue, S2[b2] = Ue - F2;
+    }
+    e.modifiersData[r] = S2;
+  }
+}
+var xt = { name: "preventOverflow", enabled: true, phase: "main", fn: on, requiresIfExists: ["offset"] };
+function an(t) {
+  return { scrollLeft: t.scrollLeft, scrollTop: t.scrollTop };
+}
+function sn(t) {
+  return t === H(t) || !B(t) ? We(t) : an(t);
+}
+function fn(t) {
+  var e = t.getBoundingClientRect(), n = Z(e.width) / t.offsetWidth || 1, r = Z(e.height) / t.offsetHeight || 1;
+  return n !== 1 || r !== 1;
+}
+function cn(t, e, n) {
+  n === void 0 && (n = false);
+  var r = B(e), o2 = B(e) && fn(e), i = I(e), a2 = ee(t, o2), s2 = { scrollLeft: 0, scrollTop: 0 }, f2 = { x: 0, y: 0 };
+  return (r || !r && !n) && ((C(e) !== "body" || Se(i)) && (s2 = sn(e)), B(e) ? (f2 = ee(e, true), f2.x += e.clientLeft, f2.y += e.clientTop) : i && (f2.x = Be(i))), { x: a2.left + s2.scrollLeft - f2.x, y: a2.top + s2.scrollTop - f2.y, width: a2.width, height: a2.height };
+}
+function pn(t) {
+  var e = /* @__PURE__ */ new Map(), n = /* @__PURE__ */ new Set(), r = [];
+  t.forEach(function(i) {
+    e.set(i.name, i);
+  });
+  function o2(i) {
+    n.add(i.name);
+    var a2 = [].concat(i.requires || [], i.requiresIfExists || []);
+    a2.forEach(function(s2) {
+      if (!n.has(s2)) {
+        var f2 = e.get(s2);
+        f2 && o2(f2);
+      }
+    }), r.push(i);
+  }
+  return t.forEach(function(i) {
+    n.has(i.name) || o2(i);
+  }), r;
+}
+function un(t) {
+  var e = pn(t);
+  return ot.reduce(function(n, r) {
+    return n.concat(e.filter(function(o2) {
+      return o2.phase === r;
+    }));
+  }, []);
+}
+function ln(t) {
+  var e;
+  return function() {
+    return e || (e = new Promise(function(n) {
+      Promise.resolve().then(function() {
+        e = void 0, n(t());
+      });
+    })), e;
+  };
+}
+function dn(t) {
+  var e = t.reduce(function(n, r) {
+    var o2 = n[r.name];
+    return n[r.name] = o2 ? Object.assign({}, o2, r, { options: Object.assign({}, o2.options, r.options), data: Object.assign({}, o2.data, r.data) }) : r, n;
+  }, {});
+  return Object.keys(e).map(function(n) {
+    return e[n];
+  });
+}
+var Ot = { placement: "bottom", modifiers: [], strategy: "absolute" };
+function $t() {
+  for (var t = arguments.length, e = new Array(t), n = 0; n < t; n++)
+    e[n] = arguments[n];
+  return !e.some(function(r) {
+    return !(r && typeof r.getBoundingClientRect == "function");
+  });
+}
+function we(t) {
+  t === void 0 && (t = {});
+  var e = t, n = e.defaultModifiers, r = n === void 0 ? [] : n, o2 = e.defaultOptions, i = o2 === void 0 ? Ot : o2;
+  return function(a2, s2, f2) {
+    f2 === void 0 && (f2 = i);
+    var c2 = { placement: "bottom", orderedModifiers: [], options: Object.assign({}, Ot, i), modifiersData: {}, elements: { reference: a2, popper: s2 }, attributes: {}, styles: {} }, u2 = [], m2 = false, v2 = { state: c2, setOptions: function(p2) {
+      var g = typeof p2 == "function" ? p2(c2.options) : p2;
+      h3(), c2.options = Object.assign({}, i, c2.options, g), c2.scrollParents = { reference: Q(a2) ? ce(a2) : a2.contextElement ? ce(a2.contextElement) : [], popper: ce(s2) };
+      var x2 = un(dn([].concat(r, c2.options.modifiers)));
+      return c2.orderedModifiers = x2.filter(function(y) {
+        return y.enabled;
+      }), l2(), v2.update();
+    }, forceUpdate: function() {
+      if (!m2) {
+        var p2 = c2.elements, g = p2.reference, x2 = p2.popper;
+        if ($t(g, x2)) {
+          c2.rects = { reference: cn(g, se(x2), c2.options.strategy === "fixed"), popper: ke(x2) }, c2.reset = false, c2.placement = c2.options.placement, c2.orderedModifiers.forEach(function(j) {
+            return c2.modifiersData[j.name] = Object.assign({}, j.data);
+          });
+          for (var y = 0; y < c2.orderedModifiers.length; y++) {
+            if (c2.reset === true) {
+              c2.reset = false, y = -1;
+              continue;
+            }
+            var $ = c2.orderedModifiers[y], d2 = $.fn, b2 = $.options, w2 = b2 === void 0 ? {} : b2, O2 = $.name;
+            typeof d2 == "function" && (c2 = d2({ state: c2, options: w2, name: O2, instance: v2 }) || c2);
+          }
+        }
+      }
+    }, update: ln(function() {
+      return new Promise(function(p2) {
+        v2.forceUpdate(), p2(c2);
+      });
+    }), destroy: function() {
+      h3(), m2 = true;
+    } };
+    if (!$t(a2, s2))
+      return v2;
+    v2.setOptions(f2).then(function(p2) {
+      !m2 && f2.onFirstUpdate && f2.onFirstUpdate(p2);
+    });
+    function l2() {
+      c2.orderedModifiers.forEach(function(p2) {
+        var g = p2.name, x2 = p2.options, y = x2 === void 0 ? {} : x2, $ = p2.effect;
+        if (typeof $ == "function") {
+          var d2 = $({ state: c2, name: g, instance: v2, options: y }), b2 = function() {
+          };
+          u2.push(d2 || b2);
+        }
+      });
+    }
+    function h3() {
+      u2.forEach(function(p2) {
+        return p2();
+      }), u2 = [];
+    }
+    return v2;
+  };
+}
+var hn = we();
+var mn = [Re, He, Me, Ae];
+var vn = we({ defaultModifiers: mn });
+var gn = [Re, He, Me, Ae, wt, vt, xt, pt, bt];
+var yn = we({ defaultModifiers: gn });
+
+// node_modules/element-plus/es/hooks/use-popper/index.mjs
+var usePopper = (referenceElementRef, popperElementRef, opts = {}) => {
+  const stateUpdater = {
+    name: "updateState",
+    enabled: true,
+    phase: "write",
+    fn: ({ state }) => {
+      const derivedState = deriveState(state);
+      Object.assign(states.value, derivedState);
+    },
+    requires: ["computeStyles"]
+  };
+  const options = computed2(() => {
+    const { onFirstUpdate, placement, strategy, modifiers } = unref(opts);
+    return {
+      onFirstUpdate,
+      placement: placement || "bottom",
+      strategy: strategy || "absolute",
+      modifiers: [
+        ...modifiers || [],
+        stateUpdater,
+        { name: "applyStyles", enabled: false }
+      ]
+    };
+  });
+  const instanceRef = shallowRef();
+  const states = ref({
+    styles: {
+      popper: {
+        position: unref(options).strategy,
+        left: "0",
+        right: "0"
+      },
+      arrow: {
+        position: "absolute"
+      }
+    },
+    attributes: {}
+  });
+  const destroy = () => {
+    if (!instanceRef.value)
+      return;
+    instanceRef.value.destroy();
+    instanceRef.value = void 0;
+  };
+  watch(options, (newOptions) => {
+    const instance = unref(instanceRef);
+    if (instance) {
+      instance.setOptions(newOptions);
+    }
+  }, {
+    deep: true
+  });
+  watch([referenceElementRef, popperElementRef], ([referenceElement, popperElement]) => {
+    destroy();
+    if (!referenceElement || !popperElement)
+      return;
+    instanceRef.value = yn(referenceElement, popperElement, unref(options));
+  });
+  onBeforeUnmount(() => {
+    destroy();
+  });
+  return {
+    state: computed2(() => {
+      var _a2;
+      return (_a2 = unref(instanceRef)) == null ? void 0 : _a2.state;
+    }),
+    styles: computed2(() => unref(states).styles),
+    attributes: computed2(() => unref(states).attributes),
+    update: () => {
+      var _a2;
+      return (_a2 = unref(instanceRef)) == null ? void 0 : _a2.update();
+    },
+    forceUpdate: () => {
+      var _a2;
+      return (_a2 = unref(instanceRef)) == null ? void 0 : _a2.forceUpdate();
+    },
+    instanceRef: computed2(() => unref(instanceRef))
+  };
+};
+function deriveState(state) {
+  const elements = Object.keys(state.elements);
+  const styles = fromPairs_default(elements.map((element) => [element, state.elements[element] || {}]));
+  const attributes2 = fromPairs_default(elements.map((element) => [element, state.attributes[element]]));
+  return {
+    styles,
+    attributes: attributes2
+  };
+}
+
 // node_modules/element-plus/es/hooks/use-restore-active/index.mjs
 var useRestoreActive = (toggle, initialFocus) => {
   let previousActive;
@@ -11112,17 +11810,17 @@ var useZIndex = () => {
 };
 
 // node_modules/@floating-ui/core/dist/floating-ui.core.esm.js
-function getSide(placement) {
-  return placement.split("-")[0];
-}
 function getAlignment(placement) {
   return placement.split("-")[1];
 }
-function getMainAxisFromPlacement(placement) {
-  return ["top", "bottom"].includes(getSide(placement)) ? "x" : "y";
-}
 function getLengthFromAxis(axis) {
   return axis === "y" ? "height" : "width";
+}
+function getSide(placement) {
+  return placement.split("-")[0];
+}
+function getMainAxisFromPlacement(placement) {
+  return ["top", "bottom"].includes(getSide(placement)) ? "x" : "y";
 }
 function computeCoordsFromPlacement(_ref, placement, rtl) {
   let {
@@ -11321,7 +12019,7 @@ var arrow = (options) => ({
     const {
       element,
       padding = 0
-    } = options != null ? options : {};
+    } = options || {};
     const {
       x: x2,
       y,
@@ -11341,7 +12039,6 @@ var arrow = (options) => ({
       y
     };
     const axis = getMainAxisFromPlacement(placement);
-    const alignment = getAlignment(placement);
     const length = getLengthFromAxis(axis);
     const arrowDimensions = await platform2.getDimensions(element);
     const minProp = axis === "y" ? "top" : "left";
@@ -11358,8 +12055,7 @@ var arrow = (options) => ({
     const max5 = clientSize - arrowDimensions[length] - paddingObject[maxProp];
     const center = clientSize / 2 - arrowDimensions[length] / 2 + centerToReference;
     const offset2 = within(min5, center, max5);
-    const alignmentPadding = alignment === "start" ? paddingObject[minProp] : paddingObject[maxProp];
-    const shouldAddOffset = alignmentPadding > 0 && center !== offset2 && rects.reference[length] <= rects.floating[length];
+    const shouldAddOffset = getAlignment(placement) != null && center != offset2 && rects.reference[length] / 2 - (center < min5 ? paddingObject[minProp] : paddingObject[maxProp]) - arrowDimensions[length] / 2 < 0;
     const alignmentOffset = shouldAddOffset ? center < min5 ? min5 - center : max5 - center : 0;
     return {
       [axis]: coords[axis] - alignmentOffset,
@@ -11433,30 +12129,25 @@ var offset = function(value) {
 };
 
 // node_modules/@floating-ui/dom/dist/floating-ui.dom.esm.js
-var min3 = Math.min;
-var max3 = Math.max;
-var round2 = Math.round;
-function getScale(element, paramRect) {
-  const rect = paramRect || element.getBoundingClientRect();
-  return {
-    x: element.offsetWidth > 0 ? round2(rect.width) / element.offsetWidth || 1 : 1,
-    y: element.offsetHeight > 0 ? round2(rect.height) / element.offsetHeight || 1 : 1
-  };
-}
 function getWindow(node) {
   var _node$ownerDocument;
   return ((_node$ownerDocument = node.ownerDocument) == null ? void 0 : _node$ownerDocument.defaultView) || window;
 }
-function getComputedStyle2(element) {
+function getComputedStyle$1(element) {
   return getWindow(element).getComputedStyle(element);
 }
 function getNodeName(node) {
   return isNode(node) ? (node.nodeName || "").toLowerCase() : "";
 }
+var uaString;
 function getUAString() {
+  if (uaString) {
+    return uaString;
+  }
   const uaData = navigator.userAgentData;
   if (uaData && Array.isArray(uaData.brands)) {
-    return uaData.brands.map((item) => item.brand + "/" + item.version).join(" ");
+    uaString = uaData.brands.map((item) => item.brand + "/" + item.version).join(" ");
+    return uaString;
   }
   return navigator.userAgent;
 }
@@ -11482,15 +12173,15 @@ function isOverflowElement(element) {
     overflowX,
     overflowY,
     display
-  } = getComputedStyle2(element);
-  return /auto|scroll|overlay|hidden/.test(overflow + overflowY + overflowX) && !["inline", "contents"].includes(display);
+  } = getComputedStyle$1(element);
+  return /auto|scroll|overlay|hidden|clip/.test(overflow + overflowY + overflowX) && !["inline", "contents"].includes(display);
 }
 function isTableElement(element) {
   return ["table", "td", "th"].includes(getNodeName(element));
 }
 function isContainingBlock(element) {
   const isFirefox2 = /firefox/i.test(getUAString());
-  const css = getComputedStyle2(element);
+  const css = getComputedStyle$1(element);
   const backdropFilter = css.backdropFilter || css.WebkitBackdropFilter;
   return css.transform !== "none" || css.perspective !== "none" || (backdropFilter ? backdropFilter !== "none" : false) || isFirefox2 && css.willChange === "filter" || isFirefox2 && (css.filter ? css.filter !== "none" : false) || ["transform", "perspective"].some((value) => css.willChange.includes(value)) || ["paint", "layout", "strict", "content"].some(
     (value) => {
@@ -11505,8 +12196,59 @@ function isLayoutViewport() {
 function isLastTraversableNode(node) {
   return ["html", "body", "#document"].includes(getNodeName(node));
 }
-function getBoundingClientRect(element, includeScale, isFixedStrategy) {
-  var _win$visualViewport$o, _win$visualViewport, _win$visualViewport$o2, _win$visualViewport2;
+var min3 = Math.min;
+var max3 = Math.max;
+var round2 = Math.round;
+function getCssDimensions(element) {
+  const css = getComputedStyle$1(element);
+  let width = parseFloat(css.width);
+  let height = parseFloat(css.height);
+  const offsetWidth = element.offsetWidth;
+  const offsetHeight = element.offsetHeight;
+  const shouldFallback = round2(width) !== offsetWidth || round2(height) !== offsetHeight;
+  if (shouldFallback) {
+    width = offsetWidth;
+    height = offsetHeight;
+  }
+  return {
+    width,
+    height,
+    fallback: shouldFallback
+  };
+}
+function unwrapElement(element) {
+  return !isElement3(element) ? element.contextElement : element;
+}
+var FALLBACK_SCALE = {
+  x: 1,
+  y: 1
+};
+function getScale(element) {
+  const domElement = unwrapElement(element);
+  if (!isHTMLElement(domElement)) {
+    return FALLBACK_SCALE;
+  }
+  const rect = domElement.getBoundingClientRect();
+  const {
+    width,
+    height,
+    fallback
+  } = getCssDimensions(domElement);
+  let x2 = (fallback ? round2(rect.width) : rect.width) / width;
+  let y = (fallback ? round2(rect.height) : rect.height) / height;
+  if (!x2 || !Number.isFinite(x2)) {
+    x2 = 1;
+  }
+  if (!y || !Number.isFinite(y)) {
+    y = 1;
+  }
+  return {
+    x: x2,
+    y
+  };
+}
+function getBoundingClientRect(element, includeScale, isFixedStrategy, offsetParent) {
+  var _win$visualViewport, _win$visualViewport2;
   if (includeScale === void 0) {
     includeScale = false;
   }
@@ -11514,25 +12256,42 @@ function getBoundingClientRect(element, includeScale, isFixedStrategy) {
     isFixedStrategy = false;
   }
   const clientRect = element.getBoundingClientRect();
-  let contextRect = clientRect;
-  let elementToCheckForScale = element;
-  let scale = {
-    x: 1,
-    y: 1
-  };
-  if (!isElement3(element) && element.contextElement) {
-    contextRect = element.contextElement.getBoundingClientRect();
-    elementToCheckForScale = element.contextElement;
+  const domElement = unwrapElement(element);
+  let scale = FALLBACK_SCALE;
+  if (includeScale) {
+    if (offsetParent) {
+      if (isElement3(offsetParent)) {
+        scale = getScale(offsetParent);
+      }
+    } else {
+      scale = getScale(element);
+    }
   }
-  if (includeScale && isHTMLElement(elementToCheckForScale)) {
-    scale = getScale(elementToCheckForScale, contextRect);
-  }
-  const win = isElement3(element) ? getWindow(element) : window;
+  const win = domElement ? getWindow(domElement) : window;
   const addVisualOffsets = !isLayoutViewport() && isFixedStrategy;
-  const x2 = (clientRect.left + (addVisualOffsets ? (_win$visualViewport$o = (_win$visualViewport = win.visualViewport) == null ? void 0 : _win$visualViewport.offsetLeft) != null ? _win$visualViewport$o : 0 : 0)) / scale.x;
-  const y = (clientRect.top + (addVisualOffsets ? (_win$visualViewport$o2 = (_win$visualViewport2 = win.visualViewport) == null ? void 0 : _win$visualViewport2.offsetTop) != null ? _win$visualViewport$o2 : 0 : 0)) / scale.y;
-  const width = clientRect.width / scale.x;
-  const height = clientRect.height / scale.y;
+  let x2 = (clientRect.left + (addVisualOffsets ? ((_win$visualViewport = win.visualViewport) == null ? void 0 : _win$visualViewport.offsetLeft) || 0 : 0)) / scale.x;
+  let y = (clientRect.top + (addVisualOffsets ? ((_win$visualViewport2 = win.visualViewport) == null ? void 0 : _win$visualViewport2.offsetTop) || 0 : 0)) / scale.y;
+  let width = clientRect.width / scale.x;
+  let height = clientRect.height / scale.y;
+  if (domElement) {
+    const win2 = getWindow(domElement);
+    const offsetWin = offsetParent && isElement3(offsetParent) ? getWindow(offsetParent) : offsetParent;
+    let currentIFrame = win2.frameElement;
+    while (currentIFrame && offsetParent && offsetWin !== win2) {
+      const iframeScale = getScale(currentIFrame);
+      const iframeRect = currentIFrame.getBoundingClientRect();
+      const css = getComputedStyle(currentIFrame);
+      iframeRect.x += (currentIFrame.clientLeft + parseFloat(css.paddingLeft)) * iframeScale.x;
+      iframeRect.y += (currentIFrame.clientTop + parseFloat(css.paddingTop)) * iframeScale.y;
+      x2 *= iframeScale.x;
+      y *= iframeScale.y;
+      width *= iframeScale.x;
+      height *= iframeScale.y;
+      x2 += iframeRect.x;
+      y += iframeRect.y;
+      currentIFrame = getWindow(currentIFrame).frameElement;
+    }
+  }
   return {
     width,
     height,
@@ -11562,18 +12321,10 @@ function getNodeScroll(element) {
 function getWindowScrollBarX(element) {
   return getBoundingClientRect(getDocumentElement(element)).left + getNodeScroll(element).scrollLeft;
 }
-function isScaled(element) {
-  const rect = getBoundingClientRect(element);
-  return round2(rect.width) !== element.offsetWidth || round2(rect.height) !== element.offsetHeight;
-}
 function getRectRelativeToOffsetParent(element, offsetParent, strategy) {
   const isOffsetParentAnElement = isHTMLElement(offsetParent);
   const documentElement = getDocumentElement(offsetParent);
-  const rect = getBoundingClientRect(
-    element,
-    isOffsetParentAnElement && isScaled(offsetParent),
-    strategy === "fixed"
-  );
+  const rect = getBoundingClientRect(element, true, strategy === "fixed", offsetParent);
   let scroll = {
     scrollLeft: 0,
     scrollTop: 0
@@ -11609,7 +12360,7 @@ function getParentNode(node) {
   return isShadowRoot(result2) ? result2.host : result2;
 }
 function getTrueOffsetParent(element) {
-  if (!isHTMLElement(element) || getComputedStyle2(element).position === "fixed") {
+  if (!isHTMLElement(element) || getComputedStyle$1(element).position === "fixed") {
     return null;
   }
   return element.offsetParent;
@@ -11628,26 +12379,16 @@ function getContainingBlock(element) {
 function getOffsetParent(element) {
   const window2 = getWindow(element);
   let offsetParent = getTrueOffsetParent(element);
-  while (offsetParent && isTableElement(offsetParent) && getComputedStyle2(offsetParent).position === "static") {
+  while (offsetParent && isTableElement(offsetParent) && getComputedStyle$1(offsetParent).position === "static") {
     offsetParent = getTrueOffsetParent(offsetParent);
   }
-  if (offsetParent && (getNodeName(offsetParent) === "html" || getNodeName(offsetParent) === "body" && getComputedStyle2(offsetParent).position === "static" && !isContainingBlock(offsetParent))) {
+  if (offsetParent && (getNodeName(offsetParent) === "html" || getNodeName(offsetParent) === "body" && getComputedStyle$1(offsetParent).position === "static" && !isContainingBlock(offsetParent))) {
     return window2;
   }
   return offsetParent || getContainingBlock(element) || window2;
 }
 function getDimensions(element) {
-  if (isHTMLElement(element)) {
-    return {
-      width: element.offsetWidth,
-      height: element.offsetHeight
-    };
-  }
-  const rect = getBoundingClientRect(element);
-  return {
-    width: rect.width,
-    height: rect.height
-  };
+  return getCssDimensions(element);
 }
 function convertOffsetParentRelativeRectToViewportRelativeRect(_ref) {
   let {
@@ -11723,7 +12464,7 @@ function getDocumentRect(element) {
   const height = max3(html.scrollHeight, html.clientHeight, body ? body.scrollHeight : 0, body ? body.clientHeight : 0);
   let x2 = -scroll.scrollLeft + getWindowScrollBarX(element);
   const y = -scroll.scrollTop;
-  if (getComputedStyle2(body || html).direction === "rtl") {
+  if (getComputedStyle$1(body || html).direction === "rtl") {
     x2 += max3(html.clientWidth, body ? body.clientWidth : 0) - width;
   }
   return {
@@ -11788,13 +12529,17 @@ function getClientRectFromClippingAncestor(element, clippingAncestor, strategy) 
   }
   return rectToClientRect(getDocumentRect(getDocumentElement(element)));
 }
-function getClippingElementAncestors(element) {
+function getClippingElementAncestors(element, cache2) {
+  const cachedResult = cache2.get(element);
+  if (cachedResult) {
+    return cachedResult;
+  }
   let result2 = getOverflowAncestors(element).filter((el) => isElement3(el) && getNodeName(el) !== "body");
   let currentContainingBlockComputedStyle = null;
-  const elementIsFixed = getComputedStyle2(element).position === "fixed";
+  const elementIsFixed = getComputedStyle$1(element).position === "fixed";
   let currentNode = elementIsFixed ? getParentNode(element) : element;
   while (isElement3(currentNode) && !isLastTraversableNode(currentNode)) {
-    const computedStyle = getComputedStyle2(currentNode);
+    const computedStyle = getComputedStyle$1(currentNode);
     const containingBlock = isContainingBlock(currentNode);
     const shouldDropCurrentNode = elementIsFixed ? !containingBlock && !currentContainingBlockComputedStyle : !containingBlock && computedStyle.position === "static" && !!currentContainingBlockComputedStyle && ["absolute", "fixed"].includes(currentContainingBlockComputedStyle.position);
     if (shouldDropCurrentNode) {
@@ -11804,6 +12549,7 @@ function getClippingElementAncestors(element) {
     }
     currentNode = getParentNode(currentNode);
   }
+  cache2.set(element, result2);
   return result2;
 }
 function getClippingRect(_ref) {
@@ -11813,7 +12559,7 @@ function getClippingRect(_ref) {
     rootBoundary,
     strategy
   } = _ref;
-  const elementClippingAncestors = boundary === "clippingAncestors" ? getClippingElementAncestors(element) : [].concat(boundary);
+  const elementClippingAncestors = boundary === "clippingAncestors" ? getClippingElementAncestors(element, this._c) : [].concat(boundary);
   const clippingAncestors = [...elementClippingAncestors, rootBoundary];
   const firstClippingAncestor = clippingAncestors[0];
   const clippingRect = clippingAncestors.reduce((accRect, clippingAncestor) => {
@@ -11857,12 +12603,23 @@ var platform = {
     };
   },
   getClientRects: (element) => Array.from(element.getClientRects()),
-  isRTL: (element) => getComputedStyle2(element).direction === "rtl"
+  isRTL: (element) => getComputedStyle$1(element).direction === "rtl"
 };
-var computePosition2 = (reference, floating, options) => computePosition(reference, floating, {
-  platform,
-  ...options
-});
+var computePosition2 = (reference, floating, options) => {
+  const cache2 = /* @__PURE__ */ new Map();
+  const mergedOptions = {
+    platform,
+    ...options
+  };
+  const platformWithCache = {
+    ...mergedOptions.platform,
+    _c: cache2
+  };
+  return computePosition(reference, floating, {
+    ...mergedOptions,
+    platform: platformWithCache
+  });
+};
 
 // node_modules/element-plus/es/hooks/use-floating/index.mjs
 var useFloatingProps = buildProps({});
@@ -12018,7 +12775,7 @@ var useOrderedChildren = (vm, childComponentName) => {
 };
 
 // node_modules/element-plus/es/version.mjs
-var version = "2.2.26";
+var version2 = "2.2.28";
 
 // node_modules/element-plus/es/make-installer.mjs
 var makeInstaller = (components = []) => {
@@ -12031,7 +12788,7 @@ var makeInstaller = (components = []) => {
       provideGlobalConfig(options, app, true);
   };
   return {
-    version,
+    version: version2,
     install: install2
   };
 };
@@ -13697,586 +14454,6 @@ var _sfc_main10 = defineComponent({
 });
 var ElPopperTrigger = _export_sfc(_sfc_main10, [["__file", "/home/runner/work/element-plus/element-plus/packages/components/popper/src/trigger.vue"]]);
 
-// node_modules/@popperjs/core/dist/index.mjs
-var E = "top";
-var R = "bottom";
-var W = "right";
-var P = "left";
-var me = "auto";
-var G = [E, R, W, P];
-var U = "start";
-var J = "end";
-var Xe = "clippingParents";
-var je = "viewport";
-var K = "popper";
-var Ye = "reference";
-var De = G.reduce(function(t, e) {
-  return t.concat([e + "-" + U, e + "-" + J]);
-}, []);
-var Ee = [].concat(G, [me]).reduce(function(t, e) {
-  return t.concat([e, e + "-" + U, e + "-" + J]);
-}, []);
-var Ge = "beforeRead";
-var Je = "read";
-var Ke = "afterRead";
-var Qe = "beforeMain";
-var Ze = "main";
-var et = "afterMain";
-var tt = "beforeWrite";
-var nt = "write";
-var rt = "afterWrite";
-var ot = [Ge, Je, Ke, Qe, Ze, et, tt, nt, rt];
-function C(t) {
-  return t ? (t.nodeName || "").toLowerCase() : null;
-}
-function H(t) {
-  if (t == null)
-    return window;
-  if (t.toString() !== "[object Window]") {
-    var e = t.ownerDocument;
-    return e && e.defaultView || window;
-  }
-  return t;
-}
-function Q(t) {
-  var e = H(t).Element;
-  return t instanceof e || t instanceof Element;
-}
-function B(t) {
-  var e = H(t).HTMLElement;
-  return t instanceof e || t instanceof HTMLElement;
-}
-function Pe(t) {
-  if (typeof ShadowRoot == "undefined")
-    return false;
-  var e = H(t).ShadowRoot;
-  return t instanceof e || t instanceof ShadowRoot;
-}
-function Mt(t) {
-  var e = t.state;
-  Object.keys(e.elements).forEach(function(n) {
-    var r = e.styles[n] || {}, o2 = e.attributes[n] || {}, i = e.elements[n];
-    !B(i) || !C(i) || (Object.assign(i.style, r), Object.keys(o2).forEach(function(a2) {
-      var s2 = o2[a2];
-      s2 === false ? i.removeAttribute(a2) : i.setAttribute(a2, s2 === true ? "" : s2);
-    }));
-  });
-}
-function Rt(t) {
-  var e = t.state, n = { popper: { position: e.options.strategy, left: "0", top: "0", margin: "0" }, arrow: { position: "absolute" }, reference: {} };
-  return Object.assign(e.elements.popper.style, n.popper), e.styles = n, e.elements.arrow && Object.assign(e.elements.arrow.style, n.arrow), function() {
-    Object.keys(e.elements).forEach(function(r) {
-      var o2 = e.elements[r], i = e.attributes[r] || {}, a2 = Object.keys(e.styles.hasOwnProperty(r) ? e.styles[r] : n[r]), s2 = a2.reduce(function(f2, c2) {
-        return f2[c2] = "", f2;
-      }, {});
-      !B(o2) || !C(o2) || (Object.assign(o2.style, s2), Object.keys(i).forEach(function(f2) {
-        o2.removeAttribute(f2);
-      }));
-    });
-  };
-}
-var Ae = { name: "applyStyles", enabled: true, phase: "write", fn: Mt, effect: Rt, requires: ["computeStyles"] };
-function q(t) {
-  return t.split("-")[0];
-}
-var X = Math.max;
-var ve = Math.min;
-var Z = Math.round;
-function ee(t, e) {
-  e === void 0 && (e = false);
-  var n = t.getBoundingClientRect(), r = 1, o2 = 1;
-  if (B(t) && e) {
-    var i = t.offsetHeight, a2 = t.offsetWidth;
-    a2 > 0 && (r = Z(n.width) / a2 || 1), i > 0 && (o2 = Z(n.height) / i || 1);
-  }
-  return { width: n.width / r, height: n.height / o2, top: n.top / o2, right: n.right / r, bottom: n.bottom / o2, left: n.left / r, x: n.left / r, y: n.top / o2 };
-}
-function ke(t) {
-  var e = ee(t), n = t.offsetWidth, r = t.offsetHeight;
-  return Math.abs(e.width - n) <= 1 && (n = e.width), Math.abs(e.height - r) <= 1 && (r = e.height), { x: t.offsetLeft, y: t.offsetTop, width: n, height: r };
-}
-function it(t, e) {
-  var n = e.getRootNode && e.getRootNode();
-  if (t.contains(e))
-    return true;
-  if (n && Pe(n)) {
-    var r = e;
-    do {
-      if (r && t.isSameNode(r))
-        return true;
-      r = r.parentNode || r.host;
-    } while (r);
-  }
-  return false;
-}
-function N(t) {
-  return H(t).getComputedStyle(t);
-}
-function Wt(t) {
-  return ["table", "td", "th"].indexOf(C(t)) >= 0;
-}
-function I(t) {
-  return ((Q(t) ? t.ownerDocument : t.document) || window.document).documentElement;
-}
-function ge(t) {
-  return C(t) === "html" ? t : t.assignedSlot || t.parentNode || (Pe(t) ? t.host : null) || I(t);
-}
-function at2(t) {
-  return !B(t) || N(t).position === "fixed" ? null : t.offsetParent;
-}
-function Bt(t) {
-  var e = navigator.userAgent.toLowerCase().indexOf("firefox") !== -1, n = navigator.userAgent.indexOf("Trident") !== -1;
-  if (n && B(t)) {
-    var r = N(t);
-    if (r.position === "fixed")
-      return null;
-  }
-  var o2 = ge(t);
-  for (Pe(o2) && (o2 = o2.host); B(o2) && ["html", "body"].indexOf(C(o2)) < 0; ) {
-    var i = N(o2);
-    if (i.transform !== "none" || i.perspective !== "none" || i.contain === "paint" || ["transform", "perspective"].indexOf(i.willChange) !== -1 || e && i.willChange === "filter" || e && i.filter && i.filter !== "none")
-      return o2;
-    o2 = o2.parentNode;
-  }
-  return null;
-}
-function se(t) {
-  for (var e = H(t), n = at2(t); n && Wt(n) && N(n).position === "static"; )
-    n = at2(n);
-  return n && (C(n) === "html" || C(n) === "body" && N(n).position === "static") ? e : n || Bt(t) || e;
-}
-function Le(t) {
-  return ["top", "bottom"].indexOf(t) >= 0 ? "x" : "y";
-}
-function fe(t, e, n) {
-  return X(t, ve(e, n));
-}
-function St(t, e, n) {
-  var r = fe(t, e, n);
-  return r > n ? n : r;
-}
-function st() {
-  return { top: 0, right: 0, bottom: 0, left: 0 };
-}
-function ft(t) {
-  return Object.assign({}, st(), t);
-}
-function ct(t, e) {
-  return e.reduce(function(n, r) {
-    return n[r] = t, n;
-  }, {});
-}
-var Tt = function(t, e) {
-  return t = typeof t == "function" ? t(Object.assign({}, e.rects, { placement: e.placement })) : t, ft(typeof t != "number" ? t : ct(t, G));
-};
-function Ht(t) {
-  var e, n = t.state, r = t.name, o2 = t.options, i = n.elements.arrow, a2 = n.modifiersData.popperOffsets, s2 = q(n.placement), f2 = Le(s2), c2 = [P, W].indexOf(s2) >= 0, u2 = c2 ? "height" : "width";
-  if (!(!i || !a2)) {
-    var m2 = Tt(o2.padding, n), v2 = ke(i), l2 = f2 === "y" ? E : P, h3 = f2 === "y" ? R : W, p2 = n.rects.reference[u2] + n.rects.reference[f2] - a2[f2] - n.rects.popper[u2], g = a2[f2] - n.rects.reference[f2], x2 = se(i), y = x2 ? f2 === "y" ? x2.clientHeight || 0 : x2.clientWidth || 0 : 0, $ = p2 / 2 - g / 2, d2 = m2[l2], b2 = y - v2[u2] - m2[h3], w2 = y / 2 - v2[u2] / 2 + $, O2 = fe(d2, w2, b2), j = f2;
-    n.modifiersData[r] = (e = {}, e[j] = O2, e.centerOffset = O2 - w2, e);
-  }
-}
-function Ct(t) {
-  var e = t.state, n = t.options, r = n.element, o2 = r === void 0 ? "[data-popper-arrow]" : r;
-  o2 != null && (typeof o2 == "string" && (o2 = e.elements.popper.querySelector(o2), !o2) || !it(e.elements.popper, o2) || (e.elements.arrow = o2));
-}
-var pt = { name: "arrow", enabled: true, phase: "main", fn: Ht, effect: Ct, requires: ["popperOffsets"], requiresIfExists: ["preventOverflow"] };
-function te(t) {
-  return t.split("-")[1];
-}
-var qt = { top: "auto", right: "auto", bottom: "auto", left: "auto" };
-function Vt(t) {
-  var e = t.x, n = t.y, r = window, o2 = r.devicePixelRatio || 1;
-  return { x: Z(e * o2) / o2 || 0, y: Z(n * o2) / o2 || 0 };
-}
-function ut(t) {
-  var e, n = t.popper, r = t.popperRect, o2 = t.placement, i = t.variation, a2 = t.offsets, s2 = t.position, f2 = t.gpuAcceleration, c2 = t.adaptive, u2 = t.roundOffsets, m2 = t.isFixed, v2 = a2.x, l2 = v2 === void 0 ? 0 : v2, h3 = a2.y, p2 = h3 === void 0 ? 0 : h3, g = typeof u2 == "function" ? u2({ x: l2, y: p2 }) : { x: l2, y: p2 };
-  l2 = g.x, p2 = g.y;
-  var x2 = a2.hasOwnProperty("x"), y = a2.hasOwnProperty("y"), $ = P, d2 = E, b2 = window;
-  if (c2) {
-    var w2 = se(n), O2 = "clientHeight", j = "clientWidth";
-    if (w2 === H(n) && (w2 = I(n), N(w2).position !== "static" && s2 === "absolute" && (O2 = "scrollHeight", j = "scrollWidth")), w2 = w2, o2 === E || (o2 === P || o2 === W) && i === J) {
-      d2 = R;
-      var A2 = m2 && w2 === b2 && b2.visualViewport ? b2.visualViewport.height : w2[O2];
-      p2 -= A2 - r.height, p2 *= f2 ? 1 : -1;
-    }
-    if (o2 === P || (o2 === E || o2 === R) && i === J) {
-      $ = W;
-      var k = m2 && w2 === b2 && b2.visualViewport ? b2.visualViewport.width : w2[j];
-      l2 -= k - r.width, l2 *= f2 ? 1 : -1;
-    }
-  }
-  var D2 = Object.assign({ position: s2 }, c2 && qt), S2 = u2 === true ? Vt({ x: l2, y: p2 }) : { x: l2, y: p2 };
-  if (l2 = S2.x, p2 = S2.y, f2) {
-    var L;
-    return Object.assign({}, D2, (L = {}, L[d2] = y ? "0" : "", L[$] = x2 ? "0" : "", L.transform = (b2.devicePixelRatio || 1) <= 1 ? "translate(" + l2 + "px, " + p2 + "px)" : "translate3d(" + l2 + "px, " + p2 + "px, 0)", L));
-  }
-  return Object.assign({}, D2, (e = {}, e[d2] = y ? p2 + "px" : "", e[$] = x2 ? l2 + "px" : "", e.transform = "", e));
-}
-function Nt(t) {
-  var e = t.state, n = t.options, r = n.gpuAcceleration, o2 = r === void 0 ? true : r, i = n.adaptive, a2 = i === void 0 ? true : i, s2 = n.roundOffsets, f2 = s2 === void 0 ? true : s2, c2 = { placement: q(e.placement), variation: te(e.placement), popper: e.elements.popper, popperRect: e.rects.popper, gpuAcceleration: o2, isFixed: e.options.strategy === "fixed" };
-  e.modifiersData.popperOffsets != null && (e.styles.popper = Object.assign({}, e.styles.popper, ut(Object.assign({}, c2, { offsets: e.modifiersData.popperOffsets, position: e.options.strategy, adaptive: a2, roundOffsets: f2 })))), e.modifiersData.arrow != null && (e.styles.arrow = Object.assign({}, e.styles.arrow, ut(Object.assign({}, c2, { offsets: e.modifiersData.arrow, position: "absolute", adaptive: false, roundOffsets: f2 })))), e.attributes.popper = Object.assign({}, e.attributes.popper, { "data-popper-placement": e.placement });
-}
-var Me = { name: "computeStyles", enabled: true, phase: "beforeWrite", fn: Nt, data: {} };
-var ye = { passive: true };
-function It(t) {
-  var e = t.state, n = t.instance, r = t.options, o2 = r.scroll, i = o2 === void 0 ? true : o2, a2 = r.resize, s2 = a2 === void 0 ? true : a2, f2 = H(e.elements.popper), c2 = [].concat(e.scrollParents.reference, e.scrollParents.popper);
-  return i && c2.forEach(function(u2) {
-    u2.addEventListener("scroll", n.update, ye);
-  }), s2 && f2.addEventListener("resize", n.update, ye), function() {
-    i && c2.forEach(function(u2) {
-      u2.removeEventListener("scroll", n.update, ye);
-    }), s2 && f2.removeEventListener("resize", n.update, ye);
-  };
-}
-var Re = { name: "eventListeners", enabled: true, phase: "write", fn: function() {
-}, effect: It, data: {} };
-var _t = { left: "right", right: "left", bottom: "top", top: "bottom" };
-function be(t) {
-  return t.replace(/left|right|bottom|top/g, function(e) {
-    return _t[e];
-  });
-}
-var zt = { start: "end", end: "start" };
-function lt2(t) {
-  return t.replace(/start|end/g, function(e) {
-    return zt[e];
-  });
-}
-function We(t) {
-  var e = H(t), n = e.pageXOffset, r = e.pageYOffset;
-  return { scrollLeft: n, scrollTop: r };
-}
-function Be(t) {
-  return ee(I(t)).left + We(t).scrollLeft;
-}
-function Ft(t) {
-  var e = H(t), n = I(t), r = e.visualViewport, o2 = n.clientWidth, i = n.clientHeight, a2 = 0, s2 = 0;
-  return r && (o2 = r.width, i = r.height, /^((?!chrome|android).)*safari/i.test(navigator.userAgent) || (a2 = r.offsetLeft, s2 = r.offsetTop)), { width: o2, height: i, x: a2 + Be(t), y: s2 };
-}
-function Ut(t) {
-  var e, n = I(t), r = We(t), o2 = (e = t.ownerDocument) == null ? void 0 : e.body, i = X(n.scrollWidth, n.clientWidth, o2 ? o2.scrollWidth : 0, o2 ? o2.clientWidth : 0), a2 = X(n.scrollHeight, n.clientHeight, o2 ? o2.scrollHeight : 0, o2 ? o2.clientHeight : 0), s2 = -r.scrollLeft + Be(t), f2 = -r.scrollTop;
-  return N(o2 || n).direction === "rtl" && (s2 += X(n.clientWidth, o2 ? o2.clientWidth : 0) - i), { width: i, height: a2, x: s2, y: f2 };
-}
-function Se(t) {
-  var e = N(t), n = e.overflow, r = e.overflowX, o2 = e.overflowY;
-  return /auto|scroll|overlay|hidden/.test(n + o2 + r);
-}
-function dt(t) {
-  return ["html", "body", "#document"].indexOf(C(t)) >= 0 ? t.ownerDocument.body : B(t) && Se(t) ? t : dt(ge(t));
-}
-function ce(t, e) {
-  var n;
-  e === void 0 && (e = []);
-  var r = dt(t), o2 = r === ((n = t.ownerDocument) == null ? void 0 : n.body), i = H(r), a2 = o2 ? [i].concat(i.visualViewport || [], Se(r) ? r : []) : r, s2 = e.concat(a2);
-  return o2 ? s2 : s2.concat(ce(ge(a2)));
-}
-function Te(t) {
-  return Object.assign({}, t, { left: t.x, top: t.y, right: t.x + t.width, bottom: t.y + t.height });
-}
-function Xt(t) {
-  var e = ee(t);
-  return e.top = e.top + t.clientTop, e.left = e.left + t.clientLeft, e.bottom = e.top + t.clientHeight, e.right = e.left + t.clientWidth, e.width = t.clientWidth, e.height = t.clientHeight, e.x = e.left, e.y = e.top, e;
-}
-function ht(t, e) {
-  return e === je ? Te(Ft(t)) : Q(e) ? Xt(e) : Te(Ut(I(t)));
-}
-function Yt(t) {
-  var e = ce(ge(t)), n = ["absolute", "fixed"].indexOf(N(t).position) >= 0, r = n && B(t) ? se(t) : t;
-  return Q(r) ? e.filter(function(o2) {
-    return Q(o2) && it(o2, r) && C(o2) !== "body";
-  }) : [];
-}
-function Gt(t, e, n) {
-  var r = e === "clippingParents" ? Yt(t) : [].concat(e), o2 = [].concat(r, [n]), i = o2[0], a2 = o2.reduce(function(s2, f2) {
-    var c2 = ht(t, f2);
-    return s2.top = X(c2.top, s2.top), s2.right = ve(c2.right, s2.right), s2.bottom = ve(c2.bottom, s2.bottom), s2.left = X(c2.left, s2.left), s2;
-  }, ht(t, i));
-  return a2.width = a2.right - a2.left, a2.height = a2.bottom - a2.top, a2.x = a2.left, a2.y = a2.top, a2;
-}
-function mt(t) {
-  var e = t.reference, n = t.element, r = t.placement, o2 = r ? q(r) : null, i = r ? te(r) : null, a2 = e.x + e.width / 2 - n.width / 2, s2 = e.y + e.height / 2 - n.height / 2, f2;
-  switch (o2) {
-    case E:
-      f2 = { x: a2, y: e.y - n.height };
-      break;
-    case R:
-      f2 = { x: a2, y: e.y + e.height };
-      break;
-    case W:
-      f2 = { x: e.x + e.width, y: s2 };
-      break;
-    case P:
-      f2 = { x: e.x - n.width, y: s2 };
-      break;
-    default:
-      f2 = { x: e.x, y: e.y };
-  }
-  var c2 = o2 ? Le(o2) : null;
-  if (c2 != null) {
-    var u2 = c2 === "y" ? "height" : "width";
-    switch (i) {
-      case U:
-        f2[c2] = f2[c2] - (e[u2] / 2 - n[u2] / 2);
-        break;
-      case J:
-        f2[c2] = f2[c2] + (e[u2] / 2 - n[u2] / 2);
-        break;
-    }
-  }
-  return f2;
-}
-function ne(t, e) {
-  e === void 0 && (e = {});
-  var n = e, r = n.placement, o2 = r === void 0 ? t.placement : r, i = n.boundary, a2 = i === void 0 ? Xe : i, s2 = n.rootBoundary, f2 = s2 === void 0 ? je : s2, c2 = n.elementContext, u2 = c2 === void 0 ? K : c2, m2 = n.altBoundary, v2 = m2 === void 0 ? false : m2, l2 = n.padding, h3 = l2 === void 0 ? 0 : l2, p2 = ft(typeof h3 != "number" ? h3 : ct(h3, G)), g = u2 === K ? Ye : K, x2 = t.rects.popper, y = t.elements[v2 ? g : u2], $ = Gt(Q(y) ? y : y.contextElement || I(t.elements.popper), a2, f2), d2 = ee(t.elements.reference), b2 = mt({ reference: d2, element: x2, strategy: "absolute", placement: o2 }), w2 = Te(Object.assign({}, x2, b2)), O2 = u2 === K ? w2 : d2, j = { top: $.top - O2.top + p2.top, bottom: O2.bottom - $.bottom + p2.bottom, left: $.left - O2.left + p2.left, right: O2.right - $.right + p2.right }, A2 = t.modifiersData.offset;
-  if (u2 === K && A2) {
-    var k = A2[o2];
-    Object.keys(j).forEach(function(D2) {
-      var S2 = [W, R].indexOf(D2) >= 0 ? 1 : -1, L = [E, R].indexOf(D2) >= 0 ? "y" : "x";
-      j[D2] += k[L] * S2;
-    });
-  }
-  return j;
-}
-function Jt(t, e) {
-  e === void 0 && (e = {});
-  var n = e, r = n.placement, o2 = n.boundary, i = n.rootBoundary, a2 = n.padding, s2 = n.flipVariations, f2 = n.allowedAutoPlacements, c2 = f2 === void 0 ? Ee : f2, u2 = te(r), m2 = u2 ? s2 ? De : De.filter(function(h3) {
-    return te(h3) === u2;
-  }) : G, v2 = m2.filter(function(h3) {
-    return c2.indexOf(h3) >= 0;
-  });
-  v2.length === 0 && (v2 = m2);
-  var l2 = v2.reduce(function(h3, p2) {
-    return h3[p2] = ne(t, { placement: p2, boundary: o2, rootBoundary: i, padding: a2 })[q(p2)], h3;
-  }, {});
-  return Object.keys(l2).sort(function(h3, p2) {
-    return l2[h3] - l2[p2];
-  });
-}
-function Kt(t) {
-  if (q(t) === me)
-    return [];
-  var e = be(t);
-  return [lt2(t), e, lt2(e)];
-}
-function Qt(t) {
-  var e = t.state, n = t.options, r = t.name;
-  if (!e.modifiersData[r]._skip) {
-    for (var o2 = n.mainAxis, i = o2 === void 0 ? true : o2, a2 = n.altAxis, s2 = a2 === void 0 ? true : a2, f2 = n.fallbackPlacements, c2 = n.padding, u2 = n.boundary, m2 = n.rootBoundary, v2 = n.altBoundary, l2 = n.flipVariations, h3 = l2 === void 0 ? true : l2, p2 = n.allowedAutoPlacements, g = e.options.placement, x2 = q(g), y = x2 === g, $ = f2 || (y || !h3 ? [be(g)] : Kt(g)), d2 = [g].concat($).reduce(function(z, V) {
-      return z.concat(q(V) === me ? Jt(e, { placement: V, boundary: u2, rootBoundary: m2, padding: c2, flipVariations: h3, allowedAutoPlacements: p2 }) : V);
-    }, []), b2 = e.rects.reference, w2 = e.rects.popper, O2 = /* @__PURE__ */ new Map(), j = true, A2 = d2[0], k = 0; k < d2.length; k++) {
-      var D2 = d2[k], S2 = q(D2), L = te(D2) === U, re = [E, R].indexOf(S2) >= 0, oe = re ? "width" : "height", M2 = ne(e, { placement: D2, boundary: u2, rootBoundary: m2, altBoundary: v2, padding: c2 }), T2 = re ? L ? W : P : L ? R : E;
-      b2[oe] > w2[oe] && (T2 = be(T2));
-      var pe = be(T2), _2 = [];
-      if (i && _2.push(M2[S2] <= 0), s2 && _2.push(M2[T2] <= 0, M2[pe] <= 0), _2.every(function(z) {
-        return z;
-      })) {
-        A2 = D2, j = false;
-        break;
-      }
-      O2.set(D2, _2);
-    }
-    if (j)
-      for (var ue = h3 ? 3 : 1, xe = function(z) {
-        var V = d2.find(function(de) {
-          var ae = O2.get(de);
-          if (ae)
-            return ae.slice(0, z).every(function(Y2) {
-              return Y2;
-            });
-        });
-        if (V)
-          return A2 = V, "break";
-      }, ie = ue; ie > 0; ie--) {
-        var le = xe(ie);
-        if (le === "break")
-          break;
-      }
-    e.placement !== A2 && (e.modifiersData[r]._skip = true, e.placement = A2, e.reset = true);
-  }
-}
-var vt = { name: "flip", enabled: true, phase: "main", fn: Qt, requiresIfExists: ["offset"], data: { _skip: false } };
-function gt2(t, e, n) {
-  return n === void 0 && (n = { x: 0, y: 0 }), { top: t.top - e.height - n.y, right: t.right - e.width + n.x, bottom: t.bottom - e.height + n.y, left: t.left - e.width - n.x };
-}
-function yt(t) {
-  return [E, W, R, P].some(function(e) {
-    return t[e] >= 0;
-  });
-}
-function Zt(t) {
-  var e = t.state, n = t.name, r = e.rects.reference, o2 = e.rects.popper, i = e.modifiersData.preventOverflow, a2 = ne(e, { elementContext: "reference" }), s2 = ne(e, { altBoundary: true }), f2 = gt2(a2, r), c2 = gt2(s2, o2, i), u2 = yt(f2), m2 = yt(c2);
-  e.modifiersData[n] = { referenceClippingOffsets: f2, popperEscapeOffsets: c2, isReferenceHidden: u2, hasPopperEscaped: m2 }, e.attributes.popper = Object.assign({}, e.attributes.popper, { "data-popper-reference-hidden": u2, "data-popper-escaped": m2 });
-}
-var bt = { name: "hide", enabled: true, phase: "main", requiresIfExists: ["preventOverflow"], fn: Zt };
-function en(t, e, n) {
-  var r = q(t), o2 = [P, E].indexOf(r) >= 0 ? -1 : 1, i = typeof n == "function" ? n(Object.assign({}, e, { placement: t })) : n, a2 = i[0], s2 = i[1];
-  return a2 = a2 || 0, s2 = (s2 || 0) * o2, [P, W].indexOf(r) >= 0 ? { x: s2, y: a2 } : { x: a2, y: s2 };
-}
-function tn(t) {
-  var e = t.state, n = t.options, r = t.name, o2 = n.offset, i = o2 === void 0 ? [0, 0] : o2, a2 = Ee.reduce(function(u2, m2) {
-    return u2[m2] = en(m2, e.rects, i), u2;
-  }, {}), s2 = a2[e.placement], f2 = s2.x, c2 = s2.y;
-  e.modifiersData.popperOffsets != null && (e.modifiersData.popperOffsets.x += f2, e.modifiersData.popperOffsets.y += c2), e.modifiersData[r] = a2;
-}
-var wt = { name: "offset", enabled: true, phase: "main", requires: ["popperOffsets"], fn: tn };
-function nn(t) {
-  var e = t.state, n = t.name;
-  e.modifiersData[n] = mt({ reference: e.rects.reference, element: e.rects.popper, strategy: "absolute", placement: e.placement });
-}
-var He = { name: "popperOffsets", enabled: true, phase: "read", fn: nn, data: {} };
-function rn(t) {
-  return t === "x" ? "y" : "x";
-}
-function on(t) {
-  var e = t.state, n = t.options, r = t.name, o2 = n.mainAxis, i = o2 === void 0 ? true : o2, a2 = n.altAxis, s2 = a2 === void 0 ? false : a2, f2 = n.boundary, c2 = n.rootBoundary, u2 = n.altBoundary, m2 = n.padding, v2 = n.tether, l2 = v2 === void 0 ? true : v2, h3 = n.tetherOffset, p2 = h3 === void 0 ? 0 : h3, g = ne(e, { boundary: f2, rootBoundary: c2, padding: m2, altBoundary: u2 }), x2 = q(e.placement), y = te(e.placement), $ = !y, d2 = Le(x2), b2 = rn(d2), w2 = e.modifiersData.popperOffsets, O2 = e.rects.reference, j = e.rects.popper, A2 = typeof p2 == "function" ? p2(Object.assign({}, e.rects, { placement: e.placement })) : p2, k = typeof A2 == "number" ? { mainAxis: A2, altAxis: A2 } : Object.assign({ mainAxis: 0, altAxis: 0 }, A2), D2 = e.modifiersData.offset ? e.modifiersData.offset[e.placement] : null, S2 = { x: 0, y: 0 };
-  if (w2) {
-    if (i) {
-      var L, re = d2 === "y" ? E : P, oe = d2 === "y" ? R : W, M2 = d2 === "y" ? "height" : "width", T2 = w2[d2], pe = T2 + g[re], _2 = T2 - g[oe], ue = l2 ? -j[M2] / 2 : 0, xe = y === U ? O2[M2] : j[M2], ie = y === U ? -j[M2] : -O2[M2], le = e.elements.arrow, z = l2 && le ? ke(le) : { width: 0, height: 0 }, V = e.modifiersData["arrow#persistent"] ? e.modifiersData["arrow#persistent"].padding : st(), de = V[re], ae = V[oe], Y2 = fe(0, O2[M2], z[M2]), jt = $ ? O2[M2] / 2 - ue - Y2 - de - k.mainAxis : xe - Y2 - de - k.mainAxis, Dt = $ ? -O2[M2] / 2 + ue + Y2 + ae + k.mainAxis : ie + Y2 + ae + k.mainAxis, Oe = e.elements.arrow && se(e.elements.arrow), Et = Oe ? d2 === "y" ? Oe.clientTop || 0 : Oe.clientLeft || 0 : 0, Ce = (L = D2 == null ? void 0 : D2[d2]) != null ? L : 0, Pt = T2 + jt - Ce - Et, At = T2 + Dt - Ce, qe = fe(l2 ? ve(pe, Pt) : pe, T2, l2 ? X(_2, At) : _2);
-      w2[d2] = qe, S2[d2] = qe - T2;
-    }
-    if (s2) {
-      var Ve, kt = d2 === "x" ? E : P, Lt = d2 === "x" ? R : W, F2 = w2[b2], he = b2 === "y" ? "height" : "width", Ne = F2 + g[kt], Ie = F2 - g[Lt], $e = [E, P].indexOf(x2) !== -1, _e = (Ve = D2 == null ? void 0 : D2[b2]) != null ? Ve : 0, ze = $e ? Ne : F2 - O2[he] - j[he] - _e + k.altAxis, Fe = $e ? F2 + O2[he] + j[he] - _e - k.altAxis : Ie, Ue = l2 && $e ? St(ze, F2, Fe) : fe(l2 ? ze : Ne, F2, l2 ? Fe : Ie);
-      w2[b2] = Ue, S2[b2] = Ue - F2;
-    }
-    e.modifiersData[r] = S2;
-  }
-}
-var xt = { name: "preventOverflow", enabled: true, phase: "main", fn: on, requiresIfExists: ["offset"] };
-function an(t) {
-  return { scrollLeft: t.scrollLeft, scrollTop: t.scrollTop };
-}
-function sn(t) {
-  return t === H(t) || !B(t) ? We(t) : an(t);
-}
-function fn(t) {
-  var e = t.getBoundingClientRect(), n = Z(e.width) / t.offsetWidth || 1, r = Z(e.height) / t.offsetHeight || 1;
-  return n !== 1 || r !== 1;
-}
-function cn(t, e, n) {
-  n === void 0 && (n = false);
-  var r = B(e), o2 = B(e) && fn(e), i = I(e), a2 = ee(t, o2), s2 = { scrollLeft: 0, scrollTop: 0 }, f2 = { x: 0, y: 0 };
-  return (r || !r && !n) && ((C(e) !== "body" || Se(i)) && (s2 = sn(e)), B(e) ? (f2 = ee(e, true), f2.x += e.clientLeft, f2.y += e.clientTop) : i && (f2.x = Be(i))), { x: a2.left + s2.scrollLeft - f2.x, y: a2.top + s2.scrollTop - f2.y, width: a2.width, height: a2.height };
-}
-function pn(t) {
-  var e = /* @__PURE__ */ new Map(), n = /* @__PURE__ */ new Set(), r = [];
-  t.forEach(function(i) {
-    e.set(i.name, i);
-  });
-  function o2(i) {
-    n.add(i.name);
-    var a2 = [].concat(i.requires || [], i.requiresIfExists || []);
-    a2.forEach(function(s2) {
-      if (!n.has(s2)) {
-        var f2 = e.get(s2);
-        f2 && o2(f2);
-      }
-    }), r.push(i);
-  }
-  return t.forEach(function(i) {
-    n.has(i.name) || o2(i);
-  }), r;
-}
-function un(t) {
-  var e = pn(t);
-  return ot.reduce(function(n, r) {
-    return n.concat(e.filter(function(o2) {
-      return o2.phase === r;
-    }));
-  }, []);
-}
-function ln(t) {
-  var e;
-  return function() {
-    return e || (e = new Promise(function(n) {
-      Promise.resolve().then(function() {
-        e = void 0, n(t());
-      });
-    })), e;
-  };
-}
-function dn(t) {
-  var e = t.reduce(function(n, r) {
-    var o2 = n[r.name];
-    return n[r.name] = o2 ? Object.assign({}, o2, r, { options: Object.assign({}, o2.options, r.options), data: Object.assign({}, o2.data, r.data) }) : r, n;
-  }, {});
-  return Object.keys(e).map(function(n) {
-    return e[n];
-  });
-}
-var Ot = { placement: "bottom", modifiers: [], strategy: "absolute" };
-function $t() {
-  for (var t = arguments.length, e = new Array(t), n = 0; n < t; n++)
-    e[n] = arguments[n];
-  return !e.some(function(r) {
-    return !(r && typeof r.getBoundingClientRect == "function");
-  });
-}
-function we(t) {
-  t === void 0 && (t = {});
-  var e = t, n = e.defaultModifiers, r = n === void 0 ? [] : n, o2 = e.defaultOptions, i = o2 === void 0 ? Ot : o2;
-  return function(a2, s2, f2) {
-    f2 === void 0 && (f2 = i);
-    var c2 = { placement: "bottom", orderedModifiers: [], options: Object.assign({}, Ot, i), modifiersData: {}, elements: { reference: a2, popper: s2 }, attributes: {}, styles: {} }, u2 = [], m2 = false, v2 = { state: c2, setOptions: function(p2) {
-      var g = typeof p2 == "function" ? p2(c2.options) : p2;
-      h3(), c2.options = Object.assign({}, i, c2.options, g), c2.scrollParents = { reference: Q(a2) ? ce(a2) : a2.contextElement ? ce(a2.contextElement) : [], popper: ce(s2) };
-      var x2 = un(dn([].concat(r, c2.options.modifiers)));
-      return c2.orderedModifiers = x2.filter(function(y) {
-        return y.enabled;
-      }), l2(), v2.update();
-    }, forceUpdate: function() {
-      if (!m2) {
-        var p2 = c2.elements, g = p2.reference, x2 = p2.popper;
-        if ($t(g, x2)) {
-          c2.rects = { reference: cn(g, se(x2), c2.options.strategy === "fixed"), popper: ke(x2) }, c2.reset = false, c2.placement = c2.options.placement, c2.orderedModifiers.forEach(function(j) {
-            return c2.modifiersData[j.name] = Object.assign({}, j.data);
-          });
-          for (var y = 0; y < c2.orderedModifiers.length; y++) {
-            if (c2.reset === true) {
-              c2.reset = false, y = -1;
-              continue;
-            }
-            var $ = c2.orderedModifiers[y], d2 = $.fn, b2 = $.options, w2 = b2 === void 0 ? {} : b2, O2 = $.name;
-            typeof d2 == "function" && (c2 = d2({ state: c2, options: w2, name: O2, instance: v2 }) || c2);
-          }
-        }
-      }
-    }, update: ln(function() {
-      return new Promise(function(p2) {
-        v2.forceUpdate(), p2(c2);
-      });
-    }), destroy: function() {
-      h3(), m2 = true;
-    } };
-    if (!$t(a2, s2))
-      return v2;
-    v2.setOptions(f2).then(function(p2) {
-      !m2 && f2.onFirstUpdate && f2.onFirstUpdate(p2);
-    });
-    function l2() {
-      c2.orderedModifiers.forEach(function(p2) {
-        var g = p2.name, x2 = p2.options, y = x2 === void 0 ? {} : x2, $ = p2.effect;
-        if (typeof $ == "function") {
-          var d2 = $({ state: c2, name: g, instance: v2, options: y }), b2 = function() {
-          };
-          u2.push(d2 || b2);
-        }
-      });
-    }
-    function h3() {
-      u2.forEach(function(p2) {
-        return p2();
-      }), u2 = [];
-    }
-    return v2;
-  };
-}
-var hn = we();
-var mn = [Re, He, Me, Ae];
-var vn = we({ defaultModifiers: mn });
-var gn = [Re, He, Me, Ae, wt, vt, xt, pt, bt];
-var yn = we({ defaultModifiers: gn });
-
 // node_modules/element-plus/es/components/focus-trap/src/tokens.mjs
 var FOCUS_AFTER_TRAPPED = "focus-trap.focus-after-trapped";
 var FOCUS_AFTER_RELEASED = "focus-trap.focus-after-released";
@@ -14347,10 +14524,6 @@ var tryFocus = (element, shouldSelect) => {
     element.focus({ preventScroll: true });
     lastAutomatedFocusTimestamp.value = window.performance.now();
     if (element !== prevFocusedElement && isSelectable(element) && shouldSelect) {
-      if (element.tagName === "INPUT") {
-        element.setSelectionRange(element.value.length, element.value.length);
-        return;
-      }
       element.select();
     }
   }
@@ -14642,7 +14815,7 @@ var _sfc_main11 = defineComponent({
         trapContainer.addEventListener(FOCUS_AFTER_RELEASED, releaseOnFocus);
         trapContainer.dispatchEvent(releasedEvent);
         if (!releasedEvent.defaultPrevented && (focusReason2.value == "keyboard" || !isFocusCausedByUserEvent())) {
-          tryFocus(lastFocusBeforeTrapped != null ? lastFocusBeforeTrapped : document.body, true);
+          tryFocus(lastFocusBeforeTrapped != null ? lastFocusBeforeTrapped : document.body);
         }
         trapContainer.removeEventListener(FOCUS_AFTER_RELEASED, trapOnFocus);
         focusableStack.remove(focusLayer);
@@ -14772,15 +14945,15 @@ var usePopperContentEmits = popperContentEmits;
 
 // node_modules/element-plus/es/components/popper/src/utils.mjs
 var buildPopperOptions = (props, arrowProps) => {
-  const { placement, strategy, popperOptions: popperOptions2 } = props;
+  const { placement, strategy, popperOptions } = props;
   const options = {
     placement,
     strategy,
-    ...popperOptions2,
+    ...popperOptions,
     modifiers: genModifiers(props)
   };
   attachArrow(options, arrowProps);
-  deriveExtraModifiers(options, popperOptions2 == null ? void 0 : popperOptions2.modifiers);
+  deriveExtraModifiers(options, popperOptions == null ? void 0 : popperOptions.modifiers);
   return options;
 };
 var unwrapMeasurableEl = ($el) => {
@@ -15521,7 +15694,7 @@ var Tooltip = _export_sfc(_sfc_main15, [["__file", "/home/runner/work/element-pl
 // node_modules/element-plus/es/components/tooltip/index.mjs
 var ElTooltip = withInstall(Tooltip);
 
-// node_modules/element-plus/es/components/autocomplete/src/autocomplete2.mjs
+// node_modules/element-plus/es/components/autocomplete/src/autocomplete.mjs
 var autocompleteProps = buildProps({
   valueKey: {
     type: String,
@@ -15590,7 +15763,7 @@ var autocompleteEmits = {
   select: (item) => isObject(item)
 };
 
-// node_modules/element-plus/es/components/autocomplete/src/autocomplete.mjs
+// node_modules/element-plus/es/components/autocomplete/src/autocomplete2.mjs
 var _hoisted_13 = ["aria-expanded", "aria-owns"];
 var _hoisted_23 = { key: 0 };
 var _hoisted_32 = ["id", "aria-selected", "onClick"];
@@ -20913,27 +21086,33 @@ var _sfc_main33 = defineComponent({
       onClickRoot
     } = useCheckbox(props, slots);
     const ns2 = useNamespace("checkbox");
+    const compKls = computed2(() => {
+      return [
+        ns2.b(),
+        ns2.m(checkboxSize.value),
+        ns2.is("disabled", isDisabled.value),
+        ns2.is("bordered", props.border),
+        ns2.is("checked", isChecked.value)
+      ];
+    });
+    const spanKls = computed2(() => {
+      return [
+        ns2.e("input"),
+        ns2.is("disabled", isDisabled.value),
+        ns2.is("checked", isChecked.value),
+        ns2.is("indeterminate", props.indeterminate),
+        ns2.is("focus", isFocused.value)
+      ];
+    });
     return (_ctx, _cache) => {
       return openBlock(), createBlock(resolveDynamicComponent(!unref(hasOwnLabel) && unref(isLabeledByFormItem) ? "span" : "label"), {
-        class: normalizeClass([
-          unref(ns2).b(),
-          unref(ns2).m(unref(checkboxSize)),
-          unref(ns2).is("disabled", unref(isDisabled)),
-          unref(ns2).is("bordered", _ctx.border),
-          unref(ns2).is("checked", unref(isChecked))
-        ]),
+        class: normalizeClass(unref(compKls)),
         "aria-controls": _ctx.indeterminate ? _ctx.controls : null,
         onClick: unref(onClickRoot)
       }, {
         default: withCtx(() => [
           createBaseVNode("span", {
-            class: normalizeClass([
-              unref(ns2).e("input"),
-              unref(ns2).is("disabled", unref(isDisabled)),
-              unref(ns2).is("checked", unref(isChecked)),
-              unref(ns2).is("indeterminate", _ctx.indeterminate),
-              unref(ns2).is("focus", unref(isFocused))
-            ]),
+            class: normalizeClass(unref(spanKls)),
             tabindex: _ctx.indeterminate ? 0 : void 0,
             role: _ctx.indeterminate ? "checkbox" : void 0,
             "aria-checked": _ctx.indeterminate ? "mixed" : void 0
@@ -21026,15 +21205,18 @@ var _sfc_main34 = defineComponent({
         boxShadow: fillValue ? `-1px 0 0 0 ${fillValue}` : void 0
       };
     });
+    const lableKls = computed2(() => {
+      return [
+        ns2.b("button"),
+        ns2.bm("button", checkboxButtonSize.value),
+        ns2.is("disabled", isDisabled.value),
+        ns2.is("checked", isChecked.value),
+        ns2.is("focus", isFocused.value)
+      ];
+    });
     return (_ctx, _cache) => {
       return openBlock(), createElementBlock("label", {
-        class: normalizeClass([
-          unref(ns2).b("button"),
-          unref(ns2).bm("button", unref(checkboxButtonSize)),
-          unref(ns2).is("disabled", unref(isDisabled)),
-          unref(ns2).is("checked", unref(isChecked)),
-          unref(ns2).is("focus", unref(isFocused))
-        ])
+        class: normalizeClass(unref(lableKls))
       }, [
         _ctx.trueLabel || _ctx.falseLabel ? withDirectives((openBlock(), createElementBlock("input", {
           key: 0,
@@ -21505,7 +21687,7 @@ var NodeContent = defineComponent({
 // node_modules/element-plus/es/components/cascader-panel/src/types.mjs
 var CASCADER_PANEL_INJECTION_KEY = Symbol();
 
-// node_modules/element-plus/es/components/cascader-panel/src/node.mjs
+// node_modules/element-plus/es/components/cascader-panel/src/node2.mjs
 var _sfc_main39 = defineComponent({
   name: "ElCascaderNode",
   components: {
@@ -21842,7 +22024,7 @@ function _sfc_render3(_ctx, _cache, $props, $setup, $data, $options) {
 }
 var ElCascaderMenu = _export_sfc(_sfc_main40, [["render", _sfc_render3], ["__file", "/home/runner/work/element-plus/element-plus/packages/components/cascader-panel/src/menu.vue"]]);
 
-// node_modules/element-plus/es/components/cascader-panel/src/node2.mjs
+// node_modules/element-plus/es/components/cascader-panel/src/node.mjs
 var uid = 0;
 var calculatePathNodes = (node) => {
   const nodes = [node];
@@ -22009,17 +22191,19 @@ var Store = class {
 };
 
 // node_modules/element-plus/es/components/cascader-panel/src/config.mjs
-var CommonProps = {
-  modelValue: [Number, String, Array],
+var CommonProps = buildProps({
+  modelValue: {
+    type: definePropType([Number, String, Array])
+  },
   options: {
-    type: Array,
+    type: definePropType(Array),
     default: () => []
   },
   props: {
-    type: Object,
+    type: definePropType(Object),
     default: () => ({})
   }
-};
+});
 var DefaultProps = {
   expandTrigger: "click",
   multiple: false,
@@ -22464,98 +22648,91 @@ var Tag = _export_sfc(_sfc_main42, [["__file", "/home/runner/work/element-plus/e
 // node_modules/element-plus/es/components/tag/index.mjs
 var ElTag = withInstall(Tag);
 
-// node_modules/element-plus/es/components/cascader/src/index.mjs
-var popperOptions = {
-  modifiers: [
-    {
-      name: "arrowPosition",
-      enabled: true,
-      phase: "main",
-      fn: ({ state }) => {
-        const { modifiersData, placement } = state;
-        if (["right", "left", "bottom", "top"].includes(placement))
-          return;
-        modifiersData.arrow.x = 35;
-      },
-      requires: ["arrow"]
-    }
-  ]
+// node_modules/element-plus/es/components/cascader/src/cascader.mjs
+var cascaderProps = buildProps({
+  ...CommonProps,
+  size: useSizeProp,
+  placeholder: String,
+  disabled: Boolean,
+  clearable: Boolean,
+  filterable: Boolean,
+  filterMethod: {
+    type: definePropType(Function),
+    default: (node, keyword) => node.text.includes(keyword)
+  },
+  separator: {
+    type: String,
+    default: " / "
+  },
+  showAllLevels: {
+    type: Boolean,
+    default: true
+  },
+  collapseTags: Boolean,
+  collapseTagsTooltip: {
+    type: Boolean,
+    default: false
+  },
+  debounce: {
+    type: Number,
+    default: 300
+  },
+  beforeFilter: {
+    type: definePropType(Function),
+    default: () => true
+  },
+  popperClass: {
+    type: String,
+    default: ""
+  },
+  teleported: useTooltipContentProps.teleported,
+  tagType: { ...tagProps.type, default: "info" },
+  validateEvent: {
+    type: Boolean,
+    default: true
+  }
+});
+var cascaderEmits = {
+  [UPDATE_MODEL_EVENT]: (val) => !!val,
+  [CHANGE_EVENT]: (val) => !!val,
+  focus: (evt) => evt instanceof FocusEvent,
+  blur: (evt) => evt instanceof FocusEvent,
+  visibleChange: (val) => isBoolean2(val),
+  expandChange: (val) => !!val,
+  removeTag: (val) => !!val
 };
+
+// node_modules/element-plus/es/components/cascader/src/cascader2.mjs
+var _hoisted_118 = { key: 0 };
+var _hoisted_211 = ["placeholder", "onKeydown"];
+var _hoisted_34 = ["onClick"];
 var COMPONENT_NAME9 = "ElCascader";
+var __default__34 = defineComponent({
+  name: COMPONENT_NAME9
+});
 var _sfc_main43 = defineComponent({
-  name: COMPONENT_NAME9,
-  components: {
-    ElCascaderPanel: _CascaderPanel,
-    ElInput,
-    ElTooltip,
-    ElScrollbar,
-    ElTag,
-    ElIcon,
-    CircleClose: circle_close_default,
-    Check: check_default,
-    ArrowDown: arrow_down_default
-  },
-  directives: {
-    Clickoutside: ClickOutside
-  },
-  props: {
-    ...CommonProps,
-    size: {
-      type: String,
-      validator: isValidComponentSize
-    },
-    placeholder: {
-      type: String
-    },
-    disabled: Boolean,
-    clearable: Boolean,
-    filterable: Boolean,
-    filterMethod: {
-      type: Function,
-      default: (node, keyword) => node.text.includes(keyword)
-    },
-    separator: {
-      type: String,
-      default: " / "
-    },
-    showAllLevels: {
-      type: Boolean,
-      default: true
-    },
-    collapseTags: Boolean,
-    collapseTagsTooltip: {
-      type: Boolean,
-      default: false
-    },
-    debounce: {
-      type: Number,
-      default: 300
-    },
-    beforeFilter: {
-      type: Function,
-      default: () => true
-    },
-    popperClass: {
-      type: String,
-      default: ""
-    },
-    teleported: useTooltipContentProps.teleported,
-    tagType: { ...tagProps.type, default: "info" },
-    validateEvent: {
-      type: Boolean,
-      default: true
-    }
-  },
-  emits: [
-    UPDATE_MODEL_EVENT,
-    CHANGE_EVENT,
-    "focus",
-    "blur",
-    "visible-change",
-    "expand-change",
-    "remove-tag"
-  ],
-  setup(props, { emit }) {
+  ...__default__34,
+  props: cascaderProps,
+  emits: cascaderEmits,
+  setup(__props, { expose, emit }) {
+    const props = __props;
+    const popperOptions = {
+      modifiers: [
+        {
+          name: "arrowPosition",
+          enabled: true,
+          phase: "main",
+          fn: ({ state }) => {
+            const { modifiersData, placement } = state;
+            if (["right", "left", "bottom", "top"].includes(placement))
+              return;
+            modifiersData.arrow.x = 35;
+          },
+          requires: ["arrow"]
+        }
+      ]
+    };
+    const attrs = useAttrs();
     let inputInitialHeight = 0;
     let pressDeleteCount = 0;
     const nsCascader = useNamespace("cascader");
@@ -22576,9 +22753,12 @@ var _sfc_main43 = defineComponent({
     const allPresentTags = ref([]);
     const suggestions = ref([]);
     const isOnComposition = ref(false);
+    const cascaderStyle = computed2(() => {
+      return attrs.style;
+    });
     const isDisabled = computed2(() => props.disabled || (form == null ? void 0 : form.disabled));
     const inputPlaceholder = computed2(() => props.placeholder || t("el.cascader.placeholder"));
-    const currentPlaceholder = computed2(() => searchInputValue.value || presentTags.value.length > 0 ? "" : inputPlaceholder.value);
+    const currentPlaceholder = computed2(() => searchInputValue.value || presentTags.value.length > 0 || isOnComposition.value ? "" : inputPlaceholder.value);
     const realSize = useSize();
     const tagSize = computed2(() => ["small"].includes(realSize.value) ? "small" : "default");
     const multiple = computed2(() => !!props.props.multiple);
@@ -22610,9 +22790,24 @@ var _sfc_main43 = defineComponent({
         }
       }
     });
-    const popperPaneRef = computed2(() => {
+    const cascaderPanelRef = computed2(() => {
       var _a2, _b;
       return (_b = (_a2 = tooltipRef.value) == null ? void 0 : _a2.popperRef) == null ? void 0 : _b.contentRef;
+    });
+    const cascaderKls = computed2(() => {
+      return [
+        nsCascader.b(),
+        nsCascader.m(realSize.value),
+        nsCascader.is("disabled", isDisabled.value),
+        attrs.class
+      ];
+    });
+    const cascaderIconKls = computed2(() => {
+      return [
+        nsInput.e("icon"),
+        "icon-arrow-down",
+        nsCascader.is("reverse", popperVisible.value)
+      ];
     });
     const togglePopperVisible = (visible) => {
       var _a2, _b, _c;
@@ -22628,7 +22823,7 @@ var _sfc_main43 = defineComponent({
         } else if (props.filterable) {
           syncPresentTextValue();
         }
-        emit("visible-change", visible);
+        emit("visibleChange", visible);
       }
     };
     const updatePopperPosition = () => {
@@ -22656,7 +22851,7 @@ var _sfc_main43 = defineComponent({
       const node = tag.node;
       node.doCheck(false);
       (_a2 = panel.value) == null ? void 0 : _a2.calculateCheckedValue();
-      emit("remove-tag", node.valueByOption);
+      emit("removeTag", node.valueByOption);
     };
     const calculatePresentTags = () => {
       if (!multiple.value)
@@ -22743,7 +22938,7 @@ var _sfc_main43 = defineComponent({
     };
     const handleExpandChange = (value) => {
       updatePopperPosition();
-      emit("expand-change", value);
+      emit("expandChange", value);
     };
     const handleComposition = (event) => {
       var _a2;
@@ -22830,6 +23025,12 @@ var _sfc_main43 = defineComponent({
         lastTag.hitState = true;
       }
     };
+    const handleFocus = (e) => {
+      emit("focus", e);
+    };
+    const handleBlur = (e) => {
+      emit("blur", e);
+    };
     const handleFilter = debounce_default(() => {
       const { value } = searchKeyword;
       if (!value)
@@ -22862,283 +23063,226 @@ var _sfc_main43 = defineComponent({
       inputInitialHeight = inputInner.offsetHeight || inputInnerHeight;
       useResizeObserver(inputInner, updateStyle);
     });
-    return {
-      popperOptions,
-      tooltipRef,
-      popperPaneRef,
-      input,
-      tagWrapper,
-      panel,
-      suggestionPanel,
-      popperVisible,
-      inputHover,
-      inputPlaceholder,
-      currentPlaceholder,
-      filtering,
-      presentText,
-      checkedValue,
-      inputValue,
-      searchInputValue,
-      presentTags,
-      allPresentTags,
-      suggestions,
-      isDisabled,
-      isOnComposition,
-      realSize,
-      tagSize,
-      multiple,
-      readonly: readonly2,
-      clearBtnVisible,
-      nsCascader,
-      nsInput,
-      t,
-      togglePopperVisible,
-      hideSuggestionPanel,
-      deleteTag,
-      focusFirstNode,
+    expose({
       getCheckedNodes,
-      handleExpandChange,
-      handleKeyDown,
-      handleComposition,
-      handleClear,
-      handleSuggestionClick,
-      handleSuggestionKeyDown,
-      handleDelete,
-      handleInput
+      cascaderPanelRef
+    });
+    return (_ctx, _cache) => {
+      return openBlock(), createBlock(unref(ElTooltip), {
+        ref_key: "tooltipRef",
+        ref: tooltipRef,
+        visible: popperVisible.value,
+        teleported: _ctx.teleported,
+        "popper-class": [unref(nsCascader).e("dropdown"), _ctx.popperClass],
+        "popper-options": popperOptions,
+        "fallback-placements": [
+          "bottom-start",
+          "bottom",
+          "top-start",
+          "top",
+          "right",
+          "left"
+        ],
+        "stop-popper-mouse-event": false,
+        "gpu-acceleration": false,
+        placement: "bottom-start",
+        transition: `${unref(nsCascader).namespace.value}-zoom-in-top`,
+        effect: "light",
+        pure: "",
+        persistent: "",
+        onHide: hideSuggestionPanel
+      }, {
+        default: withCtx(() => [
+          withDirectives((openBlock(), createElementBlock("div", {
+            class: normalizeClass(unref(cascaderKls)),
+            style: normalizeStyle(unref(cascaderStyle)),
+            onClick: _cache[5] || (_cache[5] = () => togglePopperVisible(unref(readonly2) ? void 0 : true)),
+            onKeydown: handleKeyDown,
+            onMouseenter: _cache[6] || (_cache[6] = ($event) => inputHover.value = true),
+            onMouseleave: _cache[7] || (_cache[7] = ($event) => inputHover.value = false)
+          }, [
+            createVNode(unref(ElInput), {
+              ref_key: "input",
+              ref: input,
+              modelValue: inputValue.value,
+              "onUpdate:modelValue": _cache[1] || (_cache[1] = ($event) => inputValue.value = $event),
+              placeholder: unref(currentPlaceholder),
+              readonly: unref(readonly2),
+              disabled: unref(isDisabled),
+              "validate-event": false,
+              size: unref(realSize),
+              class: normalizeClass(unref(nsCascader).is("focus", popperVisible.value)),
+              onCompositionstart: handleComposition,
+              onCompositionupdate: handleComposition,
+              onCompositionend: handleComposition,
+              onFocus: handleFocus,
+              onBlur: handleBlur,
+              onInput: handleInput
+            }, {
+              suffix: withCtx(() => [
+                unref(clearBtnVisible) ? (openBlock(), createBlock(unref(ElIcon), {
+                  key: "clear",
+                  class: normalizeClass([unref(nsInput).e("icon"), "icon-circle-close"]),
+                  onClick: withModifiers(handleClear, ["stop"])
+                }, {
+                  default: withCtx(() => [
+                    createVNode(unref(circle_close_default))
+                  ]),
+                  _: 1
+                }, 8, ["class", "onClick"])) : (openBlock(), createBlock(unref(ElIcon), {
+                  key: "arrow-down",
+                  class: normalizeClass(unref(cascaderIconKls)),
+                  onClick: _cache[0] || (_cache[0] = withModifiers(($event) => togglePopperVisible(), ["stop"]))
+                }, {
+                  default: withCtx(() => [
+                    createVNode(unref(arrow_down_default))
+                  ]),
+                  _: 1
+                }, 8, ["class"]))
+              ]),
+              _: 1
+            }, 8, ["modelValue", "placeholder", "readonly", "disabled", "size", "class"]),
+            unref(multiple) ? (openBlock(), createElementBlock("div", {
+              key: 0,
+              ref_key: "tagWrapper",
+              ref: tagWrapper,
+              class: normalizeClass(unref(nsCascader).e("tags"))
+            }, [
+              (openBlock(true), createElementBlock(Fragment, null, renderList(presentTags.value, (tag) => {
+                return openBlock(), createBlock(unref(ElTag), {
+                  key: tag.key,
+                  type: _ctx.tagType,
+                  size: unref(tagSize),
+                  hit: tag.hitState,
+                  closable: tag.closable,
+                  "disable-transitions": "",
+                  onClose: ($event) => deleteTag(tag)
+                }, {
+                  default: withCtx(() => [
+                    tag.isCollapseTag === false ? (openBlock(), createElementBlock("span", _hoisted_118, toDisplayString(tag.text), 1)) : (openBlock(), createBlock(unref(ElTooltip), {
+                      key: 1,
+                      disabled: popperVisible.value || !_ctx.collapseTagsTooltip,
+                      "fallback-placements": ["bottom", "top", "right", "left"],
+                      placement: "bottom",
+                      effect: "light"
+                    }, {
+                      default: withCtx(() => [
+                        createBaseVNode("span", null, toDisplayString(tag.text), 1)
+                      ]),
+                      content: withCtx(() => [
+                        createBaseVNode("div", {
+                          class: normalizeClass(unref(nsCascader).e("collapse-tags"))
+                        }, [
+                          (openBlock(true), createElementBlock(Fragment, null, renderList(allPresentTags.value.slice(1), (tag2, idx) => {
+                            return openBlock(), createElementBlock("div", {
+                              key: idx,
+                              class: normalizeClass(unref(nsCascader).e("collapse-tag"))
+                            }, [
+                              (openBlock(), createBlock(unref(ElTag), {
+                                key: tag2.key,
+                                class: "in-tooltip",
+                                type: _ctx.tagType,
+                                size: unref(tagSize),
+                                hit: tag2.hitState,
+                                closable: tag2.closable,
+                                "disable-transitions": "",
+                                onClose: ($event) => deleteTag(tag2)
+                              }, {
+                                default: withCtx(() => [
+                                  createBaseVNode("span", null, toDisplayString(tag2.text), 1)
+                                ]),
+                                _: 2
+                              }, 1032, ["type", "size", "hit", "closable", "onClose"]))
+                            ], 2);
+                          }), 128))
+                        ], 2)
+                      ]),
+                      _: 2
+                    }, 1032, ["disabled"]))
+                  ]),
+                  _: 2
+                }, 1032, ["type", "size", "hit", "closable", "onClose"]);
+              }), 128)),
+              _ctx.filterable && !unref(isDisabled) ? withDirectives((openBlock(), createElementBlock("input", {
+                key: 0,
+                "onUpdate:modelValue": _cache[2] || (_cache[2] = ($event) => searchInputValue.value = $event),
+                type: "text",
+                class: normalizeClass(unref(nsCascader).e("search-input")),
+                placeholder: unref(presentText) ? "" : unref(inputPlaceholder),
+                onInput: _cache[3] || (_cache[3] = (e) => handleInput(searchInputValue.value, e)),
+                onClick: _cache[4] || (_cache[4] = withModifiers(($event) => togglePopperVisible(true), ["stop"])),
+                onKeydown: withKeys(handleDelete, ["delete"]),
+                onCompositionstart: handleComposition,
+                onCompositionupdate: handleComposition,
+                onCompositionend: handleComposition
+              }, null, 42, _hoisted_211)), [
+                [vModelText, searchInputValue.value]
+              ]) : createCommentVNode("v-if", true)
+            ], 2)) : createCommentVNode("v-if", true)
+          ], 38)), [
+            [unref(ClickOutside), () => togglePopperVisible(false), unref(cascaderPanelRef)]
+          ])
+        ]),
+        content: withCtx(() => [
+          withDirectives(createVNode(unref(_CascaderPanel), {
+            ref_key: "panel",
+            ref: panel,
+            modelValue: unref(checkedValue),
+            "onUpdate:modelValue": _cache[8] || (_cache[8] = ($event) => isRef(checkedValue) ? checkedValue.value = $event : null),
+            options: _ctx.options,
+            props: props.props,
+            border: false,
+            "render-label": _ctx.$slots.default,
+            onExpandChange: handleExpandChange,
+            onClose: _cache[9] || (_cache[9] = ($event) => _ctx.$nextTick(() => togglePopperVisible(false)))
+          }, null, 8, ["modelValue", "options", "props", "render-label"]), [
+            [vShow, !filtering.value]
+          ]),
+          _ctx.filterable ? withDirectives((openBlock(), createBlock(unref(ElScrollbar), {
+            key: 0,
+            ref_key: "suggestionPanel",
+            ref: suggestionPanel,
+            tag: "ul",
+            class: normalizeClass(unref(nsCascader).e("suggestion-panel")),
+            "view-class": unref(nsCascader).e("suggestion-list"),
+            onKeydown: handleSuggestionKeyDown
+          }, {
+            default: withCtx(() => [
+              suggestions.value.length ? (openBlock(true), createElementBlock(Fragment, { key: 0 }, renderList(suggestions.value, (item) => {
+                return openBlock(), createElementBlock("li", {
+                  key: item.uid,
+                  class: normalizeClass([
+                    unref(nsCascader).e("suggestion-item"),
+                    unref(nsCascader).is("checked", item.checked)
+                  ]),
+                  tabindex: -1,
+                  onClick: ($event) => handleSuggestionClick(item)
+                }, [
+                  createBaseVNode("span", null, toDisplayString(item.text), 1),
+                  item.checked ? (openBlock(), createBlock(unref(ElIcon), { key: 0 }, {
+                    default: withCtx(() => [
+                      createVNode(unref(check_default))
+                    ]),
+                    _: 1
+                  })) : createCommentVNode("v-if", true)
+                ], 10, _hoisted_34);
+              }), 128)) : renderSlot(_ctx.$slots, "empty", { key: 1 }, () => [
+                createBaseVNode("li", {
+                  class: normalizeClass(unref(nsCascader).e("empty-text"))
+                }, toDisplayString(unref(t)("el.cascader.noMatch")), 3)
+              ])
+            ]),
+            _: 3
+          }, 8, ["class", "view-class"])), [
+            [vShow, filtering.value]
+          ]) : createCommentVNode("v-if", true)
+        ]),
+        _: 3
+      }, 8, ["visible", "teleported", "popper-class", "transition"]);
     };
   }
 });
-var _hoisted_118 = { key: 0 };
-var _hoisted_211 = ["placeholder"];
-var _hoisted_34 = ["onClick"];
-function _sfc_render5(_ctx, _cache, $props, $setup, $data, $options) {
-  const _component_circle_close = resolveComponent("circle-close");
-  const _component_el_icon = resolveComponent("el-icon");
-  const _component_arrow_down = resolveComponent("arrow-down");
-  const _component_el_input = resolveComponent("el-input");
-  const _component_el_tag = resolveComponent("el-tag");
-  const _component_el_tooltip = resolveComponent("el-tooltip");
-  const _component_el_cascader_panel = resolveComponent("el-cascader-panel");
-  const _component_check = resolveComponent("check");
-  const _component_el_scrollbar = resolveComponent("el-scrollbar");
-  const _directive_clickoutside = resolveDirective("clickoutside");
-  return openBlock(), createBlock(_component_el_tooltip, {
-    ref: "tooltipRef",
-    visible: _ctx.popperVisible,
-    teleported: _ctx.teleported,
-    "popper-class": [_ctx.nsCascader.e("dropdown"), _ctx.popperClass],
-    "popper-options": _ctx.popperOptions,
-    "fallback-placements": [
-      "bottom-start",
-      "bottom",
-      "top-start",
-      "top",
-      "right",
-      "left"
-    ],
-    "stop-popper-mouse-event": false,
-    "gpu-acceleration": false,
-    placement: "bottom-start",
-    transition: `${_ctx.nsCascader.namespace.value}-zoom-in-top`,
-    effect: "light",
-    pure: "",
-    persistent: "",
-    onHide: _ctx.hideSuggestionPanel
-  }, {
-    default: withCtx(() => [
-      withDirectives((openBlock(), createElementBlock("div", {
-        class: normalizeClass([
-          _ctx.nsCascader.b(),
-          _ctx.nsCascader.m(_ctx.realSize),
-          _ctx.nsCascader.is("disabled", _ctx.isDisabled),
-          _ctx.$attrs.class
-        ]),
-        style: normalizeStyle(_ctx.$attrs.style),
-        onClick: _cache[11] || (_cache[11] = () => _ctx.togglePopperVisible(_ctx.readonly ? void 0 : true)),
-        onKeydown: _cache[12] || (_cache[12] = (...args) => _ctx.handleKeyDown && _ctx.handleKeyDown(...args)),
-        onMouseenter: _cache[13] || (_cache[13] = ($event) => _ctx.inputHover = true),
-        onMouseleave: _cache[14] || (_cache[14] = ($event) => _ctx.inputHover = false)
-      }, [
-        createVNode(_component_el_input, {
-          ref: "input",
-          modelValue: _ctx.inputValue,
-          "onUpdate:modelValue": _cache[1] || (_cache[1] = ($event) => _ctx.inputValue = $event),
-          placeholder: _ctx.currentPlaceholder,
-          readonly: _ctx.readonly,
-          disabled: _ctx.isDisabled,
-          "validate-event": false,
-          size: _ctx.realSize,
-          class: normalizeClass(_ctx.nsCascader.is("focus", _ctx.popperVisible)),
-          onCompositionstart: _ctx.handleComposition,
-          onCompositionupdate: _ctx.handleComposition,
-          onCompositionend: _ctx.handleComposition,
-          onFocus: _cache[2] || (_cache[2] = (e) => _ctx.$emit("focus", e)),
-          onBlur: _cache[3] || (_cache[3] = (e) => _ctx.$emit("blur", e)),
-          onInput: _ctx.handleInput
-        }, {
-          suffix: withCtx(() => [
-            _ctx.clearBtnVisible ? (openBlock(), createBlock(_component_el_icon, {
-              key: "clear",
-              class: normalizeClass([_ctx.nsInput.e("icon"), "icon-circle-close"]),
-              onClick: withModifiers(_ctx.handleClear, ["stop"])
-            }, {
-              default: withCtx(() => [
-                createVNode(_component_circle_close)
-              ]),
-              _: 1
-            }, 8, ["class", "onClick"])) : (openBlock(), createBlock(_component_el_icon, {
-              key: "arrow-down",
-              class: normalizeClass([
-                _ctx.nsInput.e("icon"),
-                "icon-arrow-down",
-                _ctx.nsCascader.is("reverse", _ctx.popperVisible)
-              ]),
-              onClick: _cache[0] || (_cache[0] = withModifiers(($event) => _ctx.togglePopperVisible(), ["stop"]))
-            }, {
-              default: withCtx(() => [
-                createVNode(_component_arrow_down)
-              ]),
-              _: 1
-            }, 8, ["class"]))
-          ]),
-          _: 1
-        }, 8, ["modelValue", "placeholder", "readonly", "disabled", "size", "class", "onCompositionstart", "onCompositionupdate", "onCompositionend", "onInput"]),
-        _ctx.multiple ? (openBlock(), createElementBlock("div", {
-          key: 0,
-          ref: "tagWrapper",
-          class: normalizeClass(_ctx.nsCascader.e("tags"))
-        }, [
-          (openBlock(true), createElementBlock(Fragment, null, renderList(_ctx.presentTags, (tag) => {
-            return openBlock(), createBlock(_component_el_tag, {
-              key: tag.key,
-              type: _ctx.tagType,
-              size: _ctx.tagSize,
-              hit: tag.hitState,
-              closable: tag.closable,
-              "disable-transitions": "",
-              onClose: ($event) => _ctx.deleteTag(tag)
-            }, {
-              default: withCtx(() => [
-                tag.isCollapseTag === false ? (openBlock(), createElementBlock("span", _hoisted_118, toDisplayString(tag.text), 1)) : (openBlock(), createBlock(_component_el_tooltip, {
-                  key: 1,
-                  disabled: _ctx.popperVisible || !_ctx.collapseTagsTooltip,
-                  "fallback-placements": ["bottom", "top", "right", "left"],
-                  placement: "bottom",
-                  effect: "light"
-                }, {
-                  default: withCtx(() => [
-                    createBaseVNode("span", null, toDisplayString(tag.text), 1)
-                  ]),
-                  content: withCtx(() => [
-                    createBaseVNode("div", {
-                      class: normalizeClass(_ctx.nsCascader.e("collapse-tags"))
-                    }, [
-                      (openBlock(true), createElementBlock(Fragment, null, renderList(_ctx.allPresentTags.slice(1), (tag2, idx) => {
-                        return openBlock(), createElementBlock("div", {
-                          key: idx,
-                          class: normalizeClass(_ctx.nsCascader.e("collapse-tag"))
-                        }, [
-                          (openBlock(), createBlock(_component_el_tag, {
-                            key: tag2.key,
-                            class: "in-tooltip",
-                            type: _ctx.tagType,
-                            size: _ctx.tagSize,
-                            hit: tag2.hitState,
-                            closable: tag2.closable,
-                            "disable-transitions": "",
-                            onClose: ($event) => _ctx.deleteTag(tag2)
-                          }, {
-                            default: withCtx(() => [
-                              createBaseVNode("span", null, toDisplayString(tag2.text), 1)
-                            ]),
-                            _: 2
-                          }, 1032, ["type", "size", "hit", "closable", "onClose"]))
-                        ], 2);
-                      }), 128))
-                    ], 2)
-                  ]),
-                  _: 2
-                }, 1032, ["disabled"]))
-              ]),
-              _: 2
-            }, 1032, ["type", "size", "hit", "closable", "onClose"]);
-          }), 128)),
-          _ctx.filterable && !_ctx.isDisabled ? withDirectives((openBlock(), createElementBlock("input", {
-            key: 0,
-            "onUpdate:modelValue": _cache[4] || (_cache[4] = ($event) => _ctx.searchInputValue = $event),
-            type: "text",
-            class: normalizeClass(_ctx.nsCascader.e("search-input")),
-            placeholder: _ctx.presentText ? "" : _ctx.inputPlaceholder,
-            onInput: _cache[5] || (_cache[5] = (e) => _ctx.handleInput(_ctx.searchInputValue, e)),
-            onClick: _cache[6] || (_cache[6] = withModifiers(($event) => _ctx.togglePopperVisible(true), ["stop"])),
-            onKeydown: _cache[7] || (_cache[7] = withKeys((...args) => _ctx.handleDelete && _ctx.handleDelete(...args), ["delete"])),
-            onCompositionstart: _cache[8] || (_cache[8] = (...args) => _ctx.handleComposition && _ctx.handleComposition(...args)),
-            onCompositionupdate: _cache[9] || (_cache[9] = (...args) => _ctx.handleComposition && _ctx.handleComposition(...args)),
-            onCompositionend: _cache[10] || (_cache[10] = (...args) => _ctx.handleComposition && _ctx.handleComposition(...args))
-          }, null, 42, _hoisted_211)), [
-            [vModelText, _ctx.searchInputValue]
-          ]) : createCommentVNode("v-if", true)
-        ], 2)) : createCommentVNode("v-if", true)
-      ], 38)), [
-        [_directive_clickoutside, () => _ctx.togglePopperVisible(false), _ctx.popperPaneRef]
-      ])
-    ]),
-    content: withCtx(() => [
-      withDirectives(createVNode(_component_el_cascader_panel, {
-        ref: "panel",
-        modelValue: _ctx.checkedValue,
-        "onUpdate:modelValue": _cache[15] || (_cache[15] = ($event) => _ctx.checkedValue = $event),
-        options: _ctx.options,
-        props: _ctx.props,
-        border: false,
-        "render-label": _ctx.$slots.default,
-        onExpandChange: _ctx.handleExpandChange,
-        onClose: _cache[16] || (_cache[16] = ($event) => _ctx.$nextTick(() => _ctx.togglePopperVisible(false)))
-      }, null, 8, ["modelValue", "options", "props", "render-label", "onExpandChange"]), [
-        [vShow, !_ctx.filtering]
-      ]),
-      _ctx.filterable ? withDirectives((openBlock(), createBlock(_component_el_scrollbar, {
-        key: 0,
-        ref: "suggestionPanel",
-        tag: "ul",
-        class: normalizeClass(_ctx.nsCascader.e("suggestion-panel")),
-        "view-class": _ctx.nsCascader.e("suggestion-list"),
-        onKeydown: _ctx.handleSuggestionKeyDown
-      }, {
-        default: withCtx(() => [
-          _ctx.suggestions.length ? (openBlock(true), createElementBlock(Fragment, { key: 0 }, renderList(_ctx.suggestions, (item) => {
-            return openBlock(), createElementBlock("li", {
-              key: item.uid,
-              class: normalizeClass([
-                _ctx.nsCascader.e("suggestion-item"),
-                _ctx.nsCascader.is("checked", item.checked)
-              ]),
-              tabindex: -1,
-              onClick: ($event) => _ctx.handleSuggestionClick(item)
-            }, [
-              createBaseVNode("span", null, toDisplayString(item.text), 1),
-              item.checked ? (openBlock(), createBlock(_component_el_icon, { key: 0 }, {
-                default: withCtx(() => [
-                  createVNode(_component_check)
-                ]),
-                _: 1
-              })) : createCommentVNode("v-if", true)
-            ], 10, _hoisted_34);
-          }), 128)) : renderSlot(_ctx.$slots, "empty", { key: 1 }, () => [
-            createBaseVNode("li", {
-              class: normalizeClass(_ctx.nsCascader.e("empty-text"))
-            }, toDisplayString(_ctx.t("el.cascader.noMatch")), 3)
-          ])
-        ]),
-        _: 3
-      }, 8, ["class", "view-class", "onKeydown"])), [
-        [vShow, _ctx.filtering]
-      ]) : createCommentVNode("v-if", true)
-    ]),
-    _: 3
-  }, 8, ["visible", "teleported", "popper-class", "popper-options", "transition", "onHide"]);
-}
-var Cascader = _export_sfc(_sfc_main43, [["render", _sfc_render5], ["__file", "/home/runner/work/element-plus/element-plus/packages/components/cascader/src/index.vue"]]);
+var Cascader = _export_sfc(_sfc_main43, [["__file", "/home/runner/work/element-plus/element-plus/packages/components/cascader/src/cascader.vue"]]);
 
 // node_modules/element-plus/es/components/cascader/index.mjs
 Cascader.install = (app) => {
@@ -23160,11 +23304,11 @@ var checkTagEmits = {
 };
 
 // node_modules/element-plus/es/components/check-tag/src/check-tag2.mjs
-var __default__34 = defineComponent({
+var __default__35 = defineComponent({
   name: "ElCheckTag"
 });
 var _sfc_main44 = defineComponent({
-  ...__default__34,
+  ...__default__35,
   props: checkTagProps,
   emits: checkTagEmits,
   setup(__props, { emit }) {
@@ -23235,11 +23379,11 @@ var colProps = buildProps({
 });
 
 // node_modules/element-plus/es/components/col/src/col2.mjs
-var __default__35 = defineComponent({
+var __default__36 = defineComponent({
   name: "ElCol"
 });
 var _sfc_main45 = defineComponent({
-  ...__default__35,
+  ...__default__36,
   props: colProps,
   setup(__props) {
     const props = __props;
@@ -23353,11 +23497,11 @@ var useCollapseDOM = () => {
 };
 
 // node_modules/element-plus/es/components/collapse/src/collapse2.mjs
-var __default__36 = defineComponent({
+var __default__37 = defineComponent({
   name: "ElCollapse"
 });
 var _sfc_main46 = defineComponent({
-  ...__default__36,
+  ...__default__37,
   props: collapseProps,
   emits: collapseEmits,
   setup(__props, { expose, emit }) {
@@ -23382,11 +23526,11 @@ var _sfc_main46 = defineComponent({
 var Collapse = _export_sfc(_sfc_main46, [["__file", "/home/runner/work/element-plus/element-plus/packages/components/collapse/src/collapse.vue"]]);
 
 // node_modules/element-plus/es/components/collapse-transition/src/collapse-transition.mjs
-var __default__37 = defineComponent({
+var __default__38 = defineComponent({
   name: "ElCollapseTransition"
 });
 var _sfc_main47 = defineComponent({
-  ...__default__37,
+  ...__default__38,
   setup(__props) {
     const ns2 = useNamespace("collapse-transition");
     const on2 = {
@@ -23543,11 +23687,11 @@ var useCollapseItemDOM = (props, { focusing, isActive, id: id2 }) => {
 var _hoisted_119 = ["aria-expanded", "aria-controls", "aria-describedby"];
 var _hoisted_212 = ["id", "tabindex"];
 var _hoisted_35 = ["id", "aria-hidden", "aria-labelledby"];
-var __default__38 = defineComponent({
+var __default__39 = defineComponent({
   name: "ElCollapseItem"
 });
 var _sfc_main48 = defineComponent({
-  ...__default__38,
+  ...__default__39,
   props: collapseItemProps,
   setup(__props, { expose }) {
     const props = __props;
@@ -23786,7 +23930,7 @@ var _sfc_main49 = defineComponent({
     };
   }
 });
-function _sfc_render6(_ctx, _cache, $props, $setup, $data, $options) {
+function _sfc_render5(_ctx, _cache, $props, $setup, $data, $options) {
   return openBlock(), createElementBlock("div", {
     class: normalizeClass([_ctx.ns.b(), _ctx.ns.is("vertical", _ctx.vertical)])
   }, [
@@ -23808,7 +23952,7 @@ function _sfc_render6(_ctx, _cache, $props, $setup, $data, $options) {
     }, null, 6)
   ], 2);
 }
-var AlphaSlider = _export_sfc(_sfc_main49, [["render", _sfc_render6], ["__file", "/home/runner/work/element-plus/element-plus/packages/components/color-picker/src/components/alpha-slider.vue"]]);
+var AlphaSlider = _export_sfc(_sfc_main49, [["render", _sfc_render5], ["__file", "/home/runner/work/element-plus/element-plus/packages/components/color-picker/src/components/alpha-slider.vue"]]);
 
 // node_modules/element-plus/es/components/color-picker/src/components/hue-slider.mjs
 var _sfc_main50 = defineComponent({
@@ -23912,7 +24056,7 @@ var _sfc_main50 = defineComponent({
     };
   }
 });
-function _sfc_render7(_ctx, _cache, $props, $setup, $data, $options) {
+function _sfc_render6(_ctx, _cache, $props, $setup, $data, $options) {
   return openBlock(), createElementBlock("div", {
     class: normalizeClass([_ctx.ns.b(), _ctx.ns.is("vertical", _ctx.vertical)])
   }, [
@@ -23931,7 +24075,7 @@ function _sfc_render7(_ctx, _cache, $props, $setup, $data, $options) {
     }, null, 6)
   ], 2);
 }
-var HueSlider = _export_sfc(_sfc_main50, [["render", _sfc_render7], ["__file", "/home/runner/work/element-plus/element-plus/packages/components/color-picker/src/components/hue-slider.vue"]]);
+var HueSlider = _export_sfc(_sfc_main50, [["render", _sfc_render6], ["__file", "/home/runner/work/element-plus/element-plus/packages/components/color-picker/src/components/hue-slider.vue"]]);
 
 // node_modules/element-plus/es/components/color-picker/src/color-picker.mjs
 var colorPickerProps = buildProps({
@@ -24301,7 +24445,7 @@ var _sfc_main51 = defineComponent({
   }
 });
 var _hoisted_120 = ["onClick"];
-function _sfc_render8(_ctx, _cache, $props, $setup, $data, $options) {
+function _sfc_render7(_ctx, _cache, $props, $setup, $data, $options) {
   return openBlock(), createElementBlock("div", {
     class: normalizeClass(_ctx.ns.b())
   }, [
@@ -24326,7 +24470,7 @@ function _sfc_render8(_ctx, _cache, $props, $setup, $data, $options) {
     ], 2)
   ], 2);
 }
-var Predefine = _export_sfc(_sfc_main51, [["render", _sfc_render8], ["__file", "/home/runner/work/element-plus/element-plus/packages/components/color-picker/src/components/predefine.vue"]]);
+var Predefine = _export_sfc(_sfc_main51, [["render", _sfc_render7], ["__file", "/home/runner/work/element-plus/element-plus/packages/components/color-picker/src/components/predefine.vue"]]);
 
 // node_modules/element-plus/es/components/color-picker/src/components/sv-panel.mjs
 var _sfc_main52 = defineComponent({
@@ -24403,7 +24547,7 @@ var _hoisted_121 = createBaseVNode("div", null, null, -1);
 var _hoisted_213 = [
   _hoisted_121
 ];
-function _sfc_render9(_ctx, _cache, $props, $setup, $data, $options) {
+function _sfc_render8(_ctx, _cache, $props, $setup, $data, $options) {
   return openBlock(), createElementBlock("div", {
     class: normalizeClass(_ctx.ns.b()),
     style: normalizeStyle({
@@ -24425,15 +24569,15 @@ function _sfc_render9(_ctx, _cache, $props, $setup, $data, $options) {
     }, _hoisted_213, 6)
   ], 6);
 }
-var SvPanel = _export_sfc(_sfc_main52, [["render", _sfc_render9], ["__file", "/home/runner/work/element-plus/element-plus/packages/components/color-picker/src/components/sv-panel.vue"]]);
+var SvPanel = _export_sfc(_sfc_main52, [["render", _sfc_render8], ["__file", "/home/runner/work/element-plus/element-plus/packages/components/color-picker/src/components/sv-panel.vue"]]);
 
 // node_modules/element-plus/es/components/color-picker/src/color-picker2.mjs
 var _hoisted_122 = ["id", "aria-label", "aria-labelledby", "aria-description", "tabindex", "onKeydown"];
-var __default__39 = defineComponent({
+var __default__40 = defineComponent({
   name: "ElColorPicker"
 });
 var _sfc_main53 = defineComponent({
-  ...__default__39,
+  ...__default__40,
   props: colorPickerProps,
   emits: colorPickerEmits,
   setup(__props, { expose, emit }) {
@@ -24473,6 +24617,13 @@ var _sfc_main53 = defineComponent({
     });
     const buttonAriaLabelledby = computed2(() => {
       return isLabeledByFormItem.value ? formItem == null ? void 0 : formItem.labelId : void 0;
+    });
+    const btnKls = computed2(() => {
+      return [
+        ns2.b("picker"),
+        ns2.is("disabled", colorDisabled.value),
+        ns2.bm("picker", colorSize.value)
+      ];
     });
     function displayedRgb(color2, showAlpha) {
       if (!(color2 instanceof Color)) {
@@ -24664,11 +24815,7 @@ var _sfc_main53 = defineComponent({
         default: withCtx(() => [
           createBaseVNode("div", {
             id: unref(buttonId),
-            class: normalizeClass([
-              unref(ns2).b("picker"),
-              unref(ns2).is("disabled", unref(colorDisabled)),
-              unref(ns2).bm("picker", unref(colorSize))
-            ]),
+            class: normalizeClass(unref(btnKls)),
             role: "button",
             "aria-label": unref(buttonAriaLabel),
             "aria-labelledby": unref(buttonAriaLabelledby),
@@ -24773,11 +24920,11 @@ var ConfigProvider = defineComponent({
 var ElConfigProvider = withInstall(ConfigProvider);
 
 // node_modules/element-plus/es/components/container/src/container.mjs
-var __default__40 = defineComponent({
+var __default__41 = defineComponent({
   name: "ElContainer"
 });
 var _sfc_main54 = defineComponent({
-  ...__default__40,
+  ...__default__41,
   props: {
     direction: {
       type: String
@@ -24815,11 +24962,11 @@ var _sfc_main54 = defineComponent({
 var Container = _export_sfc(_sfc_main54, [["__file", "/home/runner/work/element-plus/element-plus/packages/components/container/src/container.vue"]]);
 
 // node_modules/element-plus/es/components/container/src/aside.mjs
-var __default__41 = defineComponent({
+var __default__42 = defineComponent({
   name: "ElAside"
 });
 var _sfc_main55 = defineComponent({
-  ...__default__41,
+  ...__default__42,
   props: {
     width: {
       type: String,
@@ -24843,11 +24990,11 @@ var _sfc_main55 = defineComponent({
 var Aside = _export_sfc(_sfc_main55, [["__file", "/home/runner/work/element-plus/element-plus/packages/components/container/src/aside.vue"]]);
 
 // node_modules/element-plus/es/components/container/src/footer.mjs
-var __default__42 = defineComponent({
+var __default__43 = defineComponent({
   name: "ElFooter"
 });
 var _sfc_main56 = defineComponent({
-  ...__default__42,
+  ...__default__43,
   props: {
     height: {
       type: String,
@@ -24871,11 +25018,11 @@ var _sfc_main56 = defineComponent({
 var Footer = _export_sfc(_sfc_main56, [["__file", "/home/runner/work/element-plus/element-plus/packages/components/container/src/footer.vue"]]);
 
 // node_modules/element-plus/es/components/container/src/header.mjs
-var __default__43 = defineComponent({
+var __default__44 = defineComponent({
   name: "ElHeader"
 });
 var _sfc_main57 = defineComponent({
-  ...__default__43,
+  ...__default__44,
   props: {
     height: {
       type: String,
@@ -24903,11 +25050,11 @@ var _sfc_main57 = defineComponent({
 var Header = _export_sfc(_sfc_main57, [["__file", "/home/runner/work/element-plus/element-plus/packages/components/container/src/header.vue"]]);
 
 // node_modules/element-plus/es/components/container/src/main.mjs
-var __default__44 = defineComponent({
+var __default__45 = defineComponent({
   name: "ElMain"
 });
 var _sfc_main58 = defineComponent({
-  ...__default__44,
+  ...__default__45,
   setup(__props) {
     const ns2 = useNamespace("main");
     return (_ctx, _cache) => {
@@ -25142,7 +25289,7 @@ var ElDatePickerCell = defineComponent({
 });
 
 // node_modules/element-plus/es/components/date-picker/src/date-picker-com/basic-date-table.mjs
-var _hoisted_123 = ["aria-label"];
+var _hoisted_123 = ["aria-label", "onMousedown"];
 var _hoisted_214 = {
   key: 0,
   scope: "col"
@@ -25451,7 +25598,7 @@ var _sfc_main59 = defineComponent({
         class: normalizeClass([unref(ns2).b(), { "is-week-mode": _ctx.selectionMode === "week" }]),
         onClick: handlePickDate,
         onMousemove: handleMouseMove,
-        onMousedown: handleMouseDown,
+        onMousedown: withModifiers(handleMouseDown, ["prevent"]),
         onMouseup: handleMouseUp
       }, [
         createBaseVNode("tbody", {
@@ -27265,11 +27412,11 @@ var _hoisted_128 = ["onClick"];
 var _hoisted_219 = ["disabled"];
 var _hoisted_311 = ["disabled"];
 var unit2 = "year";
-var __default__45 = defineComponent({
+var __default__46 = defineComponent({
   name: "DatePickerMonthRange"
 });
 var _sfc_main64 = defineComponent({
-  ...__default__45,
+  ...__default__46,
   props: panelMonthRangeProps,
   emits: panelMonthRangeEmits,
   setup(__props, { emit }) {
@@ -27656,11 +27803,11 @@ var descriptionsRowProps = buildProps({
 
 // node_modules/element-plus/es/components/descriptions/src/descriptions-row2.mjs
 var _hoisted_129 = { key: 1 };
-var __default__46 = defineComponent({
+var __default__47 = defineComponent({
   name: "ElDescriptionsRow"
 });
 var _sfc_main65 = defineComponent({
-  ...__default__46,
+  ...__default__47,
   props: descriptionsRowProps,
   setup(__props) {
     const descriptions = inject(descriptionsKey, {});
@@ -27743,11 +27890,11 @@ var descriptionProps = buildProps({
 });
 
 // node_modules/element-plus/es/components/descriptions/src/description2.mjs
-var __default__47 = defineComponent({
+var __default__48 = defineComponent({
   name: "ElDescriptions"
 });
 var _sfc_main66 = defineComponent({
-  ...__default__47,
+  ...__default__48,
   props: descriptionProps,
   setup(__props) {
     const props = __props;
@@ -27994,9 +28141,9 @@ var dialogContentEmits = {
 // node_modules/element-plus/es/components/dialog/src/dialog-content2.mjs
 var _hoisted_130 = ["aria-label"];
 var _hoisted_220 = ["id"];
-var __default__48 = defineComponent({ name: "ElDialogContent" });
+var __default__49 = defineComponent({ name: "ElDialogContent" });
 var _sfc_main67 = defineComponent({
-  ...__default__48,
+  ...__default__49,
   props: dialogContentProps,
   emits: dialogContentEmits,
   setup(__props) {
@@ -28308,12 +28455,12 @@ var useDialog = (props, targetRef) => {
 
 // node_modules/element-plus/es/components/dialog/src/dialog2.mjs
 var _hoisted_131 = ["aria-label", "aria-labelledby", "aria-describedby"];
-var __default__49 = defineComponent({
+var __default__50 = defineComponent({
   name: "ElDialog",
   inheritAttrs: false
 });
 var _sfc_main68 = defineComponent({
-  ...__default__49,
+  ...__default__50,
   props: dialogProps,
   emits: dialogEmits,
   setup(__props, { expose }) {
@@ -28487,11 +28634,11 @@ var dividerProps = buildProps({
 });
 
 // node_modules/element-plus/es/components/divider/src/divider2.mjs
-var __default__50 = defineComponent({
+var __default__51 = defineComponent({
   name: "ElDivider"
 });
 var _sfc_main69 = defineComponent({
-  ...__default__50,
+  ...__default__51,
   props: dividerProps,
   setup(__props) {
     const props = __props;
@@ -28594,7 +28741,7 @@ var _hoisted_132 = ["aria-label", "aria-labelledby", "aria-describedby"];
 var _hoisted_221 = ["id"];
 var _hoisted_312 = ["aria-label"];
 var _hoisted_45 = ["id"];
-function _sfc_render10(_ctx, _cache, $props, $setup, $data, $options) {
+function _sfc_render9(_ctx, _cache, $props, $setup, $data, $options) {
   const _component_close = resolveComponent("close");
   const _component_el_icon = resolveComponent("el-icon");
   const _component_el_focus_trap = resolveComponent("el-focus-trap");
@@ -28707,7 +28854,7 @@ function _sfc_render10(_ctx, _cache, $props, $setup, $data, $options) {
     }, 8, ["name", "onAfterEnter", "onAfterLeave", "onBeforeLeave"])
   ], 8, ["disabled"]);
 }
-var Drawer = _export_sfc(_sfc_main70, [["render", _sfc_render10], ["__file", "/home/runner/work/element-plus/element-plus/packages/components/drawer/src/drawer.vue"]]);
+var Drawer = _export_sfc(_sfc_main70, [["render", _sfc_render9], ["__file", "/home/runner/work/element-plus/element-plus/packages/components/drawer/src/drawer.vue"]]);
 
 // node_modules/element-plus/es/components/drawer/index.mjs
 var ElDrawer = withInstall(Drawer);
@@ -28716,20 +28863,20 @@ var ElDrawer = withInstall(Drawer);
 var _sfc_main71 = defineComponent({
   inheritAttrs: false
 });
-function _sfc_render11(_ctx, _cache, $props, $setup, $data, $options) {
+function _sfc_render10(_ctx, _cache, $props, $setup, $data, $options) {
   return renderSlot(_ctx.$slots, "default");
 }
-var Collection = _export_sfc(_sfc_main71, [["render", _sfc_render11], ["__file", "/home/runner/work/element-plus/element-plus/packages/components/collection/src/collection.vue"]]);
+var Collection = _export_sfc(_sfc_main71, [["render", _sfc_render10], ["__file", "/home/runner/work/element-plus/element-plus/packages/components/collection/src/collection.vue"]]);
 
 // node_modules/element-plus/es/components/collection/src/collection-item.mjs
 var _sfc_main72 = defineComponent({
   name: "ElCollectionItem",
   inheritAttrs: false
 });
-function _sfc_render12(_ctx, _cache, $props, $setup, $data, $options) {
+function _sfc_render11(_ctx, _cache, $props, $setup, $data, $options) {
   return renderSlot(_ctx.$slots, "default");
 }
-var CollectionItem = _export_sfc(_sfc_main72, [["render", _sfc_render12], ["__file", "/home/runner/work/element-plus/element-plus/packages/components/collection/src/collection-item.vue"]]);
+var CollectionItem = _export_sfc(_sfc_main72, [["render", _sfc_render11], ["__file", "/home/runner/work/element-plus/element-plus/packages/components/collection/src/collection-item.vue"]]);
 
 // node_modules/element-plus/es/components/collection/src/collection.mjs
 var COLLECTION_ITEM_SIGN = `data-el-collection-item`;
@@ -28954,10 +29101,10 @@ var _sfc_main73 = defineComponent({
     useEventListener(rovingFocusGroupRef, ENTRY_FOCUS_EVT, handleEntryFocus);
   }
 });
-function _sfc_render13(_ctx, _cache, $props, $setup, $data, $options) {
+function _sfc_render12(_ctx, _cache, $props, $setup, $data, $options) {
   return renderSlot(_ctx.$slots, "default");
 }
-var ElRovingFocusGroupImpl = _export_sfc(_sfc_main73, [["render", _sfc_render13], ["__file", "/home/runner/work/element-plus/element-plus/packages/components/roving-focus-group/src/roving-focus-group-impl.vue"]]);
+var ElRovingFocusGroupImpl = _export_sfc(_sfc_main73, [["render", _sfc_render12], ["__file", "/home/runner/work/element-plus/element-plus/packages/components/roving-focus-group/src/roving-focus-group-impl.vue"]]);
 
 // node_modules/element-plus/es/components/roving-focus-group/src/roving-focus-group2.mjs
 var _sfc_main74 = defineComponent({
@@ -28967,7 +29114,7 @@ var _sfc_main74 = defineComponent({
     ElRovingFocusGroupImpl
   }
 });
-function _sfc_render14(_ctx, _cache, $props, $setup, $data, $options) {
+function _sfc_render13(_ctx, _cache, $props, $setup, $data, $options) {
   const _component_el_roving_focus_group_impl = resolveComponent("el-roving-focus-group-impl");
   const _component_el_focus_group_collection = resolveComponent("el-focus-group-collection");
   return openBlock(), createBlock(_component_el_focus_group_collection, null, {
@@ -28982,7 +29129,7 @@ function _sfc_render14(_ctx, _cache, $props, $setup, $data, $options) {
     _: 3
   });
 }
-var ElRovingFocusGroup = _export_sfc(_sfc_main74, [["render", _sfc_render14], ["__file", "/home/runner/work/element-plus/element-plus/packages/components/roving-focus-group/src/roving-focus-group.vue"]]);
+var ElRovingFocusGroup = _export_sfc(_sfc_main74, [["render", _sfc_render13], ["__file", "/home/runner/work/element-plus/element-plus/packages/components/roving-focus-group/src/roving-focus-group.vue"]]);
 
 // node_modules/element-plus/es/components/roving-focus-group/src/roving-focus-item.mjs
 var _sfc_main75 = defineComponent({
@@ -29073,7 +29220,7 @@ var _sfc_main75 = defineComponent({
     };
   }
 });
-function _sfc_render15(_ctx, _cache, $props, $setup, $data, $options) {
+function _sfc_render14(_ctx, _cache, $props, $setup, $data, $options) {
   const _component_el_roving_focus_collection_item = resolveComponent("el-roving-focus-collection-item");
   return openBlock(), createBlock(_component_el_roving_focus_collection_item, {
     id: _ctx.id,
@@ -29086,7 +29233,7 @@ function _sfc_render15(_ctx, _cache, $props, $setup, $data, $options) {
     _: 3
   }, 8, ["id", "focusable", "active"]);
 }
-var ElRovingFocusItem = _export_sfc(_sfc_main75, [["render", _sfc_render15], ["__file", "/home/runner/work/element-plus/element-plus/packages/components/roving-focus-group/src/roving-focus-item.vue"]]);
+var ElRovingFocusItem = _export_sfc(_sfc_main75, [["render", _sfc_render14], ["__file", "/home/runner/work/element-plus/element-plus/packages/components/roving-focus-group/src/roving-focus-item.vue"]]);
 
 // node_modules/element-plus/es/components/dropdown/src/dropdown.mjs
 var dropdownProps = buildProps({
@@ -29316,7 +29463,7 @@ var _sfc_main76 = defineComponent({
     };
   }
 });
-function _sfc_render16(_ctx, _cache, $props, $setup, $data, $options) {
+function _sfc_render15(_ctx, _cache, $props, $setup, $data, $options) {
   var _a2;
   const _component_el_dropdown_collection = resolveComponent("el-dropdown-collection");
   const _component_el_roving_focus_group = resolveComponent("el-roving-focus-group");
@@ -29448,7 +29595,7 @@ function _sfc_render16(_ctx, _cache, $props, $setup, $data, $options) {
     })) : createCommentVNode("v-if", true)
   ], 2);
 }
-var Dropdown = _export_sfc(_sfc_main76, [["render", _sfc_render16], ["__file", "/home/runner/work/element-plus/element-plus/packages/components/dropdown/src/dropdown.vue"]]);
+var Dropdown = _export_sfc(_sfc_main76, [["render", _sfc_render15], ["__file", "/home/runner/work/element-plus/element-plus/packages/components/dropdown/src/dropdown.vue"]]);
 
 // node_modules/element-plus/es/components/dropdown/src/dropdown-item-impl.mjs
 var _sfc_main77 = defineComponent({
@@ -29503,7 +29650,7 @@ var _sfc_main77 = defineComponent({
   }
 });
 var _hoisted_133 = ["aria-disabled", "tabindex", "role"];
-function _sfc_render17(_ctx, _cache, $props, $setup, $data, $options) {
+function _sfc_render16(_ctx, _cache, $props, $setup, $data, $options) {
   const _component_el_icon = resolveComponent("el-icon");
   return openBlock(), createElementBlock(Fragment, null, [
     _ctx.divided ? (openBlock(), createElementBlock("li", mergeProps({
@@ -29533,7 +29680,7 @@ function _sfc_render17(_ctx, _cache, $props, $setup, $data, $options) {
     ], 16, _hoisted_133)
   ], 64);
 }
-var ElDropdownItemImpl = _export_sfc(_sfc_main77, [["render", _sfc_render17], ["__file", "/home/runner/work/element-plus/element-plus/packages/components/dropdown/src/dropdown-item-impl.vue"]]);
+var ElDropdownItemImpl = _export_sfc(_sfc_main77, [["render", _sfc_render16], ["__file", "/home/runner/work/element-plus/element-plus/packages/components/dropdown/src/dropdown-item-impl.vue"]]);
 
 // node_modules/element-plus/es/components/dropdown/src/useDropdown.mjs
 var useDropdown = () => {
@@ -29615,7 +29762,7 @@ var _sfc_main78 = defineComponent({
     };
   }
 });
-function _sfc_render18(_ctx, _cache, $props, $setup, $data, $options) {
+function _sfc_render17(_ctx, _cache, $props, $setup, $data, $options) {
   var _a2;
   const _component_el_dropdown_item_impl = resolveComponent("el-dropdown-item-impl");
   const _component_el_roving_focus_item = resolveComponent("el-roving-focus-item");
@@ -29646,7 +29793,7 @@ function _sfc_render18(_ctx, _cache, $props, $setup, $data, $options) {
     _: 3
   }, 8, ["disabled", "text-value"]);
 }
-var DropdownItem = _export_sfc(_sfc_main78, [["render", _sfc_render18], ["__file", "/home/runner/work/element-plus/element-plus/packages/components/dropdown/src/dropdown-item.vue"]]);
+var DropdownItem = _export_sfc(_sfc_main78, [["render", _sfc_render17], ["__file", "/home/runner/work/element-plus/element-plus/packages/components/dropdown/src/dropdown-item.vue"]]);
 
 // node_modules/element-plus/es/components/dropdown/src/dropdown-menu.mjs
 var _sfc_main79 = defineComponent({
@@ -29715,7 +29862,7 @@ var _sfc_main79 = defineComponent({
   }
 });
 var _hoisted_134 = ["role", "aria-labelledby"];
-function _sfc_render19(_ctx, _cache, $props, $setup, $data, $options) {
+function _sfc_render18(_ctx, _cache, $props, $setup, $data, $options) {
   return openBlock(), createElementBlock("ul", {
     ref: _ctx.dropdownListWrapperRef,
     class: normalizeClass(_ctx.dropdownKls),
@@ -29731,7 +29878,7 @@ function _sfc_render19(_ctx, _cache, $props, $setup, $data, $options) {
     renderSlot(_ctx.$slots, "default")
   ], 46, _hoisted_134);
 }
-var DropdownMenu = _export_sfc(_sfc_main79, [["render", _sfc_render19], ["__file", "/home/runner/work/element-plus/element-plus/packages/components/dropdown/src/dropdown-menu.vue"]]);
+var DropdownMenu = _export_sfc(_sfc_main79, [["render", _sfc_render18], ["__file", "/home/runner/work/element-plus/element-plus/packages/components/dropdown/src/dropdown-menu.vue"]]);
 
 // node_modules/element-plus/es/components/dropdown/index.mjs
 var ElDropdown = withInstall(Dropdown, {
@@ -29799,7 +29946,7 @@ var _hoisted_20 = {
 var _hoisted_21 = ["fill", "xlink:href"];
 var _hoisted_223 = ["fill", "mask"];
 var _hoisted_232 = ["fill"];
-function _sfc_render20(_ctx, _cache, $props, $setup, $data, $options) {
+function _sfc_render19(_ctx, _cache, $props, $setup, $data, $options) {
   return openBlock(), createElementBlock("svg", _hoisted_135, [
     createBaseVNode("defs", null, [
       createBaseVNode("linearGradient", {
@@ -29918,7 +30065,7 @@ function _sfc_render20(_ctx, _cache, $props, $setup, $data, $options) {
     ])
   ]);
 }
-var ImgEmpty = _export_sfc(_sfc_main80, [["render", _sfc_render20], ["__file", "/home/runner/work/element-plus/element-plus/packages/components/empty/src/img-empty.vue"]]);
+var ImgEmpty = _export_sfc(_sfc_main80, [["render", _sfc_render19], ["__file", "/home/runner/work/element-plus/element-plus/packages/components/empty/src/img-empty.vue"]]);
 
 // node_modules/element-plus/es/components/empty/src/empty.mjs
 var emptyProps = {
@@ -29936,11 +30083,11 @@ var emptyProps = {
 // node_modules/element-plus/es/components/empty/src/empty2.mjs
 var _hoisted_137 = ["src"];
 var _hoisted_224 = { key: 1 };
-var __default__51 = defineComponent({
+var __default__52 = defineComponent({
   name: "ElEmpty"
 });
 var _sfc_main81 = defineComponent({
-  ...__default__51,
+  ...__default__52,
   props: emptyProps,
   setup(__props) {
     const props = __props;
@@ -30080,11 +30227,11 @@ var filterFields = (fields, props) => {
 
 // node_modules/element-plus/es/components/form/src/form2.mjs
 var COMPONENT_NAME10 = "ElForm";
-var __default__52 = defineComponent({
+var __default__53 = defineComponent({
   name: COMPONENT_NAME10
 });
 var _sfc_main82 = defineComponent({
-  ...__default__52,
+  ...__default__53,
   props: formProps,
   emits: formEmits,
   setup(__props, { expose, emit }) {
@@ -31401,11 +31548,11 @@ var FormLabelWrap = defineComponent({
 
 // node_modules/element-plus/es/components/form/src/form-item2.mjs
 var _hoisted_138 = ["role", "aria-labelledby"];
-var __default__53 = defineComponent({
+var __default__54 = defineComponent({
   name: "ElFormItem"
 });
 var _sfc_main83 = defineComponent({
-  ...__default__53,
+  ...__default__54,
   props: formItemProps,
   setup(__props, { expose }) {
     const props = __props;
@@ -31736,6 +31883,10 @@ var imageViewerProps = buildProps({
   closeOnPressEscape: {
     type: Boolean,
     default: true
+  },
+  zoomRate: {
+    type: Number,
+    default: 1.2
   }
 });
 var imageViewerEmits = {
@@ -31745,11 +31896,11 @@ var imageViewerEmits = {
 
 // node_modules/element-plus/es/components/image-viewer/src/image-viewer2.mjs
 var _hoisted_139 = ["src"];
-var __default__54 = defineComponent({
+var __default__55 = defineComponent({
   name: "ElImageViewer"
 });
 var _sfc_main84 = defineComponent({
-  ...__default__54,
+  ...__default__55,
   props: imageViewerProps,
   emits: imageViewerEmits,
   setup(__props, { expose, emit }) {
@@ -31858,12 +32009,12 @@ var _sfc_main84 = defineComponent({
         const delta = e.wheelDelta ? e.wheelDelta : -e.detail;
         if (delta > 0) {
           handleActions("zoomIn", {
-            zoomRate: 1.2,
+            zoomRate: props.zoomRate,
             enableTransition: false
           });
         } else {
           handleActions("zoomOut", {
-            zoomRate: 1.2,
+            zoomRate: props.zoomRate,
             enableTransition: false
           });
         }
@@ -31941,7 +32092,7 @@ var _sfc_main84 = defineComponent({
       if (loading.value)
         return;
       const { zoomRate, rotateDeg, enableTransition } = {
-        zoomRate: 1.4,
+        zoomRate: props.zoomRate,
         rotateDeg: 90,
         enableTransition: true,
         ...options
@@ -32187,6 +32338,10 @@ var imageProps = buildProps({
   closeOnPressEscape: {
     type: Boolean,
     default: true
+  },
+  zoomRate: {
+    type: Number,
+    default: 1.2
   }
 });
 var imageEmits = {
@@ -32200,12 +32355,12 @@ var imageEmits = {
 // node_modules/element-plus/es/components/image/src/image2.mjs
 var _hoisted_140 = ["src", "loading"];
 var _hoisted_225 = { key: 0 };
-var __default__55 = defineComponent({
+var __default__56 = defineComponent({
   name: "ElImage",
   inheritAttrs: false
 });
 var _sfc_main85 = defineComponent({
-  ...__default__55,
+  ...__default__56,
   props: imageProps,
   emits: imageEmits,
   setup(__props, { emit }) {
@@ -32385,6 +32540,7 @@ var _sfc_main85 = defineComponent({
             "z-index": _ctx.zIndex,
             "initial-index": unref(imageIndex),
             infinite: _ctx.infinite,
+            "zoom-rate": _ctx.zoomRate,
             "url-list": _ctx.previewSrcList,
             "hide-on-click-modal": _ctx.hideOnClickModal,
             teleported: _ctx.previewTeleported,
@@ -32398,7 +32554,7 @@ var _sfc_main85 = defineComponent({
               ])) : createCommentVNode("v-if", true)
             ]),
             _: 3
-          }, 8, ["z-index", "initial-index", "infinite", "url-list", "hide-on-click-modal", "teleported", "close-on-press-escape"])) : createCommentVNode("v-if", true)
+          }, 8, ["z-index", "initial-index", "infinite", "zoom-rate", "url-list", "hide-on-click-modal", "teleported", "close-on-press-escape"])) : createCommentVNode("v-if", true)
         ], 64)) : createCommentVNode("v-if", true)
       ], 6);
     };
@@ -32459,7 +32615,7 @@ var inputNumberProps = buildProps({
   }
 });
 var inputNumberEmits = {
-  [CHANGE_EVENT]: (prev, cur) => prev !== cur,
+  [CHANGE_EVENT]: (cur, prev) => prev !== cur,
   blur: (e) => e instanceof FocusEvent,
   focus: (e) => e instanceof FocusEvent,
   [INPUT_EVENT]: (val) => isNumber2(val) || isNil_default(val),
@@ -32469,11 +32625,11 @@ var inputNumberEmits = {
 // node_modules/element-plus/es/components/input-number/src/input-number2.mjs
 var _hoisted_141 = ["aria-label", "onKeydown"];
 var _hoisted_226 = ["aria-label", "onKeydown"];
-var __default__56 = defineComponent({
+var __default__57 = defineComponent({
   name: "ElInputNumber"
 });
 var _sfc_main86 = defineComponent({
-  ...__default__56,
+  ...__default__57,
   props: inputNumberProps,
   emits: inputNumberEmits,
   setup(__props, { expose, emit }) {
@@ -32647,7 +32803,7 @@ var _sfc_main86 = defineComponent({
     watch(() => props.modelValue, (value) => {
       const userInput = verifyValue(data.userInput);
       const newValue = verifyValue(value, true);
-      if (!userInput || userInput !== newValue) {
+      if (!isNumber2(userInput) && (!userInput || userInput !== newValue)) {
         data.currentValue = newValue;
         data.userInput = null;
       }
@@ -32764,7 +32920,7 @@ var InputNumber = _export_sfc(_sfc_main86, [["__file", "/home/runner/work/elemen
 // node_modules/element-plus/es/components/input-number/index.mjs
 var ElInputNumber = withInstall(InputNumber);
 
-// node_modules/element-plus/es/components/link/src/link2.mjs
+// node_modules/element-plus/es/components/link/src/link.mjs
 var linkProps = buildProps({
   type: {
     type: String,
@@ -32785,13 +32941,13 @@ var linkEmits = {
   click: (evt) => evt instanceof MouseEvent
 };
 
-// node_modules/element-plus/es/components/link/src/link.mjs
+// node_modules/element-plus/es/components/link/src/link2.mjs
 var _hoisted_143 = ["href"];
-var __default__57 = defineComponent({
+var __default__58 = defineComponent({
   name: "ElLink"
 });
 var _sfc_main87 = defineComponent({
-  ...__default__57,
+  ...__default__58,
   props: linkProps,
   emits: linkEmits,
   setup(__props, { emit }) {
@@ -33006,7 +33162,7 @@ var _sfc_main88 = defineComponent({
     };
   }
 });
-function _sfc_render21(_ctx, _cache, $props, $setup, $data, $options) {
+function _sfc_render20(_ctx, _cache, $props, $setup, $data, $options) {
   return openBlock(), createBlock(Transition, mergeProps({ mode: "out-in" }, _ctx.listeners), {
     default: withCtx(() => [
       renderSlot(_ctx.$slots, "default")
@@ -33014,7 +33170,7 @@ function _sfc_render21(_ctx, _cache, $props, $setup, $data, $options) {
     _: 3
   }, 16);
 }
-var ElMenuCollapseTransition = _export_sfc(_sfc_main88, [["render", _sfc_render21], ["__file", "/home/runner/work/element-plus/element-plus/packages/components/menu/src/menu-collapse-transition.vue"]]);
+var ElMenuCollapseTransition = _export_sfc(_sfc_main88, [["render", _sfc_render20], ["__file", "/home/runner/work/element-plus/element-plus/packages/components/menu/src/menu-collapse-transition.vue"]]);
 
 // node_modules/element-plus/es/components/menu/src/use-menu.mjs
 function useMenu(instance, currentIndex) {
@@ -33712,7 +33868,7 @@ var _sfc_main89 = defineComponent({
     };
   }
 });
-function _sfc_render22(_ctx, _cache, $props, $setup, $data, $options) {
+function _sfc_render21(_ctx, _cache, $props, $setup, $data, $options) {
   const _component_el_tooltip = resolveComponent("el-tooltip");
   return openBlock(), createElementBlock("li", {
     class: normalizeClass([
@@ -33748,7 +33904,7 @@ function _sfc_render22(_ctx, _cache, $props, $setup, $data, $options) {
     ], 64))
   ], 2);
 }
-var MenuItem2 = _export_sfc(_sfc_main89, [["render", _sfc_render22], ["__file", "/home/runner/work/element-plus/element-plus/packages/components/menu/src/menu-item.vue"]]);
+var MenuItem2 = _export_sfc(_sfc_main89, [["render", _sfc_render21], ["__file", "/home/runner/work/element-plus/element-plus/packages/components/menu/src/menu-item.vue"]]);
 
 // node_modules/element-plus/es/components/menu/src/menu-item-group.mjs
 var menuItemGroupProps = {
@@ -33767,7 +33923,7 @@ var _sfc_main90 = defineComponent({
     };
   }
 });
-function _sfc_render23(_ctx, _cache, $props, $setup, $data, $options) {
+function _sfc_render22(_ctx, _cache, $props, $setup, $data, $options) {
   return openBlock(), createElementBlock("li", {
     class: normalizeClass(_ctx.ns.b())
   }, [
@@ -33783,7 +33939,7 @@ function _sfc_render23(_ctx, _cache, $props, $setup, $data, $options) {
     ])
   ], 2);
 }
-var MenuItemGroup = _export_sfc(_sfc_main90, [["render", _sfc_render23], ["__file", "/home/runner/work/element-plus/element-plus/packages/components/menu/src/menu-item-group.vue"]]);
+var MenuItemGroup = _export_sfc(_sfc_main90, [["render", _sfc_render22], ["__file", "/home/runner/work/element-plus/element-plus/packages/components/menu/src/menu-item-group.vue"]]);
 
 // node_modules/element-plus/es/components/menu/index.mjs
 var ElMenu = withInstall(Menu2, {
@@ -33813,11 +33969,11 @@ var pageHeaderEmits = {
 
 // node_modules/element-plus/es/components/page-header/src/page-header2.mjs
 var _hoisted_144 = ["aria-label"];
-var __default__58 = defineComponent({
+var __default__59 = defineComponent({
   name: "ElPageHeader"
 });
 var _sfc_main91 = defineComponent({
-  ...__default__58,
+  ...__default__59,
   props: pageHeaderProps,
   emits: pageHeaderEmits,
   setup(__props, { emit }) {
@@ -33933,11 +34089,11 @@ var paginationPrevEmits = {
 // node_modules/element-plus/es/components/pagination/src/components/prev2.mjs
 var _hoisted_145 = ["disabled", "aria-disabled"];
 var _hoisted_227 = { key: 0 };
-var __default__59 = defineComponent({
+var __default__60 = defineComponent({
   name: "ElPaginationPrev"
 });
 var _sfc_main92 = defineComponent({
-  ...__default__59,
+  ...__default__60,
   props: paginationPrevProps,
   emits: paginationPrevEmits,
   setup(__props) {
@@ -33985,11 +34141,11 @@ var paginationNextProps = buildProps({
 // node_modules/element-plus/es/components/pagination/src/components/next2.mjs
 var _hoisted_146 = ["disabled", "aria-disabled"];
 var _hoisted_228 = { key: 0 };
-var __default__60 = defineComponent({
+var __default__61 = defineComponent({
   name: "ElPaginationNext"
 });
 var _sfc_main93 = defineComponent({
-  ...__default__60,
+  ...__default__61,
   props: paginationNextProps,
   emits: ["click"],
   setup(__props) {
@@ -34023,7 +34179,7 @@ var selectKey = "ElSelect";
 function useOption(props, states) {
   const select = inject(selectKey);
   const selectGroup = inject(selectGroupKey, { disabled: false });
-  const isObject5 = computed2(() => {
+  const isObject4 = computed2(() => {
     return Object.prototype.toString.call(props.value).toLowerCase() === "[object object]";
   });
   const itemSelected = computed2(() => {
@@ -34042,7 +34198,7 @@ function useOption(props, states) {
     }
   });
   const currentLabel = computed2(() => {
-    return props.label || (isObject5.value ? "" : props.value);
+    return props.label || (isObject4.value ? "" : props.value);
   });
   const currentValue = computed2(() => {
     return props.value || props.label || "";
@@ -34052,7 +34208,7 @@ function useOption(props, states) {
   });
   const instance = getCurrentInstance();
   const contains = (arr = [], target2) => {
-    if (!isObject5.value) {
+    if (!isObject4.value) {
       return arr && arr.includes(target2);
     } else {
       const valueKey = select.props.valueKey;
@@ -34062,7 +34218,7 @@ function useOption(props, states) {
     }
   };
   const isEqual3 = (a2, b2) => {
-    if (!isObject5.value) {
+    if (!isObject4.value) {
       return a2 === b2;
     } else {
       const { valueKey } = select.props;
@@ -34175,7 +34331,7 @@ var _sfc_main94 = defineComponent({
     };
   }
 });
-function _sfc_render24(_ctx, _cache, $props, $setup, $data, $options) {
+function _sfc_render23(_ctx, _cache, $props, $setup, $data, $options) {
   return withDirectives((openBlock(), createElementBlock("li", {
     class: normalizeClass([
       _ctx.ns.be("dropdown", "item"),
@@ -34195,7 +34351,7 @@ function _sfc_render24(_ctx, _cache, $props, $setup, $data, $options) {
     [vShow, _ctx.visible]
   ]);
 }
-var Option = _export_sfc(_sfc_main94, [["render", _sfc_render24], ["__file", "/home/runner/work/element-plus/element-plus/packages/components/select/src/option.vue"]]);
+var Option = _export_sfc(_sfc_main94, [["render", _sfc_render23], ["__file", "/home/runner/work/element-plus/element-plus/packages/components/select/src/option.vue"]]);
 
 // node_modules/element-plus/es/components/select/src/select-dropdown.mjs
 var _sfc_main95 = defineComponent({
@@ -34225,7 +34381,7 @@ var _sfc_main95 = defineComponent({
     };
   }
 });
-function _sfc_render25(_ctx, _cache, $props, $setup, $data, $options) {
+function _sfc_render24(_ctx, _cache, $props, $setup, $data, $options) {
   return openBlock(), createElementBlock("div", {
     class: normalizeClass([_ctx.ns.b("dropdown"), _ctx.ns.is("multiple", _ctx.isMultiple), _ctx.popperClass]),
     style: normalizeStyle({ [_ctx.isFitInputWidth ? "width" : "minWidth"]: _ctx.minWidth })
@@ -34233,7 +34389,7 @@ function _sfc_render25(_ctx, _cache, $props, $setup, $data, $options) {
     renderSlot(_ctx.$slots, "default")
   ], 6);
 }
-var ElSelectMenu = _export_sfc(_sfc_main95, [["render", _sfc_render25], ["__file", "/home/runner/work/element-plus/element-plus/packages/components/select/src/select-dropdown.vue"]]);
+var ElSelectMenu = _export_sfc(_sfc_main95, [["render", _sfc_render24], ["__file", "/home/runner/work/element-plus/element-plus/packages/components/select/src/select-dropdown.vue"]]);
 
 // node_modules/element-plus/es/components/select/src/useSelect.mjs
 function useSelectStates(props) {
@@ -35268,7 +35424,7 @@ var _sfc_main96 = defineComponent({
 });
 var _hoisted_147 = ["disabled", "autocomplete"];
 var _hoisted_229 = { style: { "height": "100%", "display": "flex", "justify-content": "center", "align-items": "center" } };
-function _sfc_render26(_ctx, _cache, $props, $setup, $data, $options) {
+function _sfc_render25(_ctx, _cache, $props, $setup, $data, $options) {
   const _component_el_tag = resolveComponent("el-tag");
   const _component_el_tooltip = resolveComponent("el-tooltip");
   const _component_el_icon = resolveComponent("el-icon");
@@ -35573,7 +35729,7 @@ function _sfc_render26(_ctx, _cache, $props, $setup, $data, $options) {
     [_directive_click_outside, _ctx.handleClose, _ctx.popperPaneRef]
   ]);
 }
-var Select = _export_sfc(_sfc_main96, [["render", _sfc_render26], ["__file", "/home/runner/work/element-plus/element-plus/packages/components/select/src/select.vue"]]);
+var Select = _export_sfc(_sfc_main96, [["render", _sfc_render25], ["__file", "/home/runner/work/element-plus/element-plus/packages/components/select/src/select.vue"]]);
 
 // node_modules/element-plus/es/components/select/src/option-group.mjs
 var _sfc_main97 = defineComponent({
@@ -35622,7 +35778,7 @@ var _sfc_main97 = defineComponent({
     };
   }
 });
-function _sfc_render27(_ctx, _cache, $props, $setup, $data, $options) {
+function _sfc_render26(_ctx, _cache, $props, $setup, $data, $options) {
   return withDirectives((openBlock(), createElementBlock("ul", {
     class: normalizeClass(_ctx.ns.be("group", "wrap"))
   }, [
@@ -35640,7 +35796,7 @@ function _sfc_render27(_ctx, _cache, $props, $setup, $data, $options) {
     [vShow, _ctx.visible]
   ]);
 }
-var OptionGroup = _export_sfc(_sfc_main97, [["render", _sfc_render27], ["__file", "/home/runner/work/element-plus/element-plus/packages/components/select/src/option-group.vue"]]);
+var OptionGroup = _export_sfc(_sfc_main97, [["render", _sfc_render26], ["__file", "/home/runner/work/element-plus/element-plus/packages/components/select/src/option-group.vue"]]);
 
 // node_modules/element-plus/es/components/select/index.mjs
 var ElSelect = withInstall(Select, {
@@ -35674,11 +35830,11 @@ var paginationSizesProps = buildProps({
 });
 
 // node_modules/element-plus/es/components/pagination/src/components/sizes2.mjs
-var __default__61 = defineComponent({
+var __default__62 = defineComponent({
   name: "ElPaginationSizes"
 });
 var _sfc_main98 = defineComponent({
-  ...__default__61,
+  ...__default__62,
   props: paginationSizesProps,
   emits: ["page-size-change"],
   setup(__props, { emit }) {
@@ -35745,11 +35901,11 @@ var paginationJumperProps = buildProps({
 
 // node_modules/element-plus/es/components/pagination/src/components/jumper2.mjs
 var _hoisted_148 = ["disabled"];
-var __default__62 = defineComponent({
+var __default__63 = defineComponent({
   name: "ElPaginationJumper"
 });
 var _sfc_main99 = defineComponent({
-  ...__default__62,
+  ...__default__63,
   props: paginationJumperProps,
   setup(__props) {
     const { t } = useLocale();
@@ -35807,11 +35963,11 @@ var paginationTotalProps = buildProps({
 
 // node_modules/element-plus/es/components/pagination/src/components/total2.mjs
 var _hoisted_149 = ["disabled"];
-var __default__63 = defineComponent({
+var __default__64 = defineComponent({
   name: "ElPaginationTotal"
 });
 var _sfc_main100 = defineComponent({
-  ...__default__63,
+  ...__default__64,
   props: paginationTotalProps,
   setup(__props) {
     const { t } = useLocale();
@@ -35853,11 +36009,11 @@ var _hoisted_314 = ["tabindex"];
 var _hoisted_47 = ["aria-current", "tabindex"];
 var _hoisted_54 = ["tabindex"];
 var _hoisted_62 = ["aria-current", "tabindex"];
-var __default__64 = defineComponent({
+var __default__65 = defineComponent({
   name: "ElPaginationPager"
 });
 var _sfc_main101 = defineComponent({
-  ...__default__64,
+  ...__default__65,
   props: paginationPagerProps,
   emits: ["change"],
   setup(__props, { emit }) {
@@ -36061,7 +36217,7 @@ var paginationProps = buildProps({
   pagerCount: {
     type: Number,
     validator: (value) => {
-      return typeof value === "number" && Math.trunc(value) === value && value > 4 && value < 22 && value % 2 === 1;
+      return isNumber2(value) && Math.trunc(value) === value && value > 4 && value < 22 && value % 2 === 1;
     },
     default: 7
   },
@@ -36099,12 +36255,12 @@ var paginationProps = buildProps({
   hideOnSinglePage: Boolean
 });
 var paginationEmits = {
-  "update:current-page": (val) => typeof val === "number",
-  "update:page-size": (val) => typeof val === "number",
-  "size-change": (val) => typeof val === "number",
-  "current-change": (val) => typeof val === "number",
-  "prev-click": (val) => typeof val === "number",
-  "next-click": (val) => typeof val === "number"
+  "update:current-page": (val) => isNumber2(val),
+  "update:page-size": (val) => isNumber2(val),
+  "size-change": (val) => isNumber2(val),
+  "current-change": (val) => isNumber2(val),
+  "prev-click": (val) => isNumber2(val),
+  "next-click": (val) => isNumber2(val)
 };
 var componentName = "ElPagination";
 var Pagination = defineComponent({
@@ -36356,11 +36512,11 @@ var popconfirmProps = buildProps({
 });
 
 // node_modules/element-plus/es/components/popconfirm/src/popconfirm2.mjs
-var __default__65 = defineComponent({
+var __default__66 = defineComponent({
   name: "ElPopconfirm"
 });
 var _sfc_main102 = defineComponent({
-  ...__default__65,
+  ...__default__66,
   props: popconfirmProps,
   setup(__props) {
     const props = __props;
@@ -36526,11 +36682,11 @@ var popoverEmits = {
 
 // node_modules/element-plus/es/components/popover/src/popover2.mjs
 var updateEventKeyRaw = `onUpdate:visible`;
-var __default__66 = defineComponent({
+var __default__67 = defineComponent({
   name: "ElPopover"
 });
 var _sfc_main103 = defineComponent({
-  ...__default__66,
+  ...__default__67,
   props: popoverProps,
   emits: popoverEmits,
   setup(__props, { expose, emit }) {
@@ -36720,11 +36876,11 @@ var _hoisted_231 = { viewBox: "0 0 100 100" };
 var _hoisted_315 = ["d", "stroke", "stroke-width"];
 var _hoisted_48 = ["d", "stroke", "opacity", "stroke-linecap", "stroke-width"];
 var _hoisted_55 = { key: 0 };
-var __default__67 = defineComponent({
+var __default__68 = defineComponent({
   name: "ElProgress"
 });
 var _sfc_main104 = defineComponent({
-  ...__default__67,
+  ...__default__68,
   props: progressProps,
   setup(__props) {
     const props = __props;
@@ -37011,11 +37167,11 @@ var rateEmits = {
 // node_modules/element-plus/es/components/rate/src/rate2.mjs
 var _hoisted_153 = ["id", "aria-label", "aria-labelledby", "aria-valuenow", "aria-valuetext", "aria-valuemax"];
 var _hoisted_233 = ["onMousemove", "onClick"];
-var __default__68 = defineComponent({
+var __default__69 = defineComponent({
   name: "ElRate"
 });
 var _sfc_main105 = defineComponent({
-  ...__default__68,
+  ...__default__69,
   props: rateProps,
   emits: rateEmits,
   setup(__props, { expose, emit }) {
@@ -37286,11 +37442,11 @@ var resultProps = buildProps({
 });
 
 // node_modules/element-plus/es/components/result/src/result2.mjs
-var __default__69 = defineComponent({
+var __default__70 = defineComponent({
   name: "ElResult"
 });
 var _sfc_main106 = defineComponent({
-  ...__default__69,
+  ...__default__70,
   props: resultProps,
   setup(__props) {
     const props = __props;
@@ -37381,11 +37537,11 @@ var rowProps = buildProps({
 });
 
 // node_modules/element-plus/es/components/row/src/row2.mjs
-var __default__70 = defineComponent({
+var __default__71 = defineComponent({
   name: "ElRow"
 });
 var _sfc_main107 = defineComponent({
-  ...__default__70,
+  ...__default__71,
   props: rowProps,
   setup(__props) {
     const props = __props;
@@ -39304,7 +39460,7 @@ var _sfc_main108 = defineComponent({
     };
   }
 });
-function _sfc_render28(_ctx, _cache, $props, $setup, $data, $options) {
+function _sfc_render27(_ctx, _cache, $props, $setup, $data, $options) {
   return _ctx.item.isTitle ? (openBlock(), createElementBlock("div", {
     key: 0,
     class: normalizeClass(_ctx.ns.be("group", "title")),
@@ -39320,7 +39476,7 @@ function _sfc_render28(_ctx, _cache, $props, $setup, $data, $options) {
     }, null, 6)
   ], 6));
 }
-var GroupItem = _export_sfc(_sfc_main108, [["render", _sfc_render28], ["__file", "/home/runner/work/element-plus/element-plus/packages/components/select-v2/src/group-item.vue"]]);
+var GroupItem = _export_sfc(_sfc_main108, [["render", _sfc_render27], ["__file", "/home/runner/work/element-plus/element-plus/packages/components/select-v2/src/group-item.vue"]]);
 
 // node_modules/element-plus/es/components/select-v2/src/useOption.mjs
 function useOption2(props, { emit }) {
@@ -39463,7 +39619,7 @@ var _sfc_main109 = defineComponent({
   }
 });
 var _hoisted_154 = ["aria-selected"];
-function _sfc_render29(_ctx, _cache, $props, $setup, $data, $options) {
+function _sfc_render28(_ctx, _cache, $props, $setup, $data, $options) {
   return openBlock(), createElementBlock("li", {
     "aria-selected": _ctx.selected,
     style: normalizeStyle(_ctx.style),
@@ -39486,7 +39642,7 @@ function _sfc_render29(_ctx, _cache, $props, $setup, $data, $options) {
     ])
   ], 46, _hoisted_154);
 }
-var OptionItem = _export_sfc(_sfc_main109, [["render", _sfc_render29], ["__file", "/home/runner/work/element-plus/element-plus/packages/components/select-v2/src/option-item.vue"]]);
+var OptionItem = _export_sfc(_sfc_main109, [["render", _sfc_render28], ["__file", "/home/runner/work/element-plus/element-plus/packages/components/select-v2/src/option-item.vue"]]);
 
 // node_modules/element-plus/es/components/select-v2/src/token.mjs
 var selectV2InjectionKey = "ElSelectV2Injection";
@@ -40520,7 +40676,7 @@ var _hoisted_234 = ["id", "autocomplete", "aria-expanded", "aria-labelledby", "d
 var _hoisted_316 = ["textContent"];
 var _hoisted_49 = ["id", "aria-labelledby", "aria-expanded", "autocomplete", "disabled", "name", "readonly", "unselectable"];
 var _hoisted_56 = ["textContent"];
-function _sfc_render30(_ctx, _cache, $props, $setup, $data, $options) {
+function _sfc_render29(_ctx, _cache, $props, $setup, $data, $options) {
   const _component_el_tag = resolveComponent("el-tag");
   const _component_el_tooltip = resolveComponent("el-tooltip");
   const _component_el_icon = resolveComponent("el-icon");
@@ -40863,7 +41019,7 @@ function _sfc_render30(_ctx, _cache, $props, $setup, $data, $options) {
     [_directive_click_outside, _ctx.handleClickOutside, _ctx.popperRef]
   ]);
 }
-var Select2 = _export_sfc(_sfc_main110, [["render", _sfc_render30], ["__file", "/home/runner/work/element-plus/element-plus/packages/components/select-v2/src/select.vue"]]);
+var Select2 = _export_sfc(_sfc_main110, [["render", _sfc_render29], ["__file", "/home/runner/work/element-plus/element-plus/packages/components/select-v2/src/select.vue"]]);
 
 // node_modules/element-plus/es/components/select-v2/index.mjs
 Select2.install = (app) => {
@@ -40915,11 +41071,11 @@ var skeletonItemProps = buildProps({
 });
 
 // node_modules/element-plus/es/components/skeleton/src/skeleton-item2.mjs
-var __default__71 = defineComponent({
+var __default__72 = defineComponent({
   name: "ElSkeletonItem"
 });
 var _sfc_main111 = defineComponent({
-  ...__default__71,
+  ...__default__72,
   props: skeletonItemProps,
   setup(__props) {
     const ns2 = useNamespace("skeleton");
@@ -40935,11 +41091,11 @@ var _sfc_main111 = defineComponent({
 var SkeletonItem = _export_sfc(_sfc_main111, [["__file", "/home/runner/work/element-plus/element-plus/packages/components/skeleton/src/skeleton-item.vue"]]);
 
 // node_modules/element-plus/es/components/skeleton/src/skeleton2.mjs
-var __default__72 = defineComponent({
+var __default__73 = defineComponent({
   name: "ElSkeleton"
 });
 var _sfc_main112 = defineComponent({
-  ...__default__72,
+  ...__default__73,
   props: skeletonProps,
   setup(__props, { expose }) {
     const props = __props;
@@ -41600,11 +41756,11 @@ var sliderButtonEmits = {
 
 // node_modules/element-plus/es/components/slider/src/button2.mjs
 var _hoisted_156 = ["tabindex"];
-var __default__73 = defineComponent({
+var __default__74 = defineComponent({
   name: "ElSliderButton"
 });
 var _sfc_main113 = defineComponent({
-  ...__default__73,
+  ...__default__74,
   props: sliderButtonProps,
   emits: sliderButtonEmits,
   setup(__props, { expose, emit }) {
@@ -41712,11 +41868,11 @@ var SliderMarker = defineComponent({
 // node_modules/element-plus/es/components/slider/src/slider2.mjs
 var _hoisted_157 = ["id", "role", "aria-label", "aria-labelledby"];
 var _hoisted_235 = { key: 1 };
-var __default__74 = defineComponent({
+var __default__75 = defineComponent({
   name: "ElSlider"
 });
 var _sfc_main114 = defineComponent({
-  ...__default__74,
+  ...__default__75,
   props: sliderProps,
   emits: sliderEmits,
   setup(__props, { expose, emit }) {
@@ -42125,6 +42281,226 @@ var Space = defineComponent({
 // node_modules/element-plus/es/components/space/index.mjs
 var ElSpace = withInstall(Space);
 
+// node_modules/element-plus/es/components/statistic/src/statistic.mjs
+var statisticProps = buildProps({
+  decimalSeparator: {
+    type: String,
+    default: "."
+  },
+  groupSeparator: {
+    type: String,
+    default: ","
+  },
+  precision: {
+    type: Number,
+    default: 0
+  },
+  formatter: Function,
+  value: {
+    type: definePropType([Number, Object]),
+    default: 0
+  },
+  prefix: String,
+  suffix: String,
+  title: String,
+  valueStyle: {
+    type: definePropType([String, Object, Array])
+  }
+});
+
+// node_modules/element-plus/es/components/statistic/src/statistic2.mjs
+var __default__76 = defineComponent({
+  name: "ElStatistic"
+});
+var _sfc_main115 = defineComponent({
+  ...__default__76,
+  props: statisticProps,
+  setup(__props, { expose }) {
+    const props = __props;
+    const ns2 = useNamespace("statistic");
+    const displayValue = computed2(() => {
+      const { value, formatter: formatter2, precision, decimalSeparator, groupSeparator } = props;
+      if (isFunction(formatter2))
+        return formatter2(value);
+      if (!isNumber2(value))
+        return value;
+      let [integer4, decimal = ""] = String(value).split(".");
+      decimal = decimal.padEnd(precision, "0").slice(0, precision > 0 ? precision : 0);
+      integer4 = integer4.replace(/\B(?=(\d{3})+(?!\d))/g, groupSeparator);
+      return [integer4, decimal].join(decimal ? decimalSeparator : "");
+    });
+    expose({
+      displayValue
+    });
+    return (_ctx, _cache) => {
+      return openBlock(), createElementBlock("div", {
+        class: normalizeClass(unref(ns2).b())
+      }, [
+        _ctx.$slots.title || _ctx.title ? (openBlock(), createElementBlock("div", {
+          key: 0,
+          class: normalizeClass(unref(ns2).e("head"))
+        }, [
+          renderSlot(_ctx.$slots, "title", {}, () => [
+            createTextVNode(toDisplayString(_ctx.title), 1)
+          ])
+        ], 2)) : createCommentVNode("v-if", true),
+        createBaseVNode("div", {
+          class: normalizeClass(unref(ns2).e("content"))
+        }, [
+          _ctx.$slots.prefix || _ctx.prefix ? (openBlock(), createElementBlock("div", {
+            key: 0,
+            class: normalizeClass(unref(ns2).e("prefix"))
+          }, [
+            renderSlot(_ctx.$slots, "prefix", {}, () => [
+              createBaseVNode("span", null, toDisplayString(_ctx.prefix), 1)
+            ])
+          ], 2)) : createCommentVNode("v-if", true),
+          createBaseVNode("span", {
+            class: normalizeClass(unref(ns2).e("number")),
+            style: normalizeStyle(_ctx.valueStyle)
+          }, toDisplayString(unref(displayValue)), 7),
+          _ctx.$slots.suffix || _ctx.suffix ? (openBlock(), createElementBlock("div", {
+            key: 1,
+            class: normalizeClass(unref(ns2).e("suffix"))
+          }, [
+            renderSlot(_ctx.$slots, "suffix", {}, () => [
+              createBaseVNode("span", null, toDisplayString(_ctx.suffix), 1)
+            ])
+          ], 2)) : createCommentVNode("v-if", true)
+        ], 2)
+      ], 2);
+    };
+  }
+});
+var Statistic = _export_sfc(_sfc_main115, [["__file", "/home/runner/work/element-plus/element-plus/packages/components/statistic/src/statistic.vue"]]);
+
+// node_modules/element-plus/es/components/statistic/index.mjs
+var ElStatistic = withInstall(Statistic);
+
+// node_modules/element-plus/es/components/countdown/src/countdown.mjs
+var countdownProps = buildProps({
+  format: {
+    type: String,
+    default: "HH:mm:ss"
+  },
+  prefix: String,
+  suffix: String,
+  title: String,
+  value: {
+    type: definePropType([Number, Object]),
+    default: 0
+  },
+  valueStyle: {
+    type: definePropType([String, Object, Array])
+  }
+});
+var countdownEmits = {
+  finish: () => true,
+  [CHANGE_EVENT]: (value) => isNumber2(value)
+};
+
+// node_modules/element-plus/es/components/countdown/src/utils.mjs
+var timeUnits2 = [
+  ["Y", 1e3 * 60 * 60 * 24 * 365],
+  ["M", 1e3 * 60 * 60 * 24 * 30],
+  ["D", 1e3 * 60 * 60 * 24],
+  ["H", 1e3 * 60 * 60],
+  ["m", 1e3 * 60],
+  ["s", 1e3],
+  ["S", 1]
+];
+var getTime = (value) => {
+  return isNumber2(value) ? new Date(value).getTime() : value.valueOf();
+};
+var formatTime = (timestamp2, format2) => {
+  let timeLeft = timestamp2;
+  const escapeRegex = /\[([^\]]*)]/g;
+  const replacedText = timeUnits2.reduce((current, [name, unit3]) => {
+    const replaceRegex = new RegExp(`${name}+(?![^\\[\\]]*\\])`, "g");
+    if (replaceRegex.test(current)) {
+      const value = Math.floor(timeLeft / unit3);
+      timeLeft -= value * unit3;
+      return current.replace(replaceRegex, (match) => String(value).padStart(match.length, "0"));
+    }
+    return current;
+  }, format2);
+  return replacedText.replace(escapeRegex, "$1");
+};
+
+// node_modules/element-plus/es/components/countdown/src/countdown2.mjs
+var __default__77 = defineComponent({
+  name: "ElCountdown"
+});
+var _sfc_main116 = defineComponent({
+  ...__default__77,
+  props: countdownProps,
+  emits: countdownEmits,
+  setup(__props, { expose, emit }) {
+    const props = __props;
+    let timer;
+    const rawValue = ref(getTime(props.value) - Date.now());
+    const displayValue = computed2(() => formatTime(rawValue.value, props.format));
+    const formatter2 = (val) => formatTime(val, props.format);
+    const stopTimer = () => {
+      if (timer) {
+        cAF(timer);
+        timer = void 0;
+      }
+    };
+    const startTimer = () => {
+      const timestamp2 = getTime(props.value);
+      const frameFunc = () => {
+        let diff = timestamp2 - Date.now();
+        emit("change", diff);
+        if (diff <= 0) {
+          diff = 0;
+          stopTimer();
+          emit("finish");
+        } else {
+          timer = rAF(frameFunc);
+        }
+        rawValue.value = diff;
+      };
+      timer = rAF(frameFunc);
+    };
+    watch(() => [props.value, props.format], () => {
+      stopTimer();
+      startTimer();
+    }, {
+      immediate: true
+    });
+    onBeforeUnmount(() => {
+      stopTimer();
+    });
+    expose({
+      displayValue
+    });
+    return (_ctx, _cache) => {
+      return openBlock(), createBlock(unref(ElStatistic), {
+        value: rawValue.value,
+        title: _ctx.title,
+        prefix: _ctx.prefix,
+        suffix: _ctx.suffix,
+        "value-style": _ctx.valueStyle,
+        formatter: formatter2
+      }, createSlots({ _: 2 }, [
+        renderList(_ctx.$slots, (_2, name) => {
+          return {
+            name,
+            fn: withCtx(() => [
+              renderSlot(_ctx.$slots, name)
+            ])
+          };
+        })
+      ]), 1032, ["value", "title", "prefix", "suffix", "value-style"]);
+    };
+  }
+});
+var Countdown = _export_sfc(_sfc_main116, [["__file", "/home/runner/work/element-plus/element-plus/packages/components/countdown/src/countdown.vue"]]);
+
+// node_modules/element-plus/es/components/countdown/index.mjs
+var ElCountdown = withInstall(Countdown);
+
 // node_modules/element-plus/es/components/steps/src/steps.mjs
 var stepsProps = buildProps({
   space: {
@@ -42162,11 +42538,11 @@ var stepsEmits = {
 };
 
 // node_modules/element-plus/es/components/steps/src/steps2.mjs
-var __default__75 = defineComponent({
+var __default__78 = defineComponent({
   name: "ElSteps"
 });
-var _sfc_main115 = defineComponent({
-  ...__default__75,
+var _sfc_main117 = defineComponent({
+  ...__default__78,
   props: stepsProps,
   emits: stepsEmits,
   setup(__props, { emit }) {
@@ -42191,7 +42567,7 @@ var _sfc_main115 = defineComponent({
     };
   }
 });
-var Steps = _export_sfc(_sfc_main115, [["__file", "/home/runner/work/element-plus/element-plus/packages/components/steps/src/steps.vue"]]);
+var Steps = _export_sfc(_sfc_main117, [["__file", "/home/runner/work/element-plus/element-plus/packages/components/steps/src/steps.vue"]]);
 
 // node_modules/element-plus/es/components/steps/src/item.mjs
 var stepProps = buildProps({
@@ -42214,11 +42590,11 @@ var stepProps = buildProps({
 });
 
 // node_modules/element-plus/es/components/steps/src/item2.mjs
-var __default__76 = defineComponent({
+var __default__79 = defineComponent({
   name: "ElStep"
 });
-var _sfc_main116 = defineComponent({
-  ...__default__76,
+var _sfc_main118 = defineComponent({
+  ...__default__79,
   props: stepProps,
   setup(__props) {
     const props = __props;
@@ -42398,7 +42774,7 @@ var _sfc_main116 = defineComponent({
     };
   }
 });
-var Step = _export_sfc(_sfc_main116, [["__file", "/home/runner/work/element-plus/element-plus/packages/components/steps/src/item.vue"]]);
+var Step = _export_sfc(_sfc_main118, [["__file", "/home/runner/work/element-plus/element-plus/packages/components/steps/src/item.vue"]]);
 
 // node_modules/element-plus/es/components/steps/index.mjs
 var ElSteps = withInstall(Steps, {
@@ -42499,11 +42875,11 @@ var _hoisted_317 = ["aria-hidden"];
 var _hoisted_410 = ["aria-hidden"];
 var _hoisted_57 = ["aria-hidden"];
 var COMPONENT_NAME16 = "ElSwitch";
-var __default__77 = defineComponent({
+var __default__80 = defineComponent({
   name: COMPONENT_NAME16
 });
-var _sfc_main117 = defineComponent({
-  ...__default__77,
+var _sfc_main119 = defineComponent({
+  ...__default__80,
   props: switchProps,
   emits: switchEmits,
   setup(__props, { expose, emit }) {
@@ -42719,7 +43095,7 @@ var _sfc_main117 = defineComponent({
     };
   }
 });
-var Switch = _export_sfc(_sfc_main117, [["__file", "/home/runner/work/element-plus/element-plus/packages/components/switch/src/switch.vue"]]);
+var Switch = _export_sfc(_sfc_main119, [["__file", "/home/runner/work/element-plus/element-plus/packages/components/switch/src/switch.vue"]]);
 
 // node_modules/element-plus/es/components/switch/index.mjs
 var ElSwitch = withInstall(Switch);
@@ -42729,9 +43105,6 @@ var import_escape_html = __toESM(require_escape_html(), 1);
 var getCell = function(event) {
   var _a2;
   return (_a2 = event.target) == null ? void 0 : _a2.closest("td");
-};
-var isObject4 = function(obj) {
-  return obj !== null && typeof obj === "object";
 };
 var orderBy2 = function(array4, sortKey, reverse2, sortMethod, sortBy2) {
   if (!sortKey && !sortMethod && (!sortBy2 || Array.isArray(sortBy2) && !sortBy2.length)) {
@@ -42756,10 +43129,10 @@ var orderBy2 = function(array4, sortKey, reverse2, sortMethod, sortBy2) {
       });
     }
     if (sortKey !== "$key") {
-      if (isObject4(value) && "$value" in value)
+      if (isObject(value) && "$value" in value)
         value = value.$value;
     }
-    return [isObject4(value) ? get_default(value, sortKey) : value];
+    return [isObject(value) ? get_default(value, sortKey) : value];
   };
   const compare = function(a2, b2) {
     if (sortMethod) {
@@ -42957,14 +43330,22 @@ function walkTreeNode(root2, cb, childrenKey = "children", lazyKey = "hasChildre
   });
 }
 var removePopper;
-function createTablePopper(parentNode, trigger, popperContent, popperOptions2, tooltipEffect) {
+function createTablePopper(parentNode, trigger, popperContent, tooltipOptions) {
+  tooltipOptions = merge_default({
+    enterable: true,
+    showArrow: true
+  }, tooltipOptions);
   const { nextZIndex } = useZIndex();
   const ns2 = parentNode == null ? void 0 : parentNode.dataset.prefix;
   const scrollContainer = parentNode == null ? void 0 : parentNode.querySelector(`.${ns2}-scrollbar__wrap`);
   function renderContent() {
-    const isLight = tooltipEffect === "light";
+    const isLight = tooltipOptions.effect === "light";
     const content2 = document.createElement("div");
-    content2.className = `${ns2}-popper ${isLight ? "is-light" : "is-dark"}`;
+    content2.className = [
+      `${ns2}-popper`,
+      isLight ? "is-light" : "is-dark",
+      tooltipOptions.popperClass || ""
+    ].join(" ");
     popperContent = (0, import_escape_html.default)(popperContent);
     content2.innerHTML = popperContent;
     content2.style.zIndex = String(nextZIndex());
@@ -42972,9 +43353,9 @@ function createTablePopper(parentNode, trigger, popperContent, popperOptions2, t
     return content2;
   }
   function renderArrow() {
-    const arrow22 = document.createElement("div");
-    arrow22.className = `${ns2}-popper__arrow`;
-    return arrow22;
+    const arrow2 = document.createElement("div");
+    arrow2.className = `${ns2}-popper__arrow`;
+    return arrow2;
   }
   function showPopper() {
     popperInstance && popperInstance.update();
@@ -42984,38 +43365,56 @@ function createTablePopper(parentNode, trigger, popperContent, popperOptions2, t
     try {
       popperInstance && popperInstance.destroy();
       content && (parentNode == null ? void 0 : parentNode.removeChild(content));
-      trigger.removeEventListener("mouseenter", showPopper);
-      trigger.removeEventListener("mouseleave", removePopper);
+      trigger.removeEventListener("mouseenter", onOpen);
+      trigger.removeEventListener("mouseleave", onClose);
       scrollContainer == null ? void 0 : scrollContainer.removeEventListener("scroll", removePopper);
       removePopper = void 0;
     } catch (e) {
     }
   };
   let popperInstance = null;
+  let onOpen = showPopper;
+  let onClose = removePopper;
+  if (tooltipOptions.enterable) {
+    ;
+    ({ onOpen, onClose } = useDelayedToggle({
+      showAfter: tooltipOptions.showAfter,
+      hideAfter: tooltipOptions.hideAfter,
+      open: showPopper,
+      close: removePopper
+    }));
+  }
   const content = renderContent();
-  const arrow2 = renderArrow();
-  content.appendChild(arrow2);
-  popperInstance = yn(trigger, content, {
-    strategy: "absolute",
-    modifiers: [
-      {
-        name: "offset",
-        options: {
-          offset: [0, 8]
-        }
-      },
-      {
-        name: "arrow",
-        options: {
-          element: arrow2,
-          padding: 10
-        }
+  content.onmouseenter = onOpen;
+  content.onmouseleave = onClose;
+  const modifiers = [];
+  if (tooltipOptions.offset) {
+    modifiers.push({
+      name: "offset",
+      options: {
+        offset: [0, tooltipOptions.offset]
       }
-    ],
-    ...popperOptions2
+    });
+  }
+  if (tooltipOptions.showArrow) {
+    const arrow2 = content.appendChild(renderArrow());
+    modifiers.push({
+      name: "arrow",
+      options: {
+        element: arrow2,
+        padding: 10
+      }
+    });
+  }
+  const popperOptions = tooltipOptions.popperOptions || {};
+  popperInstance = yn(trigger, content, {
+    placement: tooltipOptions.placement || "top",
+    strategy: "fixed",
+    ...popperOptions,
+    modifiers: popperOptions.modifiers ? modifiers.concat(popperOptions.modifiers) : modifiers
   });
-  trigger.addEventListener("mouseenter", showPopper);
-  trigger.addEventListener("mouseleave", removePopper);
+  trigger.addEventListener("mouseenter", onOpen);
+  trigger.addEventListener("mouseleave", onClose);
   scrollContainer == null ? void 0 : scrollContainer.addEventListener("scroll", removePopper);
   return popperInstance;
 }
@@ -44285,7 +44684,7 @@ var TableLayout = class {
 
 // node_modules/element-plus/es/components/table/src/filter-panel.mjs
 var { CheckboxGroup: ElCheckboxGroup2 } = ElCheckbox;
-var _sfc_main118 = defineComponent({
+var _sfc_main120 = defineComponent({
   name: "ElTableFilterPanel",
   components: {
     ElCheckbox,
@@ -44430,7 +44829,7 @@ var _sfc_main118 = defineComponent({
 var _hoisted_159 = { key: 0 };
 var _hoisted_237 = ["disabled"];
 var _hoisted_318 = ["label", "onClick"];
-function _sfc_render31(_ctx, _cache, $props, $setup, $data, $options) {
+function _sfc_render30(_ctx, _cache, $props, $setup, $data, $options) {
   const _component_el_checkbox = resolveComponent("el-checkbox");
   const _component_el_checkbox_group = resolveComponent("el-checkbox-group");
   const _component_el_scrollbar = resolveComponent("el-scrollbar");
@@ -44543,7 +44942,7 @@ function _sfc_render31(_ctx, _cache, $props, $setup, $data, $options) {
     _: 1
   }, 8, ["visible", "placement", "popper-class"]);
 }
-var FilterPanel = _export_sfc(_sfc_main118, [["render", _sfc_render31], ["__file", "/home/runner/work/element-plus/element-plus/packages/components/table/src/filter-panel.vue"]]);
+var FilterPanel = _export_sfc(_sfc_main120, [["render", _sfc_render30], ["__file", "/home/runner/work/element-plus/element-plus/packages/components/table/src/filter-panel.vue"]]);
 
 // node_modules/element-plus/es/components/table/src/layout-observer.mjs
 function useLayoutObserver(root2) {
@@ -45124,7 +45523,7 @@ function useEvents(props) {
   const handleMouseLeave = debounce_default(() => {
     props.store.commit("setHoverRow", null);
   }, 30);
-  const handleCellMouseEnter = (event, row, tooltipEffect) => {
+  const handleCellMouseEnter = (event, row, tooltipOptions) => {
     var _a2;
     const table = parent2;
     const cell = getCell(event);
@@ -45136,6 +45535,9 @@ function useEvents(props) {
       const hoverState = table.hoverState = { cell, column: column2, row };
       table == null ? void 0 : table.emit("cell-mouse-enter", hoverState.row, hoverState.column, hoverState.cell, event);
     }
+    if (!tooltipOptions) {
+      return;
+    }
     const cellChild = event.target.querySelector(".cell");
     if (!(hasClass(cellChild, `${namespace}-tooltip`) && cellChild.childNodes.length)) {
       return;
@@ -45146,10 +45548,7 @@ function useEvents(props) {
     const rangeWidth = Math.round(range4.getBoundingClientRect().width);
     const padding = (Number.parseInt(getStyle(cellChild, "paddingLeft"), 10) || 0) + (Number.parseInt(getStyle(cellChild, "paddingRight"), 10) || 0);
     if (rangeWidth + padding > cellChild.offsetWidth || cellChild.scrollWidth > cellChild.offsetWidth) {
-      createTablePopper(parent2 == null ? void 0 : parent2.refs.tableWrapper, cell, cell.innerText || cell.textContent, {
-        placement: "top",
-        strategy: "fixed"
-      }, tooltipEffect);
+      createTablePopper(parent2 == null ? void 0 : parent2.refs.tableWrapper, cell, cell.innerText || cell.textContent, tooltipOptions);
     }
   };
   const handleCellMouseLeave = (event) => {
@@ -45310,7 +45709,7 @@ function useRender(props) {
     return index;
   };
   const rowRender = (row, $index, treeRowData, expanded = false) => {
-    const { tooltipEffect, store } = props;
+    const { tooltipEffect, tooltipOptions, store } = props;
     const { indent, columns: columns2 } = store.states;
     const rowClasses = getRowClass(row, $index);
     let display = true;
@@ -45364,13 +45763,16 @@ function useRender(props) {
       const baseKey = `${$index},${cellIndex}`;
       const patchKey = columnData.columnKey || columnData.rawColumnKey || "";
       const tdChildren = cellChildren(cellIndex, column2, data);
+      const mergedTooltipOptions = column2.showOverflowTooltip && merge_default({
+        effect: tooltipEffect
+      }, tooltipOptions, column2.showOverflowTooltip);
       return h("td", {
         style: getCellStyle($index, cellIndex, row, column2),
         class: getCellClass($index, cellIndex, row, column2, colspan - 1),
         key: `${patchKey}${baseKey}`,
         rowspan,
         colspan,
-        onMouseenter: ($event) => handleCellMouseEnter($event, row, tooltipEffect),
+        onMouseenter: ($event) => handleCellMouseEnter($event, row, mergedTooltipOptions),
         onMouseleave: handleCellMouseLeave
       }, [tdChildren]);
     }));
@@ -45489,6 +45891,9 @@ var defaultProps = {
   },
   stripe: Boolean,
   tooltipEffect: String,
+  tooltipOptions: {
+    type: Object
+  },
   context: {
     default: () => ({}),
     type: Object
@@ -46132,6 +46537,7 @@ var defaultProps2 = {
   defaultExpandAll: Boolean,
   defaultSort: Object,
   tooltipEffect: String,
+  tooltipOptions: Object,
   spanMethod: Function,
   selectOnIndeterminate: {
     type: Boolean,
@@ -46198,7 +46604,7 @@ var useScrollbar = () => {
 
 // node_modules/element-plus/es/components/table/src/table.mjs
 var tableIdSeed = 1;
-var _sfc_main119 = defineComponent({
+var _sfc_main121 = defineComponent({
   name: "ElTable",
   directives: {
     Mousewheel
@@ -46341,7 +46747,7 @@ var _hoisted_238 = {
   ref: "hiddenColumns",
   class: "hidden-columns"
 };
-function _sfc_render32(_ctx, _cache, $props, $setup, $data, $options) {
+function _sfc_render31(_ctx, _cache, $props, $setup, $data, $options) {
   const _component_hColgroup = resolveComponent("hColgroup");
   const _component_table_header = resolveComponent("table-header");
   const _component_table_body = resolveComponent("table-body");
@@ -46447,10 +46853,11 @@ function _sfc_render32(_ctx, _cache, $props, $setup, $data, $options) {
                 highlight: _ctx.highlightCurrentRow,
                 "row-class-name": _ctx.rowClassName,
                 "tooltip-effect": _ctx.tooltipEffect,
+                "tooltip-options": _ctx.tooltipOptions,
                 "row-style": _ctx.rowStyle,
                 store: _ctx.store,
                 stripe: _ctx.stripe
-              }, null, 8, ["context", "highlight", "row-class-name", "tooltip-effect", "row-style", "store", "stripe"])
+              }, null, 8, ["context", "highlight", "row-class-name", "tooltip-effect", "tooltip-options", "row-style", "store", "stripe"])
             ], 6),
             _ctx.isEmpty ? (openBlock(), createElementBlock("div", {
               key: 0,
@@ -46507,7 +46914,7 @@ function _sfc_render32(_ctx, _cache, $props, $setup, $data, $options) {
     ])
   ], 46, _hoisted_160);
 }
-var Table = _export_sfc(_sfc_main119, [["render", _sfc_render32], ["__file", "/home/runner/work/element-plus/element-plus/packages/components/table/src/table.vue"]]);
+var Table = _export_sfc(_sfc_main121, [["render", _sfc_render31], ["__file", "/home/runner/work/element-plus/element-plus/packages/components/table/src/table.vue"]]);
 
 // node_modules/element-plus/es/components/table/src/config.mjs
 var defaultClassNames = {
@@ -46952,8 +47359,7 @@ var defaultProps3 = {
   columnKey: String,
   align: String,
   headerAlign: String,
-  showTooltipWhenOverflow: Boolean,
-  showOverflowTooltip: Boolean,
+  showOverflowTooltip: [Boolean, Object],
   fixed: [Boolean, String],
   formatter: Function,
   selectable: Function,
@@ -47022,7 +47428,7 @@ var ElTableColumn = defineComponent({
         property: props.prop || props.property,
         align: realAlign,
         headerAlign: realHeaderAlign,
-        showOverflowTooltip: props.showOverflowTooltip || props.showTooltipWhenOverflow,
+        showOverflowTooltip: props.showOverflowTooltip,
         filterable: props.filters || props.filterMethod,
         filteredValue: [],
         filterPlacement: "",
@@ -49249,11 +49655,11 @@ var tabBarProps = buildProps({
 
 // node_modules/element-plus/es/components/tabs/src/tab-bar2.mjs
 var COMPONENT_NAME21 = "ElTabBar";
-var __default__78 = defineComponent({
+var __default__81 = defineComponent({
   name: COMPONENT_NAME21
 });
-var _sfc_main120 = defineComponent({
-  ...__default__78,
+var _sfc_main122 = defineComponent({
+  ...__default__81,
   props: tabBarProps,
   setup(__props, { expose }) {
     const props = __props;
@@ -49269,22 +49675,17 @@ var _sfc_main120 = defineComponent({
       let tabSize = 0;
       const sizeName = ["top", "bottom"].includes(rootTabs.props.tabPosition) ? "width" : "height";
       const sizeDir = sizeName === "width" ? "x" : "y";
+      const position = sizeDir === "x" ? "left" : "top";
       props.tabs.every((tab) => {
-        var _a2, _b, _c, _d;
+        var _a2, _b;
         const $el = (_b = (_a2 = instance.parent) == null ? void 0 : _a2.refs) == null ? void 0 : _b[`tab-${tab.uid}`];
         if (!$el)
           return false;
         if (!tab.active) {
           return true;
         }
+        offset2 = $el[`offset${capitalize3(position)}`];
         tabSize = $el[`client${capitalize3(sizeName)}`];
-        const position = sizeDir === "x" ? "left" : "top";
-        offset2 = $el[`offset${capitalize3(position)}`] - ((_d = (_c = $el.parentElement) == null ? void 0 : _c[`offset${capitalize3(position)}`]) != null ? _d : 0);
-        const scrollwrapEl = $el.closest(".is-scrollable");
-        if (scrollwrapEl) {
-          const scrollWrapStyle = window.getComputedStyle(scrollwrapEl);
-          offset2 += Number.parseFloat(scrollWrapStyle[`padding${capitalize3(position)}`]);
-        }
         const tabStyles = window.getComputedStyle($el);
         if (sizeName === "width") {
           if (props.tabs.length > 1) {
@@ -49319,7 +49720,7 @@ var _sfc_main120 = defineComponent({
     };
   }
 });
-var TabBar = _export_sfc(_sfc_main120, [["__file", "/home/runner/work/element-plus/element-plus/packages/components/tabs/src/tab-bar.vue"]]);
+var TabBar = _export_sfc(_sfc_main122, [["__file", "/home/runner/work/element-plus/element-plus/packages/components/tabs/src/tab-bar.vue"]]);
 
 // node_modules/element-plus/es/components/tabs/src/tab-nav.mjs
 var tabNavProps = buildProps({
@@ -49746,11 +50147,11 @@ var tabPaneProps = buildProps({
 // node_modules/element-plus/es/components/tabs/src/tab-pane2.mjs
 var _hoisted_161 = ["id", "aria-hidden", "aria-labelledby"];
 var COMPONENT_NAME23 = "ElTabPane";
-var __default__79 = defineComponent({
+var __default__82 = defineComponent({
   name: COMPONENT_NAME23
 });
-var _sfc_main121 = defineComponent({
-  ...__default__79,
+var _sfc_main123 = defineComponent({
+  ...__default__82,
   props: tabPaneProps,
   setup(__props) {
     const props = __props;
@@ -49807,7 +50208,7 @@ var _sfc_main121 = defineComponent({
     };
   }
 });
-var TabPane = _export_sfc(_sfc_main121, [["__file", "/home/runner/work/element-plus/element-plus/packages/components/tabs/src/tab-pane.vue"]]);
+var TabPane = _export_sfc(_sfc_main123, [["__file", "/home/runner/work/element-plus/element-plus/packages/components/tabs/src/tab-pane.vue"]]);
 
 // node_modules/element-plus/es/components/tabs/index.mjs
 var ElTabs = withInstall(Tabs, {
@@ -49902,7 +50303,7 @@ var compareTime = (time1, time2) => {
 var padTime = (time) => {
   return `${time}`.padStart(2, "0");
 };
-var formatTime = (time) => {
+var formatTime2 = (time) => {
   return `${padTime(time.hours)}:${padTime(time.minutes)}`;
 };
 var nextTime = (time, step) => {
@@ -49920,15 +50321,15 @@ var nextTime = (time, step) => {
   next.hours += stepValue.hours;
   next.hours += Math.floor(next.minutes / 60);
   next.minutes = next.minutes % 60;
-  return formatTime(next);
+  return formatTime2(next);
 };
 
 // node_modules/element-plus/es/components/time-select/src/time-select2.mjs
-var __default__80 = defineComponent({
+var __default__83 = defineComponent({
   name: "ElTimeSelect"
 });
-var _sfc_main122 = defineComponent({
-  ...__default__80,
+var _sfc_main124 = defineComponent({
+  ...__default__83,
   props: timeSelectProps,
   emits: ["change", "blur", "focus", "update:modelValue"],
   setup(__props, { expose }) {
@@ -49941,23 +50342,23 @@ var _sfc_main122 = defineComponent({
     const value = computed2(() => props.modelValue);
     const start = computed2(() => {
       const time = parseTime(props.start);
-      return time ? formatTime(time) : null;
+      return time ? formatTime2(time) : null;
     });
     const end2 = computed2(() => {
       const time = parseTime(props.end);
-      return time ? formatTime(time) : null;
+      return time ? formatTime2(time) : null;
     });
     const step = computed2(() => {
       const time = parseTime(props.step);
-      return time ? formatTime(time) : null;
+      return time ? formatTime2(time) : null;
     });
     const minTime = computed2(() => {
       const time = parseTime(props.minTime || "");
-      return time ? formatTime(time) : null;
+      return time ? formatTime2(time) : null;
     });
     const maxTime = computed2(() => {
       const time = parseTime(props.maxTime || "");
-      return time ? formatTime(time) : null;
+      return time ? formatTime2(time) : null;
     });
     const items = computed2(() => {
       const result2 = [];
@@ -50031,7 +50432,7 @@ var _sfc_main122 = defineComponent({
     };
   }
 });
-var TimeSelect = _export_sfc(_sfc_main122, [["__file", "/home/runner/work/element-plus/element-plus/packages/components/time-select/src/time-select.vue"]]);
+var TimeSelect = _export_sfc(_sfc_main124, [["__file", "/home/runner/work/element-plus/element-plus/packages/components/time-select/src/time-select.vue"]]);
 
 // node_modules/element-plus/es/components/time-select/index.mjs
 TimeSelect.install = (app) => {
@@ -50095,11 +50496,11 @@ var timelineItemProps = buildProps({
 });
 
 // node_modules/element-plus/es/components/timeline/src/timeline-item2.mjs
-var __default__81 = defineComponent({
+var __default__84 = defineComponent({
   name: "ElTimelineItem"
 });
-var _sfc_main123 = defineComponent({
-  ...__default__81,
+var _sfc_main125 = defineComponent({
+  ...__default__84,
   props: timelineItemProps,
   setup(__props) {
     const ns2 = useNamespace("timeline-item");
@@ -50159,7 +50560,7 @@ var _sfc_main123 = defineComponent({
     };
   }
 });
-var TimelineItem = _export_sfc(_sfc_main123, [["__file", "/home/runner/work/element-plus/element-plus/packages/components/timeline/src/timeline-item.vue"]]);
+var TimelineItem = _export_sfc(_sfc_main125, [["__file", "/home/runner/work/element-plus/element-plus/packages/components/timeline/src/timeline-item.vue"]]);
 
 // node_modules/element-plus/es/components/timeline/index.mjs
 var ElTimeline = withInstall(Timeline, {
@@ -50306,11 +50707,11 @@ var tooltipV2Props = buildProps({
 });
 
 // node_modules/element-plus/es/components/tooltip-v2/src/root2.mjs
-var __default__82 = defineComponent({
+var __default__85 = defineComponent({
   name: "ElTooltipV2Root"
 });
-var _sfc_main124 = defineComponent({
-  ...__default__82,
+var _sfc_main126 = defineComponent({
+  ...__default__85,
   props: tooltipV2RootProps,
   setup(__props, { expose }) {
     const props = __props;
@@ -50377,14 +50778,14 @@ var _sfc_main124 = defineComponent({
     };
   }
 });
-var TooltipV2Root = _export_sfc(_sfc_main124, [["__file", "/home/runner/work/element-plus/element-plus/packages/components/tooltip-v2/src/root.vue"]]);
+var TooltipV2Root = _export_sfc(_sfc_main126, [["__file", "/home/runner/work/element-plus/element-plus/packages/components/tooltip-v2/src/root.vue"]]);
 
 // node_modules/element-plus/es/components/tooltip-v2/src/arrow2.mjs
-var __default__83 = defineComponent({
+var __default__86 = defineComponent({
   name: "ElTooltipV2Arrow"
 });
-var _sfc_main125 = defineComponent({
-  ...__default__83,
+var _sfc_main127 = defineComponent({
+  ...__default__86,
   props: {
     ...tooltipV2ArrowProps,
     ...tooltipV2ArrowSpecialProps
@@ -50414,7 +50815,7 @@ var _sfc_main125 = defineComponent({
     };
   }
 });
-var TooltipV2Arrow = _export_sfc(_sfc_main125, [["__file", "/home/runner/work/element-plus/element-plus/packages/components/tooltip-v2/src/arrow.vue"]]);
+var TooltipV2Arrow = _export_sfc(_sfc_main127, [["__file", "/home/runner/work/element-plus/element-plus/packages/components/tooltip-v2/src/arrow.vue"]]);
 
 // node_modules/element-plus/es/components/visual-hidden/src/visual-hidden.mjs
 var visualHiddenProps = buildProps({
@@ -50425,11 +50826,11 @@ var visualHiddenProps = buildProps({
 });
 
 // node_modules/element-plus/es/components/visual-hidden/src/visual-hidden2.mjs
-var __default__84 = defineComponent({
+var __default__87 = defineComponent({
   name: "ElVisuallyHidden"
 });
-var _sfc_main126 = defineComponent({
-  ...__default__84,
+var _sfc_main128 = defineComponent({
+  ...__default__87,
   props: visualHiddenProps,
   setup(__props) {
     const props = __props;
@@ -50457,15 +50858,15 @@ var _sfc_main126 = defineComponent({
     };
   }
 });
-var ElVisuallyHidden = _export_sfc(_sfc_main126, [["__file", "/home/runner/work/element-plus/element-plus/packages/components/visual-hidden/src/visual-hidden.vue"]]);
+var ElVisuallyHidden = _export_sfc(_sfc_main128, [["__file", "/home/runner/work/element-plus/element-plus/packages/components/visual-hidden/src/visual-hidden.vue"]]);
 
 // node_modules/element-plus/es/components/tooltip-v2/src/content2.mjs
 var _hoisted_163 = ["data-side"];
-var __default__85 = defineComponent({
+var __default__88 = defineComponent({
   name: "ElTooltipV2Content"
 });
-var _sfc_main127 = defineComponent({
-  ...__default__85,
+var _sfc_main129 = defineComponent({
+  ...__default__88,
   props: { ...tooltipV2ContentProps, ...tooltipV2CommonProps },
   setup(__props) {
     const props = __props;
@@ -50560,7 +50961,7 @@ var _sfc_main127 = defineComponent({
     };
   }
 });
-var TooltipV2Content = _export_sfc(_sfc_main127, [["__file", "/home/runner/work/element-plus/element-plus/packages/components/tooltip-v2/src/content.vue"]]);
+var TooltipV2Content = _export_sfc(_sfc_main129, [["__file", "/home/runner/work/element-plus/element-plus/packages/components/tooltip-v2/src/content.vue"]]);
 
 // node_modules/element-plus/es/components/tooltip-v2/src/forward-ref.mjs
 var forwardRefProps = buildProps({
@@ -50595,11 +50996,11 @@ var ForwardRef = defineComponent({
 });
 
 // node_modules/element-plus/es/components/tooltip-v2/src/trigger2.mjs
-var __default__86 = defineComponent({
+var __default__89 = defineComponent({
   name: "ElTooltipV2Trigger"
 });
-var _sfc_main128 = defineComponent({
-  ...__default__86,
+var _sfc_main130 = defineComponent({
+  ...__default__89,
   props: {
     ...tooltipV2CommonProps,
     ...tooltipV2TriggerProps
@@ -50676,14 +51077,14 @@ var _sfc_main128 = defineComponent({
     };
   }
 });
-var TooltipV2Trigger = _export_sfc(_sfc_main128, [["__file", "/home/runner/work/element-plus/element-plus/packages/components/tooltip-v2/src/trigger.vue"]]);
+var TooltipV2Trigger = _export_sfc(_sfc_main130, [["__file", "/home/runner/work/element-plus/element-plus/packages/components/tooltip-v2/src/trigger.vue"]]);
 
 // node_modules/element-plus/es/components/tooltip-v2/src/tooltip2.mjs
-var __default__87 = defineComponent({
+var __default__90 = defineComponent({
   name: "ElTooltipV2"
 });
-var _sfc_main129 = defineComponent({
-  ...__default__87,
+var _sfc_main131 = defineComponent({
+  ...__default__90,
   props: tooltipV2Props,
   setup(__props) {
     const props = __props;
@@ -50742,7 +51143,7 @@ var _sfc_main129 = defineComponent({
     };
   }
 });
-var TooltipV2 = _export_sfc(_sfc_main129, [["__file", "/home/runner/work/element-plus/element-plus/packages/components/tooltip-v2/src/tooltip.vue"]]);
+var TooltipV2 = _export_sfc(_sfc_main131, [["__file", "/home/runner/work/element-plus/element-plus/packages/components/tooltip-v2/src/tooltip.vue"]]);
 
 // node_modules/element-plus/es/components/tooltip-v2/index.mjs
 var ElTooltipV2 = withInstall(TooltipV2);
@@ -51009,11 +51410,11 @@ var useMove = (props, checkedState, emit) => {
 };
 
 // node_modules/element-plus/es/components/transfer/src/transfer-panel2.mjs
-var __default__88 = defineComponent({
+var __default__91 = defineComponent({
   name: "ElTransferPanel"
 });
-var _sfc_main130 = defineComponent({
-  ...__default__88,
+var _sfc_main132 = defineComponent({
+  ...__default__91,
   props: transferPanelProps,
   emits: transferPanelEmits,
   setup(__props, { expose, emit }) {
@@ -51026,7 +51427,6 @@ var _sfc_main130 = defineComponent({
       checked: [],
       allChecked: false,
       query: "",
-      inputHover: false,
       checkChangeByUser: true
     });
     const propsAlias = usePropsAlias(props);
@@ -51038,7 +51438,7 @@ var _sfc_main130 = defineComponent({
     } = useCheck(props, panelState, emit);
     const hasNoMatch = computed2(() => !isEmpty2(panelState.query) && isEmpty2(filteredData.value));
     const hasFooter = computed2(() => !isEmpty2(slots.default()[0].children));
-    const { checked, allChecked, query, inputHover } = toRefs(panelState);
+    const { checked, allChecked, query } = toRefs(panelState);
     expose({
       query
     });
@@ -51075,13 +51475,11 @@ var _sfc_main130 = defineComponent({
             placeholder: _ctx.placeholder,
             "prefix-icon": unref(search_default),
             clearable: "",
-            "validate-event": false,
-            onMouseenter: _cache[2] || (_cache[2] = ($event) => inputHover.value = true),
-            onMouseleave: _cache[3] || (_cache[3] = ($event) => inputHover.value = false)
+            "validate-event": false
           }, null, 8, ["modelValue", "class", "placeholder", "prefix-icon"])) : createCommentVNode("v-if", true),
           withDirectives(createVNode(unref(ElCheckboxGroup), {
             modelValue: unref(checked),
-            "onUpdate:modelValue": _cache[4] || (_cache[4] = ($event) => isRef(checked) ? checked.value = $event : null),
+            "onUpdate:modelValue": _cache[2] || (_cache[2] = ($event) => isRef(checked) ? checked.value = $event : null),
             "validate-event": false,
             class: normalizeClass([unref(ns2).is("filterable", _ctx.filterable), unref(ns2).be("panel", "list")])
           }, {
@@ -51126,16 +51524,16 @@ var _sfc_main130 = defineComponent({
     };
   }
 });
-var TransferPanel = _export_sfc(_sfc_main130, [["__file", "/home/runner/work/element-plus/element-plus/packages/components/transfer/src/transfer-panel.vue"]]);
+var TransferPanel = _export_sfc(_sfc_main132, [["__file", "/home/runner/work/element-plus/element-plus/packages/components/transfer/src/transfer-panel.vue"]]);
 
 // node_modules/element-plus/es/components/transfer/src/transfer2.mjs
 var _hoisted_164 = { key: 0 };
 var _hoisted_239 = { key: 0 };
-var __default__89 = defineComponent({
+var __default__92 = defineComponent({
   name: "ElTransfer"
 });
-var _sfc_main131 = defineComponent({
-  ...__default__89,
+var _sfc_main133 = defineComponent({
+  ...__default__92,
   props: transferProps,
   emits: transferEmits,
   setup(__props, { expose, emit }) {
@@ -51270,7 +51668,7 @@ var _sfc_main131 = defineComponent({
     };
   }
 });
-var Transfer = _export_sfc(_sfc_main131, [["__file", "/home/runner/work/element-plus/element-plus/packages/components/transfer/src/transfer.vue"]]);
+var Transfer = _export_sfc(_sfc_main133, [["__file", "/home/runner/work/element-plus/element-plus/packages/components/transfer/src/transfer.vue"]]);
 
 // node_modules/element-plus/es/components/transfer/index.mjs
 var ElTransfer = withInstall(Transfer);
@@ -52025,7 +52423,7 @@ var TreeStore = class {
 };
 
 // node_modules/element-plus/es/components/tree/src/tree-node-content.mjs
-var _sfc_main132 = defineComponent({
+var _sfc_main134 = defineComponent({
   name: "ElTreeNodeContent",
   props: {
     node: {
@@ -52045,7 +52443,7 @@ var _sfc_main132 = defineComponent({
     };
   }
 });
-var NodeContent2 = _export_sfc(_sfc_main132, [["__file", "/home/runner/work/element-plus/element-plus/packages/components/tree/src/tree-node-content.vue"]]);
+var NodeContent2 = _export_sfc(_sfc_main134, [["__file", "/home/runner/work/element-plus/element-plus/packages/components/tree/src/tree-node-content.vue"]]);
 
 // node_modules/element-plus/es/components/tree/src/model/useNodeExpandEventBroadcast.mjs
 function useNodeExpandEventBroadcast(props) {
@@ -52218,7 +52616,7 @@ function useDragNodeHandler({ props, ctx, el$, dropIndicator$, store }) {
 }
 
 // node_modules/element-plus/es/components/tree/src/tree-node.mjs
-var _sfc_main133 = defineComponent({
+var _sfc_main135 = defineComponent({
   name: "ElTreeNode",
   components: {
     ElCollapseTransition: _CollapseTransition,
@@ -52406,7 +52804,7 @@ var _sfc_main133 = defineComponent({
 });
 var _hoisted_165 = ["aria-expanded", "aria-disabled", "aria-checked", "draggable", "data-key"];
 var _hoisted_240 = ["aria-expanded"];
-function _sfc_render33(_ctx, _cache, $props, $setup, $data, $options) {
+function _sfc_render32(_ctx, _cache, $props, $setup, $data, $options) {
   const _component_el_icon = resolveComponent("el-icon");
   const _component_el_checkbox = resolveComponent("el-checkbox");
   const _component_loading = resolveComponent("loading");
@@ -52511,7 +52909,7 @@ function _sfc_render33(_ctx, _cache, $props, $setup, $data, $options) {
     [vShow, _ctx.node.visible]
   ]);
 }
-var ElTreeNode = _export_sfc(_sfc_main133, [["render", _sfc_render33], ["__file", "/home/runner/work/element-plus/element-plus/packages/components/tree/src/tree-node.vue"]]);
+var ElTreeNode = _export_sfc(_sfc_main135, [["render", _sfc_render32], ["__file", "/home/runner/work/element-plus/element-plus/packages/components/tree/src/tree-node.vue"]]);
 
 // node_modules/element-plus/es/components/tree/src/model/useKeydown.mjs
 function useKeydown({ el$ }, store) {
@@ -52598,7 +52996,7 @@ function useKeydown({ el$ }, store) {
 }
 
 // node_modules/element-plus/es/components/tree/src/tree.mjs
-var _sfc_main134 = defineComponent({
+var _sfc_main136 = defineComponent({
   name: "ElTree",
   components: { ElTreeNode },
   props: {
@@ -52867,7 +53265,7 @@ var _sfc_main134 = defineComponent({
     };
   }
 });
-function _sfc_render34(_ctx, _cache, $props, $setup, $data, $options) {
+function _sfc_render33(_ctx, _cache, $props, $setup, $data, $options) {
   var _a2;
   const _component_el_tree_node = resolveComponent("el-tree-node");
   return openBlock(), createElementBlock("div", {
@@ -52909,7 +53307,7 @@ function _sfc_render34(_ctx, _cache, $props, $setup, $data, $options) {
     ])
   ], 2);
 }
-var Tree = _export_sfc(_sfc_main134, [["render", _sfc_render34], ["__file", "/home/runner/work/element-plus/element-plus/packages/components/tree/src/tree.vue"]]);
+var Tree = _export_sfc(_sfc_main136, [["render", _sfc_render33], ["__file", "/home/runner/work/element-plus/element-plus/packages/components/tree/src/tree.vue"]]);
 
 // node_modules/element-plus/es/components/tree/index.mjs
 Tree.install = (app) => {
@@ -53129,13 +53527,20 @@ var CacheOptions = defineComponent({
   },
   setup(props) {
     const select = inject(selectKey);
-    props.data.forEach((item) => select.cachedOptions.set(item.value, item));
+    watch(() => props.data, () => {
+      props.data.forEach((item) => {
+        if (!select.cachedOptions.has(item.value)) {
+          select.cachedOptions.set(item.value, item);
+        }
+      });
+      select.setSelected();
+    }, { immediate: true, deep: true });
     return () => void 0;
   }
 });
 
 // node_modules/element-plus/es/components/tree-select/src/tree-select.mjs
-var _sfc_main135 = defineComponent({
+var _sfc_main137 = defineComponent({
   name: "ElTreeSelect",
   inheritAttrs: false,
   props: {
@@ -53199,7 +53604,7 @@ var _sfc_main135 = defineComponent({
     });
   }
 });
-var TreeSelect = _export_sfc(_sfc_main135, [["__file", "/home/runner/work/element-plus/element-plus/packages/components/tree-select/src/tree-select.vue"]]);
+var TreeSelect = _export_sfc(_sfc_main137, [["__file", "/home/runner/work/element-plus/element-plus/packages/components/tree-select/src/tree-select.vue"]]);
 
 // node_modules/element-plus/es/components/tree-select/index.mjs
 TreeSelect.install = (app) => {
@@ -53871,11 +54276,11 @@ var ElNodeContent = defineComponent({
 
 // node_modules/element-plus/es/components/tree-v2/src/tree-node.mjs
 var _hoisted_166 = ["aria-expanded", "aria-disabled", "aria-checked", "data-key", "onClick"];
-var __default__90 = defineComponent({
+var __default__93 = defineComponent({
   name: "ElTreeNode"
 });
-var _sfc_main136 = defineComponent({
-  ...__default__90,
+var _sfc_main138 = defineComponent({
+  ...__default__93,
   props: treeNodeProps,
   emits: treeNodeEmits,
   setup(__props, { emit }) {
@@ -53963,15 +54368,15 @@ var _sfc_main136 = defineComponent({
     };
   }
 });
-var ElTreeNode2 = _export_sfc(_sfc_main136, [["__file", "/home/runner/work/element-plus/element-plus/packages/components/tree-v2/src/tree-node.vue"]]);
+var ElTreeNode2 = _export_sfc(_sfc_main138, [["__file", "/home/runner/work/element-plus/element-plus/packages/components/tree-v2/src/tree-node.vue"]]);
 
 // node_modules/element-plus/es/components/tree-v2/src/tree.mjs
 var itemSize2 = 26;
-var __default__91 = defineComponent({
+var __default__94 = defineComponent({
   name: "ElTreeV2"
 });
-var _sfc_main137 = defineComponent({
-  ...__default__91,
+var _sfc_main139 = defineComponent({
+  ...__default__94,
   props: treeProps,
   emits: treeEmits,
   setup(__props, { expose, emit }) {
@@ -54080,7 +54485,7 @@ var _sfc_main137 = defineComponent({
     };
   }
 });
-var TreeV2 = _export_sfc(_sfc_main137, [["__file", "/home/runner/work/element-plus/element-plus/packages/components/tree-v2/src/tree.vue"]]);
+var TreeV2 = _export_sfc(_sfc_main139, [["__file", "/home/runner/work/element-plus/element-plus/packages/components/tree-v2/src/tree.vue"]]);
 
 // node_modules/element-plus/es/components/tree-v2/index.mjs
 var ElTreeV2 = withInstall(TreeV2);
@@ -54301,11 +54706,11 @@ var _hoisted_241 = ["src"];
 var _hoisted_319 = ["onClick"];
 var _hoisted_411 = ["onClick"];
 var _hoisted_58 = ["onClick"];
-var __default__92 = defineComponent({
+var __default__95 = defineComponent({
   name: "ElUploadList"
 });
-var _sfc_main138 = defineComponent({
-  ...__default__92,
+var _sfc_main140 = defineComponent({
+  ...__default__95,
   props: uploadListProps,
   emits: uploadListEmits,
   setup(__props, { emit }) {
@@ -54458,7 +54863,7 @@ var _sfc_main138 = defineComponent({
     };
   }
 });
-var UploadList = _export_sfc(_sfc_main138, [["__file", "/home/runner/work/element-plus/element-plus/packages/components/upload/src/upload-list.vue"]]);
+var UploadList = _export_sfc(_sfc_main140, [["__file", "/home/runner/work/element-plus/element-plus/packages/components/upload/src/upload-list.vue"]]);
 
 // node_modules/element-plus/es/components/upload/src/upload-dragger.mjs
 var uploadDraggerProps = buildProps({
@@ -54474,11 +54879,11 @@ var uploadDraggerEmits = {
 // node_modules/element-plus/es/components/upload/src/upload-dragger2.mjs
 var _hoisted_168 = ["onDrop", "onDragover"];
 var COMPONENT_NAME24 = "ElUploadDrag";
-var __default__93 = defineComponent({
+var __default__96 = defineComponent({
   name: COMPONENT_NAME24
 });
-var _sfc_main139 = defineComponent({
-  ...__default__93,
+var _sfc_main141 = defineComponent({
+  ...__default__96,
   props: uploadDraggerProps,
   emits: uploadDraggerEmits,
   setup(__props, { emit }) {
@@ -54534,7 +54939,7 @@ var _sfc_main139 = defineComponent({
     };
   }
 });
-var UploadDragger = _export_sfc(_sfc_main139, [["__file", "/home/runner/work/element-plus/element-plus/packages/components/upload/src/upload-dragger.vue"]]);
+var UploadDragger = _export_sfc(_sfc_main141, [["__file", "/home/runner/work/element-plus/element-plus/packages/components/upload/src/upload-dragger.vue"]]);
 
 // node_modules/element-plus/es/components/upload/src/upload-content.mjs
 var uploadContentProps = buildProps({
@@ -54572,12 +54977,12 @@ var uploadContentProps = buildProps({
 // node_modules/element-plus/es/components/upload/src/upload-content2.mjs
 var _hoisted_169 = ["onKeydown"];
 var _hoisted_242 = ["name", "multiple", "accept"];
-var __default__94 = defineComponent({
+var __default__97 = defineComponent({
   name: "ElUploadContent",
   inheritAttrs: false
 });
-var _sfc_main140 = defineComponent({
-  ...__default__94,
+var _sfc_main142 = defineComponent({
+  ...__default__97,
   props: uploadContentProps,
   setup(__props, { expose }) {
     const props = __props;
@@ -54733,7 +55138,7 @@ var _sfc_main140 = defineComponent({
     };
   }
 });
-var UploadContent = _export_sfc(_sfc_main140, [["__file", "/home/runner/work/element-plus/element-plus/packages/components/upload/src/upload-content.vue"]]);
+var UploadContent = _export_sfc(_sfc_main142, [["__file", "/home/runner/work/element-plus/element-plus/packages/components/upload/src/upload-content.vue"]]);
 
 // node_modules/element-plus/es/components/upload/src/use-handlers.mjs
 var SCOPE8 = "ElUpload";
@@ -54863,11 +55268,11 @@ var useHandlers = (props, uploadRef) => {
 };
 
 // node_modules/element-plus/es/components/upload/src/upload2.mjs
-var __default__95 = defineComponent({
+var __default__98 = defineComponent({
   name: "ElUpload"
 });
-var _sfc_main141 = defineComponent({
-  ...__default__95,
+var _sfc_main143 = defineComponent({
+  ...__default__98,
   props: uploadProps,
   setup(__props, { expose }) {
     const props = __props;
@@ -54974,7 +55379,7 @@ var _sfc_main141 = defineComponent({
     };
   }
 });
-var Upload = _export_sfc(_sfc_main141, [["__file", "/home/runner/work/element-plus/element-plus/packages/components/upload/src/upload.vue"]]);
+var Upload = _export_sfc(_sfc_main143, [["__file", "/home/runner/work/element-plus/element-plus/packages/components/upload/src/upload.vue"]]);
 
 // node_modules/element-plus/es/components/upload/index.mjs
 var ElUpload = withInstall(Upload);
@@ -55034,6 +55439,7 @@ var Components = [
   ElMenu,
   ElMenuItem,
   ElMenuItemGroup,
+  ElSubMenu,
   ElPageHeader,
   ElPagination,
   ElPopconfirm,
@@ -55055,6 +55461,8 @@ var Components = [
   ElSkeletonItem,
   ElSlider,
   ElSpace,
+  ElStatistic,
+  ElCountdown,
   ElSteps,
   ElStep,
   ElSwitch,
@@ -55588,11 +55996,11 @@ var getLastOffset = (id2) => {
 // node_modules/element-plus/es/components/message/src/message2.mjs
 var _hoisted_170 = ["id"];
 var _hoisted_243 = ["innerHTML"];
-var __default__96 = defineComponent({
+var __default__99 = defineComponent({
   name: "ElMessage"
 });
-var _sfc_main142 = defineComponent({
-  ...__default__96,
+var _sfc_main144 = defineComponent({
+  ...__default__99,
   props: messageProps,
   emits: messageEmits,
   setup(__props, { expose }) {
@@ -55721,7 +56129,7 @@ var _sfc_main142 = defineComponent({
     };
   }
 });
-var MessageConstructor = _export_sfc(_sfc_main142, [["__file", "/home/runner/work/element-plus/element-plus/packages/components/message/src/message.vue"]]);
+var MessageConstructor = _export_sfc(_sfc_main144, [["__file", "/home/runner/work/element-plus/element-plus/packages/components/message/src/message.vue"]]);
 
 // node_modules/element-plus/es/components/message/src/method.mjs
 var seed = 1;
@@ -55831,7 +56239,7 @@ message._context = null;
 var ElMessage = withInstallFunction(message, "$message");
 
 // node_modules/element-plus/es/components/message-box/src/index.mjs
-var _sfc_main143 = defineComponent({
+var _sfc_main145 = defineComponent({
   name: "ElMessageBox",
   directives: {
     TrapFocus
@@ -56100,7 +56508,7 @@ var _sfc_main143 = defineComponent({
 var _hoisted_171 = ["aria-label", "aria-describedby"];
 var _hoisted_244 = ["aria-label"];
 var _hoisted_320 = ["id"];
-function _sfc_render35(_ctx, _cache, $props, $setup, $data, $options) {
+function _sfc_render34(_ctx, _cache, $props, $setup, $data, $options) {
   const _component_el_icon = resolveComponent("el-icon");
   const _component_close = resolveComponent("close");
   const _component_el_input = resolveComponent("el-input");
@@ -56298,7 +56706,7 @@ function _sfc_render35(_ctx, _cache, $props, $setup, $data, $options) {
     _: 3
   });
 }
-var MessageBoxConstructor = _export_sfc(_sfc_main143, [["render", _sfc_render35], ["__file", "/home/runner/work/element-plus/element-plus/packages/components/message-box/src/index.vue"]]);
+var MessageBoxConstructor = _export_sfc(_sfc_main145, [["render", _sfc_render34], ["__file", "/home/runner/work/element-plus/element-plus/packages/components/message-box/src/index.vue"]]);
 
 // node_modules/element-plus/es/components/message-box/src/messageBox.mjs
 var messageInstance = /* @__PURE__ */ new Map();
@@ -56515,11 +56923,11 @@ var _hoisted_173 = ["id"];
 var _hoisted_245 = ["textContent"];
 var _hoisted_321 = { key: 0 };
 var _hoisted_412 = ["innerHTML"];
-var __default__97 = defineComponent({
+var __default__100 = defineComponent({
   name: "ElNotification"
 });
-var _sfc_main144 = defineComponent({
-  ...__default__97,
+var _sfc_main146 = defineComponent({
+  ...__default__100,
   props: notificationProps,
   emits: notificationEmits,
   setup(__props, { expose }) {
@@ -56646,7 +57054,7 @@ var _sfc_main144 = defineComponent({
     };
   }
 });
-var NotificationConstructor = _export_sfc(_sfc_main144, [["__file", "/home/runner/work/element-plus/element-plus/packages/components/notification/src/notification.vue"]]);
+var NotificationConstructor = _export_sfc(_sfc_main146, [["__file", "/home/runner/work/element-plus/element-plus/packages/components/notification/src/notification.vue"]]);
 
 // node_modules/element-plus/es/components/notification/src/notify.mjs
 var notifications = {
@@ -56674,8 +57082,8 @@ var notify = function(options = {}, context = null) {
   const id2 = `notification_${seed2++}`;
   const userOnClose = options.onClose;
   const props = {
-    ...options,
     zIndex: nextZIndex(),
+    ...options,
     offset: verticalOffset,
     id: id2,
     onClose: () => {
@@ -56777,7 +57185,7 @@ var installer = makeInstaller([...Components, ...Plugins]);
 // node_modules/element-plus/es/index.mjs
 var import_dayjs17 = __toESM(require_dayjs_min(), 1);
 var install = installer.install;
-var version2 = installer.version;
+var version3 = installer.version;
 var export_dayjs = import_dayjs17.default;
 export {
   BAR_MAP,
@@ -56828,6 +57236,7 @@ export {
   ElColorPicker,
   ElConfigProvider,
   ElContainer,
+  ElCountdown,
   ElDatePicker,
   ElDescriptions,
   ElDescriptionsItem,
@@ -56885,6 +57294,7 @@ export {
   ElSkeletonItem,
   ElSlider,
   ElSpace,
+  ElStatistic,
   ElStep,
   ElSteps,
   ElSubMenu,
@@ -56968,6 +57378,8 @@ export {
   carouselEmits,
   carouselItemProps,
   carouselProps,
+  cascaderEmits,
+  cascaderProps,
   checkTagEmits,
   checkTagProps,
   checkboxEmits,
@@ -56987,6 +57399,8 @@ export {
   componentSizes,
   configProviderContextKey,
   configProviderProps,
+  countdownEmits,
+  countdownProps,
   createModelToggleComposable,
   dateEquals,
   datePickTypes,
@@ -57089,6 +57503,7 @@ export {
   sliderEmits,
   sliderProps,
   spaceProps,
+  statisticProps,
   stepProps,
   stepsEmits,
   stepsProps,
@@ -57155,6 +57570,7 @@ export {
   useModelToggleProps,
   useNamespace,
   useOrderedChildren,
+  usePopper,
   usePopperArrowProps,
   usePopperContainer,
   usePopperContainerId,
@@ -57185,10 +57601,59 @@ export {
   vLoading,
   vRepeatClick,
   valueEquals,
-  version2 as version,
+  version3 as version,
   virtualizedGridProps,
   virtualizedListProps,
   virtualizedProps,
   virtualizedScrollbarProps
 };
+/*! Bundled license information:
+
+escape-html/index.js:
+  (*!
+   * escape-html
+   * Copyright(c) 2012-2013 TJ Holowaychuk
+   * Copyright(c) 2015 Andreas Lubbe
+   * Copyright(c) 2015 Tiancheng "Timothy" Gu
+   * MIT Licensed
+   *)
+
+lodash-es/lodash.default.js:
+  (**
+   * @license
+   * Lodash (Custom Build) <https://lodash.com/>
+   * Build: `lodash modularize exports="es" -o ./`
+   * Copyright OpenJS Foundation and other contributors <https://openjsf.org/>
+   * Released under MIT license <https://lodash.com/license>
+   * Based on Underscore.js 1.8.3 <http://underscorejs.org/LICENSE>
+   * Copyright Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+   *)
+
+lodash-es/lodash.js:
+  (**
+   * @license
+   * Lodash (Custom Build) <https://lodash.com/>
+   * Build: `lodash modularize exports="es" -o ./`
+   * Copyright OpenJS Foundation and other contributors <https://openjsf.org/>
+   * Released under MIT license <https://lodash.com/license>
+   * Based on Underscore.js 1.8.3 <http://underscorejs.org/LICENSE>
+   * Copyright Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+   *)
+
+normalize-wheel-es/dist/index.mjs:
+  (**
+   * Checks if an event is supported in the current execution environment.
+   *
+   * NOTE: This will not work correctly for non-generic events such as `change`,
+   * `reset`, `load`, `error`, and `select`.
+   *
+   * Borrows from Modernizr.
+   *
+   * @param {string} eventNameSuffix Event name, e.g. "click".
+   * @param {?boolean} capture Check if the capture phase is supported.
+   * @return {boolean} True if the event is supported.
+   * @internal
+   * @license Modernizr 3.0.0pre (Custom Build) | MIT
+   *)
+*/
 //# sourceMappingURL=element-plus.js.map

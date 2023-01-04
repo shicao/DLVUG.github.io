@@ -1,11 +1,14 @@
 {
-  "name": "test",
+  "name": "DLVUG",
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",
   "devDependencies": {
     "@types/node": "^18.11.9",
     "flexsearch": "^0.7.31",
+    "fs-extra": "^11.1.0",
+    "globby": "11.0.4",
+    "gray-matter": "^4.0.3",
     "markdown-it": "^13.0.1",
     "patch-package": "^6.5.0",
     "sass": "^1.56.1",
@@ -28,5 +31,7 @@
     "tsparticles-slim": "^2.5.3",
     "vitepress": "1.0.0-alpha.32",
     "vue3-particles": "^2.5.3"
-  }
+  },
+  "repository": "https://github.com/YQisme/DLVUG.github.io.git",
+  "author": "YQisme <1398757912@qq.com>"
 }

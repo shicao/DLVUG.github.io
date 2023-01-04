@@ -6159,4 +6159,9 @@ export {
   zoom_in_default,
   zoom_out_default
 };
-//# sourceMappingURL=chunk-PANYJGUH.js.map
+/*! Bundled license information:
+
+@element-plus/icons-vue/dist/index.js:
+  (*! Element Plus Icons Vue v2.0.10 *)
+*/
+//# sourceMappingURL=chunk-YI4G4546.js.map

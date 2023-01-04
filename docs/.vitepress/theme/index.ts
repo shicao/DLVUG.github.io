@@ -1,5 +1,6 @@
 import DefaultTheme from "vitepress/theme";
 import Particles from "vue3-particles";
+import Tags from "./components/Tags.vue";
 
 import ElementPlus from "element-plus";
 import "element-plus/dist/index.css";
@@ -18,6 +19,8 @@ export default {
     app.component("MyParticles", MyParticles);
     //添加ElementPlus UI组件
     app.use(ElementPlus);
+    app.component("Tags", Tags);
+
     //注册ElementPlus UI组件中的icon图标为全局组件
     for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
       app.component(key, component);
