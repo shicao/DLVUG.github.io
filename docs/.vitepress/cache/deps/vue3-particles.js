@@ -3,10 +3,10 @@ import {
   defineComponent,
   nextTick,
   openBlock
-} from "./chunk-RJCAH2DQ.js";
+} from "./chunk-LG2GIHPJ.js";
 import "./chunk-TWLJ45QX.js";
 
-// node_modules/vue3-particles/dist/vue3-particles.es.js
+// node_modules/.pnpm/registry.npmmirror.com+vue3-particles@2.5.3/node_modules/vue3-particles/dist/vue3-particles.es.js
 var Xe = class {
   constructor() {
     this._listeners = /* @__PURE__ */ new Map();

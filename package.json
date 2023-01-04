@@ -10,7 +10,10 @@
     "patch-package": "^6.5.0",
     "sass": "^1.56.1",
     "vitepress-plugin-search": "^1.0.4-alpha.17",
-    "vue": "^3.2.45"
+    "vue": "^3.2.45",
+    "fs-extra": "^11.1.0",
+    "globby": "11.0.4",
+    "gray-matter": "^4.0.3"
   },
   "scripts": {
     "dev": "vitepress dev docs",
