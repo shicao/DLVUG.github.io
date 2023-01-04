@@ -1,5 +1,5 @@
 {
-  "name": "test",
+  "name": "DLVUG",
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",
@@ -31,5 +31,7 @@
     "tsparticles-slim": "^2.5.3",
     "vitepress": "1.0.0-alpha.32",
     "vue3-particles": "^2.5.3"
-  }
+  },
+  "repository": "https://github.com/YQisme/DLVUG.github.io.git",
+  "author": "YQisme <1398757912@qq.com>"
 }

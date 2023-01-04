@@ -292,8 +292,8 @@ import {
   wind_power_default,
   zoom_in_default,
   zoom_out_default
-} from "./chunk-UWKX7VDG.js";
-import "./chunk-LG2GIHPJ.js";
+} from "./chunk-YI4G4546.js";
+import "./chunk-RJCAH2DQ.js";
 import "./chunk-TWLJ45QX.js";
 export {
   add_location_default as AddLocation,

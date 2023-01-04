@@ -1,44 +1,44 @@
 {
-  "hash": "3c9cf48b",
-  "browserHash": "e5636e84",
+  "hash": "c448ca30",
+  "browserHash": "fab66609",
   "optimized": {
     "vue": {
-      "src": "../../../../node_modules/.pnpm/registry.npmmirror.com+vue@3.2.45/node_modules/vue/dist/vue.runtime.esm-bundler.js",
+      "src": "../../../../node_modules/vue/dist/vue.runtime.esm-bundler.js",
       "file": "vue.js",
-      "fileHash": "ddce1c41",
+      "fileHash": "5787f229",
       "needsInterop": false
     },
     "vue3-particles": {
-      "src": "../../../../node_modules/.pnpm/registry.npmmirror.com+vue3-particles@2.5.3/node_modules/vue3-particles/dist/vue3-particles.es.js",
+      "src": "../../../../node_modules/vue3-particles/dist/vue3-particles.es.js",
       "file": "vue3-particles.js",
-      "fileHash": "a23e5061",
+      "fileHash": "9386747e",
       "needsInterop": false
     },
     "element-plus": {
-      "src": "../../../../node_modules/.pnpm/registry.npmmirror.com+element-plus@2.2.26_vue@3.2.45/node_modules/element-plus/es/index.mjs",
+      "src": "../../../../node_modules/element-plus/es/index.mjs",
       "file": "element-plus.js",
-      "fileHash": "69a1a226",
+      "fileHash": "922557d9",
       "needsInterop": false
     },
     "@element-plus/icons-vue": {
-      "src": "../../../../node_modules/.pnpm/registry.npmmirror.com+@element-plus+icons-vue@2.0.10_vue@3.2.45/node_modules/@element-plus/icons-vue/dist/index.js",
+      "src": "../../../../node_modules/@element-plus/icons-vue/dist/index.js",
       "file": "@element-plus_icons-vue.js",
-      "fileHash": "1d0484cf",
+      "fileHash": "e73c1785",
       "needsInterop": false
     },
     "tsparticles-slim": {
-      "src": "../../../../node_modules/.pnpm/registry.npmmirror.com+tsparticles-slim@2.5.3/node_modules/tsparticles-slim/esm/index.js",
+      "src": "../../../../node_modules/tsparticles-slim/esm/index.js",
       "file": "tsparticles-slim.js",
-      "fileHash": "ddaaf8b0",
+      "fileHash": "b3a3d3ac",
       "needsInterop": false
     }
   },
   "chunks": {
-    "chunk-UWKX7VDG": {
-      "file": "chunk-UWKX7VDG.js"
+    "chunk-YI4G4546": {
+      "file": "chunk-YI4G4546.js"
     },
-    "chunk-LG2GIHPJ": {
-      "file": "chunk-LG2GIHPJ.js"
+    "chunk-RJCAH2DQ": {
+      "file": "chunk-RJCAH2DQ.js"
     },
     "chunk-TWLJ45QX": {
       "file": "chunk-TWLJ45QX.js"
