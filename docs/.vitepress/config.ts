@@ -5,24 +5,28 @@ import { sidebar } from "./config/sidebar";
 async function config() {
   return {
     title: "DLVUG",
+    titleTemplate: "深度学习与视觉理解小组",
     description: "Deep Learning and Vision Understanding Group",
-    //   base: "https://imyq7.github.io",
-    logo: "/imgs/logo.jpg",
+    ignoreDeadLinks: true,
+    lastUpdated: true,
     themeConfig: {
       logo: "/imgs/logo.jpg",
       siteTitle: "DLVUG",
       nav,
       sidebar,
+      outline: [1, 3],
+      outlineTitle: "大纲",
       lastUpdatedText: "更新时间",
-      lastUpdated: true,
       posts: await getPosts(),
-
       postLength: await getPostLength(),
+      socialLinks: [
+        { icon: "github", link: "https://github.com/DLVUG/DLVUG.github.io" },
+      ],
     },
     markdown: {
       lineNumbers: true,
       config: (md) => {
-        // use more markdown-it plugins!
+        // 可以使用更多的markdown-it插件
         md.use(require("markdown-it-mathjax3"));
       },
     },

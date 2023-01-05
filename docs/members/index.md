@@ -1,5 +1,6 @@
 ---
 layout: page
+title: 成员
 ---
 <script setup>
 import {
@@ -16,7 +17,7 @@ const coreMembers = [
     desc: '简介',
     links: [
       { icon: 'github', link: 'https://github.com/yyx990803' },
-      { icon: 'twitter', link: 'https://twitter.com/youyuxi' }
+
     ]
   },
     {
@@ -26,7 +27,7 @@ const coreMembers = [
     desc: '简介',
     links: [
       { icon: 'github', link: 'https://github.com/yyx990803' },
-      { icon: 'twitter', link: 'https://twitter.com/youyuxi' }
+      
     ]
   },
 ]
@@ -38,7 +39,7 @@ const partners =[
     desc: '简介',
     links: [
       { icon: 'github', link: 'https://github.com/yyx990803' },
-      { icon: 'twitter', link: 'https://twitter.com/youyuxi' }
+      
     ]
   },
     {
@@ -48,7 +49,7 @@ const partners =[
     desc: 'Yuteng Li received B.E. degree from Jining Medical University in 2016. Now he is  a Master student majoring in Computer technology degree at Qingdao University of Science and Technology,under the supervision of Ph.D. Cao Shi. His research interests include deep learning, computer vision, image processing.',
     links: [
       { icon: 'github', link: 'https://github.com/yyx990803' },
-      { icon: 'twitter', link: 'https://twitter.com/youyuxi' }
+      
     ]
   },
     {
@@ -58,7 +59,7 @@ const partners =[
     desc: 'Honghong Zhang  is currently pursuing the M.S. degree with School of Information Science and Technology, Qingdao University of Science and Technology, Shandong, China. Her research interests include artificial intelligence, computer vision, image processing.',
     links: [
       { icon: 'github', link: 'https://github.com/yyx990803' },
-      { icon: 'twitter', link: 'https://twitter.com/youyuxi' }
+      
     ]
   },
     {
@@ -68,7 +69,7 @@ const partners =[
 	desc: 'Jianfei He received B.E. degree from Hebei University of Science and Technology in 2021. Now he is  a Master student majoring in Computer Science and Technology degree at Qingdao University of Science and Technology, under the supervision of Ph.D. Canhui Xu . His research interests include deep learning, computer vision, and medical image segmentation.',
     links: [
       { icon: 'github', link: 'https://github.com/yyx990803' },
-      { icon: 'twitter', link: 'https://twitter.com/youyuxi' }
+      
     ]
   },
     {
@@ -78,16 +79,16 @@ const partners =[
 	desc: 'My name is Xiang Xang.I am a Postgraduate student majoring in SE in QUST.I love gaming(like Snooker offline, LOL on-line), programming(like Python, Cplusplus, lua and nothing else) and sleeping most and regard peace as my destination.',
     links: [
       { icon: 'github', link: 'https://github.com/yyx990803' },
-      { icon: 'twitter', link: 'https://twitter.com/youyuxi' }
+      
     ]
   },
     {
-    avatar: 'https://www.github.com/yyx990803.png',
+    avatar: '/imgs/avatars/陈文达.jpg',
     name: '陈文达',
     title: '2021级',
+	desc: 'I graduated from Qingdao University of Science and Technology majoring in Computer Science and Technology in 2019. Now I am studying for a master‘s degree in Electronic Information in Qingdao University of Science and Technology,under the supervision of Ph.D. Cao Shi .My research interests include computer vision, image processing and medical image segmentation.',
     links: [
       { icon: 'github', link: 'https://github.com/yyx990803' },
-      { icon: 'twitter', link: 'https://twitter.com/youyuxi' }
     ]
   },
     {
@@ -97,7 +98,7 @@ const partners =[
 	desc: 'Haitao Qiu received B.E. degree from Qingdao Agricultural University. Now I am  a Master student majoring in Electronic and Information Engineering degree at Qingdao University of Science and Technology, under the supervision of Ph.D. Cao Shi. My research interests include deep learning, computer vision, medical image segmentation.',
     links: [
       { icon: 'github', link: 'https://github.com/yyx990803' },
-      { icon: 'twitter', link: 'https://twitter.com/youyuxi' }
+      
     ]
   },
     {
@@ -106,11 +107,15 @@ const partners =[
     title: '2021级',
     links: [
       { icon: 'github', link: 'https://github.com/yyx990803' },
-      { icon: 'twitter', link: 'https://twitter.com/youyuxi' }
+       {
+        icon: 'facebook',
+        link: '...'
+      }
+
     ]
   },
 {
-    
+
 },
     {
     avatar: '/imgs/avatars/袁正一.jpg',
@@ -119,7 +124,7 @@ const partners =[
 	desc: 'yuanzhengyi received B.E. degree from Qingdao University of Science and Technology in 2021.Now he is a Master student majoring in Software Engineering degree at Qingdao University of Science and Technology,under the supervision of Ph.D. CaoShi. He research interests include deep learning, computer vision, image processing.',
     links: [
       { icon: 'github', link: 'https://github.com/yyx990803' },
-      { icon: 'twitter', link: 'https://twitter.com/youyuxi' }
+      
     ]
   },
 {
@@ -129,7 +134,7 @@ const partners =[
 	desc: 'Dong Zhang received B.E. degree from XiHua University in 2021. Now he is  a Master student majoring in Computer technology degree at Qingdao University of Science and Technology,under the supervision of Ph.D. Canhui Xu. His research interests include deep learning, computer vision, image processing.',
     links: [
       { icon: 'github', link: 'https://github.com/yyx990803' },
-      { icon: 'twitter', link: 'https://twitter.com/youyuxi' }
+      
     ]
   },
 {
@@ -139,7 +144,7 @@ const partners =[
 	desc: '',
     links: [
       { icon: 'github', link: 'https://github.com/yyx990803' },
-      { icon: 'twitter', link: 'https://twitter.com/youyuxi' }
+      
     ]
   },
 ]
