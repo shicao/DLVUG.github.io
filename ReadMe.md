@@ -1,26 +1,19 @@
-> 需要提前安装[nodejs](https://nodejs.org/en/)和pnpm
+> 需要提前安装[nodejs](https://nodejs.org/en/)和yarn
 >
-> + pnpm安装
+> + yarn安装
 >
 > ```shell
-> npm install pnpm -g 
+> npm install -g yarn
 > ```
->
-> 
-
-
 
 安装依赖
 
 ```shell
-pnpm i
+yarn install
 ```
 
 运行
 
 ```shell
-pnpm dev
+yarn dev
 ```
-
-
-
