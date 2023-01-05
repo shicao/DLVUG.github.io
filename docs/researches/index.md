@@ -1,5 +1,6 @@
 ---
 layout: page
+title: 研究
 ---
 
 <el-container>

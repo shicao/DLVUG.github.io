@@ -1,6 +1,6 @@
 ---
 layout: home
-
+title: 主页
 hero:
   name: 深度学习与视觉理解小组（DLVUG）
   text: Deep Learning and Vision Understanding Group
@@ -15,10 +15,7 @@ hero:
       text: 成员
       link: /members/
 ---
-
-
 <MyParticles/>
-
 
 <style>
 :root {
@@ -26,5 +23,3 @@ hero:
   --vp-home-hero-name-background: -webkit-linear-gradient(120deg, #bd34fe, #41d1ff);
 }
 </style>
-
-

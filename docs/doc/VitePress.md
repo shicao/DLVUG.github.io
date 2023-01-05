@@ -1,10 +1,16 @@
-
-
+---
+title: VitePress
+description: VitePress
+date: 2022-10-01
+tags:
+  - 杨琦
+  - ALL
+---
 官方文档：[Getting Started | VitePress (vuejs.org)](https://vitepress.vuejs.org/guide/getting-started)
 
-## 快速开始
+# 快速开始
 
-### 初始化
+## 初始化
 
 先使用 `yarn`初始化包管理器，初始化信息
 
@@ -14,7 +20,7 @@ yarn init
 
 ---
 
-### 安装VitePress
+## 安装VitePress
 
 安装 `VitePress`，添加VitePress 和 Vue作为 `dev`依赖
 
@@ -24,7 +30,7 @@ yarn add --dev vitepress vue
 
 ---
 
-### 创建，目录
+## 创建，目录
 
 创建一个放md文件的docs文件夹，并在里面创建 `index.md`
 
@@ -32,7 +38,7 @@ yarn add --dev vitepress vue
 
 ---
 
-### 启动dev开发环境
+## 启动dev开发环境
 
 为了简化命令行，添加代码到 `package.json`
 
@@ -54,7 +60,7 @@ yarn add --dev vitepress vue
 
 ---
 
-### 添加其他页面
+## 添加其他页面
 
 直接在docs中添加其他md文件和它对应的目录即可。
 
@@ -62,20 +68,20 @@ yarn add --dev vitepress vue
 
 ---
 
-### 简单配置
+## 简单配置
 
 配置文件 `config.js`要存放在 `docs/.vitepress`文件夹下面，改配置中导出JavaScript对象
 
 ```js
 export default {
-  title: 'VitePress', ## 首页左上角的名称
-  description: 'Just playing around.' ## description meta tag
+  title: 'VitePress', # 首页左上角的名称
+  description: 'Just playing around.' # description meta tag
 }
 ```
 
 更详细的配置见[Theme Introduction | VitePress (vuejs.org)](https://vitepress.vuejs.org/guide/theme-introduction)和[Introduction | VitePress (vuejs.org)](https://vitepress.vuejs.org/config/introduction)
 
-### 部署
+## 部署
 
 最后是部署了，可以本地部署和`<font color='red'>`线上部署`</font>`
 
@@ -102,7 +108,7 @@ build构建后在 `.vitepress/dist`生成目标文件。
 └─ package.json
 ````
 
-#### 本地部署
+### 本地部署
 
 ````shell
 yarn docs:build
@@ -120,7 +126,7 @@ yarn docs:serve
 }
 ```
 
-#### 线上部署：GithubPage
+### 线上部署：GithubPage
 
 创建的xxx.github.io名字的repo。注意一定要设为公开。
 
@@ -155,26 +161,26 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: docs/.vitepress/dist
-          ## cname: example.com ## if wanna deploy to custom domain
+          # cname: example.com # if wanna deploy to custom domain
 ```
 
 + 上面的action会创建一个新的分支gh-pages，github page需要绑定该分支
 
 在仓库设置的pages中将branch设置为gh-pages
 
-<img src="/markdown/others/vitepress/image-20221102165557340.png" alt="image-20221102165557340" style="zoom:50%;" />
+<img src="https://myimgs.obs.cn-east-2.myhuaweicloud.com/Typora/202301050130784.png" alt="image-20221102165557340" style="zoom:50%;" />
 
-## 高级配置
+# 高级配置
 
-## Markdown
+# Markdown
 
 VitePress附带内置Markdown扩展。
 
-### 链接
+## 链接
 
-#### 内部链接
+### 内部链接
 
-#### 外部链接
+### 外部链接
 
 内部链接转换为路由器链接，用于SPA（Single-Page Applications）导航。
 
@@ -198,13 +204,13 @@ VitePress附带内置Markdown扩展。
 
 默认情况下，页面和内部链接以 `.html`后缀生成。
 
-#### 外部链接
+### 外部链接
 
 `[vuejs.org](https://vuejs.org/)`
 
 因为build时会自动加上 `target="_blank" rel="noreferrer"`
 
-### Frontmatter
+## Frontmatter
 
 在typora中，md文件的顶部可以添加yaml片段
 
@@ -216,7 +222,7 @@ title: Docs with VitePress
 editLink: true
 ---
 
-## {{ $frontmatter.title }}
+# {{ $frontmatter.title }}
 
 Guide content
 
@@ -226,7 +232,7 @@ Guide content
 
 该数据将可用于页面的其余部分，以及所有自定义和主题化组件。
 
-#### JSON frontmatter语法
+### JSON frontmatter语法
 
 VitePress还支持JSON frontmatter语法，以大括号开头和结尾：
 
@@ -239,11 +245,11 @@ VitePress还支持JSON frontmatter语法，以大括号开头和结尾：
 ---
 ```
 
-#### 预定义变量
+### 预定义变量
 
 + title：浏览器选项卡显示的名字
 
-### Emoji 🎉
+## Emoji 🎉
 
 ```
 :tada: :100:
@@ -253,7 +259,7 @@ VitePress还支持JSON frontmatter语法，以大括号开头和结尾：
 
 所有可用表情符号的[列表](https://github.com/markdown-it/markdown-it-emoji/blob/master/lib/data/full.json)。
 
-### 目录
+## 目录
 
 ```
 [[toc]]
@@ -261,7 +267,7 @@ VitePress还支持JSON frontmatter语法，以大括号开头和结尾：
 
 TOC的渲染可以使用 `markdown.toc` 选项进行配置。
 
-### 自定义容器
+## 自定义容器
 
 自定义容器可以通过其类型、标题和内容来定义。
 
@@ -289,9 +295,9 @@ This is a details block.
 
 效果：
 
-<img src="/markdown/others/vitepress/image-20221102194900491.png" alt="image-20221102194900491" style="zoom: 80%;" />
+<img src="https://myimgs.obs.cn-east-2.myhuaweicloud.com/Typora/202301050130785.png" alt="image-20221102194900491" style="zoom: 80%;" />
 
-#### 自定义标题
+### 自定义标题
 
 可以通过在容器的“类型”之后添加文本来设置自定义标题
 
@@ -309,11 +315,11 @@ console.log('Hello, VitePress!')
 
 效果：
 
-<img src="/markdown/others/vitepress/image-20221102195237553.png" alt="image-20221102195237553" style="zoom:80%;" />
+<img src="https://myimgs.obs.cn-east-2.myhuaweicloud.com/Typora/202301050130786.png" alt="image-20221102195237553" style="zoom:80%;" />
 
-### 代码块中的特殊显示
+## 代码块中的特殊显示
 
-#### 突出某行代码
+### 突出某行代码
 
 [Line Highlighting in Code Blocks](https://vitepress.vuejs.org/guide/markdown#line-highlighting-in-code-blocks)
 
@@ -331,33 +337,33 @@ export default {
 
 效果：
 
-<img src="/markdown/others/vitepress/image-20221102200149280.png" alt="image-20221102200149280" style="zoom: 80%;" />
+<img src="https://myimgs.obs.cn-east-2.myhuaweicloud.com/Typora/202301050130787.png" alt="image-20221102200149280" style="zoom: 80%;" />
 
 还可以多行：
 
-<img src="/markdown/others/vitepress/image-20221102200414541.png" alt="image-20221102200414541" style="zoom:80%;" />
+<img src="https://myimgs.obs.cn-east-2.myhuaweicloud.com/Typora/202301050130788.png" alt="image-20221102200414541" style="zoom:80%;" />
 
-#### 聚焦
+### 聚焦
 
 [Focus in Code Blocks](https://vitepress.vuejs.org/guide/markdown#focus-in-code-blocks)
 
-![image-20221102200526974](/markdown/others/vitepress/image-20221102200526974.png)
+![image-20221102200526974](https://myimgs.obs.cn-east-2.myhuaweicloud.com/Typora/202301050130789.png)
 
-#### 代码块中的彩色差异
+### 代码块中的彩色差异
 
 [Colored diffs in Code Blocks](https://vitepress.vuejs.org/guide/markdown#colored-diffs-in-code-blocks)
 
-![image-20221102200606350](/markdown/others/vitepress/image-20221102200606350.png)
+![image-20221102200606350](https://myimgs.obs.cn-east-2.myhuaweicloud.com/Typora/202301050130790.png)
 
-#### 错误和警告
+### 错误和警告
 
 [Errors and warnings](https://vitepress.vuejs.org/guide/markdown#errors-and-warnings)
 
-![image-20221102200650748](/markdown/others/vitepress/image-20221102200650748.png)
+![image-20221102200650748](https://myimgs.obs.cn-east-2.myhuaweicloud.com/Typora/202301050130791.png)
 
-#### 添加行号
+### 添加行号
 
-![image-20221102200833509](/markdown/others/vitepress/image-20221102200833509.png)
+![image-20221102200833509](https://myimgs.obs.cn-east-2.myhuaweicloud.com/Typora/202301050130792.png)
 
 在 `.vitepress/config.js`中设置：
 
@@ -369,17 +375,17 @@ export default {
 }
 ```
 
-### 导入外部代码片段
+## 导入外部代码片段
 
 [Import Code Snippets](https://vitepress.vuejs.org/guide/markdown#import-code-snippets)
 
 优点：外面代码改变，md中的代码显示可以同步更新
 
-### md中插入md文件
+## md中插入md文件
 
 [Markdown File Inclusion](https://vitepress.vuejs.org/guide/markdown#markdown-file-inclusion)
 
-### 高级配置
+## 高级配置
 
 VitePress使用 [markdown-it](https://github.com/markdown-it/markdown-it)作为markdown渲染器。上面的许多扩展都是通过自定义插件实现的。您可以使用 `.vitepress/config.js`中的 `markdown`选项进一步自定义 `markdown-it`实例：
 
@@ -422,7 +428,7 @@ module.exports = {
     },
 ```
 
-### 插入PDF
+## 插入PDF
 
 推荐使用 `iframe`标签
 
@@ -430,7 +436,7 @@ module.exports = {
 <iframe src="/a.pdf" width="100%" height="1000"> </iframe>
 ```
 
-## 资产asset处理
+# 资产asset处理
 
 + 在docs下有public文件夹存放资产
 + 使用时直接 `![An image](/xxx.png)`，是 `public/xxx.png`的简洁表示
@@ -463,7 +469,7 @@ const { theme } = useData()
 </template>
 ```
 
-## vue
+# vue
 
 在VitePress中，每个markdown文件都被编译成HTML，然后被当做Vue单个文件组件(Single-File Component，SFC)进行处理。
 
@@ -471,9 +477,9 @@ const { theme } = useData()
 
 VitePress利用Vue 3的编译器自动检测和优化Markdown的纯静态部分。只需处理任何给定页面上的动态部分。
 
-### 模板化
+## 模板化
 
-#### 插值 Interpolation
+### 插值 Interpolation
 
 每个Markdown文件首先被编译成HTML，然后作为Vue组件传递到Vite流程管道。可以在文本中使用Vue样式插值：
 
@@ -483,7 +489,7 @@ VitePress利用Vue 3的编译器自动检测和优化Markdown的纯静态部分�
 
 2
 
-#### 指令 Directives
+### 指令 Directives
 
 ```html
 <span v-for="i in 3">{{ i }}</span>
@@ -491,7 +497,7 @@ VitePress利用Vue 3的编译器自动检测和优化Markdown的纯静态部分�
 
 1 2 3
 
-#### 访问网站和页面数据
+### 访问网站和页面数据
 
 您可以在 `＜script＞`块中使用 [`useData` helper](https://vitepress.vuejs.org/guide/api#usedata)助手，并将数据公开给页面。
 
@@ -517,7 +523,9 @@ const { page } = useData()
 }
 ```
 
-### 组件
+## 组件
+
+### 局部组件
 
 如果组件将只在少数地方使用，就将组件导入使用的文件中。
 
@@ -526,26 +534,83 @@ const { page } = useData()
 import CustomComponent from '../components/CustomComponent.vue'
 </script>
 
-## Docs
+# Docs
 
 This is a .md using a custom component
 
 <CustomComponent />
 
-### More docs
+## More docs
 
 ...
 ```
 
-#### 在主题中注册全局组件
+### 在主题中注册全局组件
 
 如果组件要跨文档中的多个页面使用，则可以在主题中全局注册它们（或作为扩展默认VitePress主题的一部分）。有关详细信息，请查看[主题指南](https://vitepress.vuejs.org/guide/theme-introduction)。
 
 在 `.vitepress/theme/index.ts`中， `enhanceApp` 函数接受Vue `app`实例，所以可以像在常规Vue应用程序中那样[注册组件](https://vuejs.org/guide/components/registration.html)。
 
-## 主题
+```typescript
+import DefaultTheme from "vitepress/theme";
+import Particles from "vue3-particles";
 
-### Nav 导航栏
+import ElementPlus from "element-plus";
+import "element-plus/dist/index.css";
+import * as ElementPlusIconsVue from "@element-plus/icons-vue";
+import MyParticles from "./components/MyParticles.vue";
+
+export default {
+  ...DefaultTheme,
+  enhanceApp({ app }) {
+    // 添加粒子效果组件
+    app.use(Particles);
+    // 使用较多的组件，可以注册为全局组件
+    app.component("MyParticles", MyParticles);
+    //添加ElementPlus UI组件
+    app.use(ElementPlus);
+    //注册ElementPlus UI组件中的icon图标为全局组件
+    for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
+      app.component(key, component);
+    }
+  },
+};
+```
+
+> 在标准的vue脚手架中，main.ts
+>
+> ```typescript
+> import { createApp } from 'vue'
+> import ElementPlus from 'element-plus'
+> import 'element-plus/dist/index.css'
+> import App from './App.vue'
+> //挂载根组件并创建一个实例
+> const app = createApp(App)
+> //使用其他组件
+> app.use(ElementPlus)
+> //装载应用到指定位置
+> app.mount('#app')
+> ```
+>
+> 而上面的
+>
+> ````python
+>  enhanceApp({ app }) {
+>    app.use(Particles);
+> };
+> ````
+>
+> 直接一步到位
+
+---
+
+> 注意
+>
+> 确保自定义组件的名称包含连字符或为PascalCase命名方式。否则，它将被视为内联元素并包装在＜p＞标记中，这将导致水合匹配hydration mismatch ，因为＜p＞不允许将块元素放置在其中。
+
+# 主题
+
+## Nav 导航栏
 
 默认情况下，nav显示的是引用 `config.title` 值的网站标题。
 
@@ -566,7 +631,7 @@ export default {
 
  [`themeConfig.logo`](https://vitepress.vuejs.org/config/theme-configs#logo)
 
-### 导航链接
+## 导航链接
 
  `themeConfig.nav`
 
@@ -602,7 +667,7 @@ nav: [
     ],
 ```
 
-### 侧边栏
+## 侧边栏
 
 一般的侧边栏是常驻的，每一页都是一样的
 
@@ -641,7 +706,7 @@ nav: [
     },
 ```
 
-### 前/后一页一页跳转链接
+## 前/后一页一页跳转链接
 
 不设置就默认根据侧边栏自动生成
 
@@ -655,7 +720,7 @@ prev: 'Get Started | Markdown'
 
 或者next
 
-## Layout 布局
+# Layout 布局
 
 3种布局方式 `doc`, `page`, 和 `home`，默认是doc
 
@@ -667,7 +732,7 @@ layout: doc
 ---
 ```
 
-#### doc
+### doc
 
 + `doc`将整个内容包装在 `vp-do`c css类中，并将样式应用于其下的元素
   + 几乎所有通用元素（如 `p`或 `h2`）都有特殊的样式。如果在Markdown内容中添加任何自定义HTML，这些样式也会受到这些样式的影响。
@@ -676,7 +741,7 @@ layout: doc
     + Prev Next Link
     + Outline
 
-#### Page
+### Page
 
 选项 `page` 被视为“空白页”。Markdown仍将被解析，所有[Markdown Extensions](https://vitepress.vuejs.org/guide/markdown) 扩展都与 `doc` 布局相同，但它不会得到任何默认样式。
 
@@ -684,7 +749,7 @@ layout: doc
 
 请注意，即使在这种布局中，如果页面具有匹配的侧边栏配置，侧边栏仍将显示。
 
-#### Home
+### Home
 
 默认的主页布局：[VitePress | Vite &amp; Vue Powered Static Site Generator (vuejs.org)](https://vitepress.vuejs.org/)
 
@@ -696,7 +761,7 @@ layout: home
 
 选项 `home` 将生成模板化的“Homepage主页”。在此布局中，您可以设置额外的选项，如 `hero` 和 `features` ，以进一步自定义内容。
 
-##### hero
+#### hero
 
 ```yaml
 ---
@@ -719,7 +784,7 @@ hero:
 ---
 ```
 
-![image-20221106153130174](/markdown/others/vitepress/image-20221106153130174.png)
+![image-20221106153130174](https://myimgs.obs.cn-east-2.myhuaweicloud.com/Typora/202301050130793.png)
 
 ```typescript
 interface Hero {
@@ -748,7 +813,7 @@ interface HeroAction {
 }
 ```
 
-##### 自定义名称颜色
+#### 自定义名称颜色
 
 VitePress使用品牌颜色brand color（`--vp-c-brand`）作为 `name`。可以通过重写 `--vp-home-hero-name-color` 变量来自定义此颜色。
 
@@ -767,7 +832,7 @@ VitePress使用品牌颜色brand color（`--vp-c-brand`）作为 `name`。可以
 }
 ```
 
-##### 功能部分
+#### 功能部分
 
 可以在“Hero”部分之后列出想要显示的任意数量的功能。
 
@@ -788,7 +853,7 @@ features:
 ---
 ```
 
-![image-20221106153030731](/markdown/others/vitepress/image-20221106153030731.png)
+![image-20221106153030731](https://myimgs.obs.cn-east-2.myhuaweicloud.com/Typora/202301050130794.png)
 
 ```typescript
 interface Feature {
@@ -816,16 +881,71 @@ interface Feature {
 }
 ```
 
-#### 无布局
+### 无布局
 
 如果不需要任何布局，可以通过frontmatter传递 `layout: false` 。
 
 一个完全可定制的 landing page着陆页（默认情况下没有任何侧边栏、导航栏或页脚）。
 
-## 团队页面
+# 团队页面
 
 可以使用团队组件来构建团队页面。
 
 有两种使用这些组件的方法。一种是将其嵌入文档页面，另一种是创建完整的团队页面。
 
-### 在页面中显示团队成员
+## 在页面中显示团队成员
+
+# CSS样式
+
+可以在md中直接添加 `<style>`默认是css
+
+```css
+
+
+<style>
+:root {
+  --vp-home-hero-name-color: transparent;
+  --vp-home-hero-name-background: -webkit-linear-gradient(120deg, #bd34fe, #41d1ff);
+}
+
+</style>
+```
+
+> [查看可以覆盖重写的默认主题CSS变量](https://github.com/vuejs/vitepress/blob/main/src/client/theme-default/styles/vars.css)
+
+也可以使用sass
+
+```shell
+npm install -D sass
+```
+
+```css
+<style lang="sass">
+.title
+  font-size: 20px
+</style>
+```
+
+# 最后更新
+
+在config中设置 `lastUpdated: true,`
+
+注意 `lastUpdatedText: "更新时间",`是在themeConfig下设置的
+
+所有的md文件生成的网页最后都会产生 **更新时间**，可在单个md文件开头的yaml中设置
+
+```yaml
+---
+lastUpdated: false
+---
+```
+
+# 报错
+
+## Element is missing end tag
+
+不能直接在文本中输入单个标签如< style >，最好包起来`<style>`
+
+## md文件有无效的链接而build失败
+
+config中添加`ignoreDeadLinks: true,`
