@@ -171,7 +171,7 @@ jobs:
 
 在仓库设置的pages中将branch设置为gh-pages
 
-<img src="imgs/VitePress/202301050130784-1674730368672-3-1674730748731-1.png" alt="image-20221102165557340" style="zoom:50%;" />
+<img src="./imgs/VitePress/202301050130784-1674730368672-3-1674730748731-1.png" alt="image-20221102165557340" style="zoom:50%;" />
 
 ## 高级配置
 
@@ -298,7 +298,7 @@ This is a details block.
 
 效果：
 
-<img src="imgs/VitePress/202301050130785-1674730748732-2.png" alt="image-20221102194900491" style="zoom: 80%;" />
+<img src="./imgs/VitePress/202301050130785-1674730748732-2.png" alt="image-20221102194900491" style="zoom: 80%;" />
 
 #### 自定义标题
 
@@ -318,7 +318,7 @@ console.log('Hello, VitePress!')
 
 效果：
 
-<img src="imgs/VitePress/202301050130786-1674730748732-3.png" alt="image-20221102195237553" style="zoom:80%;" />
+<img src="./imgs/VitePress/202301050130786-1674730748732-3.png" alt="image-20221102195237553" style="zoom:80%;" />
 
 ### 代码块中的特殊显示
 
@@ -340,33 +340,33 @@ export default {
 
 效果：
 
-<img src="imgs/VitePress/202301050130787-1674730748732-4.png" alt="image-20221102200149280" style="zoom: 80%;" />
+<img src="./imgs/VitePress/202301050130787-1674730748732-4.png" alt="image-20221102200149280" style="zoom: 80%;" />
 
 还可以多行：
 
-<img src="imgs/VitePress/202301050130788-1674730748732-5.png" alt="image-20221102200414541" style="zoom:80%;" />
+<img src="./imgs/VitePress/202301050130788-1674730748732-5.png" alt="image-20221102200414541" style="zoom:80%;" />
 
 #### 聚焦
 
 [Focus in Code Blocks](https://vitepress.vuejs.org/guide/markdown#focus-in-code-blocks)
 
-![image-20221102200526974](imgs/VitePress/202301050130789-1674730748733-6.png)
+![image-20221102200526974](./imgs/VitePress/202301050130789-1674730748733-6.png)
 
 #### 代码块中的彩色差异
 
 [Colored diffs in Code Blocks](https://vitepress.vuejs.org/guide/markdown#colored-diffs-in-code-blocks)
 
-![image-20221102200606350](imgs/VitePress/202301050130790-1674730748733-7.png)
+![image-20221102200606350](./imgs/VitePress/202301050130790-1674730748733-7.png)
 
 #### 错误和警告
 
 [Errors and warnings](https://vitepress.vuejs.org/guide/markdown#errors-and-warnings)
 
-![image-20221102200650748](imgs/VitePress/202301050130791-1674730748733-8.png)
+![image-20221102200650748](./imgs/VitePress/202301050130791-1674730748733-8.png)
 
 #### 添加行号
 
-![image-20221102200833509](imgs/VitePress/202301050130792-1674730748733-9.png)
+![image-20221102200833509](./imgs/VitePress/202301050130792-1674730748733-9.png)
 
 在 `.vitepress/config.js`中设置：
 
@@ -818,7 +818,7 @@ hero:
 ---
 ```
 
-![image-20221106153130174](imgs/VitePress/202301050130793-1674730748733-10.png)
+![image-20221106153130174](./imgs/VitePress/202301050130793-1674730748733-10.png)
 
 ```typescript
 interface Hero {
@@ -887,7 +887,7 @@ features:
 ---
 ```
 
-![image-20221106153030731](imgs/VitePress/202301050130794-1674730748733-11.png)
+![image-20221106153030731](./imgs/VitePress/202301050130794-1674730748733-11.png)
 
 ```typescript
 interface Feature {
