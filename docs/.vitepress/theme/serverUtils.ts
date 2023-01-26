@@ -30,10 +30,10 @@ function _compareDate(obj1, obj2) {
 }
 
 async function getPostMDFilePaths() {
-  let paths = await globby(["docs/doc/**.md"], {
+  let paths = await globby(["docs/PrivateDocs/**.md"], {
     ignore: ["node_modules", "README.md"],
   });
-  return paths.filter((item) => item.includes("doc/"));
+  return paths.filter((item) => item.includes("PrivateDocs/"));
 }
 
 export async function getPostLength() {
