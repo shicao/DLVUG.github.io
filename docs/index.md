@@ -24,7 +24,8 @@ hero:
 }
 </style>
 
-<div align="center"  class="text item" >
+<vp-doc>
+<div align="center"  class="text item"  >
 
 <el-card class="box-card" shadow="hover">
 
@@ -32,7 +33,7 @@ hero:
 
 </el-card>
 
-</div>
+
 
 <style scoped>
     .text {
@@ -43,7 +44,10 @@ line-height: 200%
  	 padding: 1px 0;
 }
     .box-card {
-  width:1000px;
+  width:900px;
 border: solid 1px #f00
 
 }</style>
+
+</div>
+</vp-doc>

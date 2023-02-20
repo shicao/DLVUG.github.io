@@ -13,15 +13,15 @@ const coreMembers = [
   {
     avatar: '/imgs/avatars/史操.jpg',
     name: '史操',
-    title: 'Creator',
-    desc: '简介',
+    title: '指导老师',
+    desc: '',
 
   },
     {
     avatar: '/imgs/avatars/许灿辉.jpg',
     name: '许灿辉',
-    title: 'Creator',
-    desc: '简介',
+    title: '指导老师',
+    desc: '',
 
   },
 ]
@@ -47,7 +47,17 @@ const partners =[
     desc: 'Honghong Zhang  is currently pursuing the M.S. degree with School of Information Science and Technology, Qingdao University of Science and Technology, Shandong, China. Her research interests include artificial intelligence, computer vision, image processing.',
 
   },
-    {
+
+{
+
+    avatar: '/imgs/avatars/李冲冲.jpg',
+    name: '李冲冲',
+    title: '2020级',
+    desc: 'Chongchong Li received B.E. degree from Zaozhuang University in 2014. Now he is a Master student majoring in Computer technology degree at Qingdao University of Science and Technology,under the supervision of Ph.D. Cao Shi. His research interests include deep learning, computer vision, image processing.',
+
+}, 
+
+{
     avatar: '/imgs/avatars/何健飞.jpg',
     name: '何健飞',
     title: '2021级',
@@ -81,9 +91,6 @@ const partners =[
 	desc: 'Qi Yang currently working toward the M.S. degree with the School of Information Science and Technology,Qingdao University of Science and Technology, Qingdao, China. His research interests include object detection,image segmentation,panoptic segmentation .Sometimes he also develops frontend, such as Vue (this website is built with Vue, more precisely, Vitepress).',
 
   },
-{
-
-},
     {
     avatar: '/imgs/avatars/袁正一.jpg',
     name: '袁正一',
