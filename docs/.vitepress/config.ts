@@ -5,7 +5,7 @@ import { sidebar } from "./config/sidebar";
 async function config() {
   return {
     title: "DLVUG",
-    titleTemplate: "深度学习与视觉理解小组",
+    titleTemplate: "深度学习与视觉理解团队",
     description: "Deep Learning and Vision Understanding Group",
     ignoreDeadLinks: true,
     lastUpdated: true,
