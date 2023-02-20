@@ -1,6 +1,6 @@
 //根目录是docs，可以跳转当前目录文档，子目录首页，子目录文档以及外链
 export const nav = [
-  { text: "主页", link: "/" },
+  { text: "学术主页", link: "/" },
   { text: "研究内容", link: "/researches/" },
   { text: "研究成果", link: "/publications/" },
   { text: "团队成员", link: "/members/" },
