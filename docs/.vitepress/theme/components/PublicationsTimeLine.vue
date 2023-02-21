@@ -23,12 +23,10 @@ export default {
 
 </script>
 <template>
-
-
     <el-dialog v-model="dialogVisible" title="BibTex" width="50%" draggable>
 
         <span v-if="(item == 1)">
-            <pre style="word-wrap: break-word; white-space: pre-wrap;">
+            <pre style="word-wrap: break-word; white-space: pre-wrap;"> 
 @article{shi2022lateral,
 title={Lateral feature enhancement network for page object detection},
 author={Shi, Cao and Xu, Canhui and Bi, Hengyue and Cheng, Yuanzhi and Li, Yuteng and Zhang, Honghong},
@@ -38,7 +36,7 @@ pages={1--10},
 year={2022},
 publisher={IEEE}
 }
-        </pre>
+                                                         </pre>
         </span>
         <span v-else-if="(item == 2)">
             <pre style="word-wrap: break-word; white-space: pre-wrap;">
@@ -53,18 +51,32 @@ pages={102653},
 year={2022},
 publisher={Elsevier}
 }
-        </pre>
+                                                                                                                                                                </pre>
         </span>
         <span v-else-if="(item == 3)">
-            <pre style="word-wrap: break-word; white-space: pre-wrap;">
+<pre style="word-wrap: break-word; white-space: pre-wrap;">
 @article{bi2022srrv,
 title={SRRV: A Novel Document Object Detector Based on Spatial-Related Relation and Vision},
 author={Bi, Hengyue and Xu, Canhui and Shi, Cao and Liu, Guozhu and Li, Yuteng and Zhang, Honghong and Qu, Jing},
 journal={IEEE Transactions on Multimedia},
 year={2022},
 publisher={IEEE}
+}     
+                                                                                                                                                                </pre>
+        </span>
+        <span v-else-if="(item == 35)">
+            <pre style="word-wrap: break-word; white-space: pre-wrap;">
+@article{JSYJ2022111000E, 
+author = {李玉腾,史操,许灿辉 & 程远志}, 
+title = {基于视觉和文本的多模态文档图像目标检测}, 
+journal = {计算机应用研究}, 
+volume = {}, 
+number = {}, 
+year = {}, 
+issn = {1001-3695}, 
+doi ={10.19734/j.issn.1001-3695.2022.08.0425} 
 }
-        </pre>
+                                                                                                                                                                </pre>
         </span>
         <span v-else-if="(item == 4)">
             <pre style="word-wrap: break-word; white-space: pre-wrap;">
@@ -78,7 +90,7 @@ pages={1765--1774},
 year={2021},
 publisher={Springer}
 }
-        </pre>
+</pre>
         </span>
         <span v-else-if="(item == 5)">
             <pre style="word-wrap: break-word; white-space: pre-wrap;">
@@ -91,7 +103,7 @@ pages={143448--143457},
 year={2021},
 publisher={IEEE}
 }
-        </pre>
+</pre>
         </span>
         <span v-else-if="(item == 6)">
             <pre style="word-wrap: break-word; white-space: pre-wrap;">
@@ -104,7 +116,7 @@ pages={158--166},
 year={2014},
 organization={SPIE}
 }
-        </pre>
+</pre>
         </span>
         <span v-else-if="(item == 7)">
             <pre style="word-wrap: break-word; white-space: pre-wrap;">
@@ -117,7 +129,7 @@ pages={24--30},
 year={2014},
 organization={SPIE}
 }
-        </pre>
+</pre>
         </span>
         <span v-else-if="(item == 8)">
             <pre style="word-wrap: break-word; white-space: pre-wrap;">
@@ -130,7 +142,7 @@ pages={276--282},
 year={2014},
 organization={SPIE}
 }
-        </pre>
+</pre>
         </span>
         <span v-else-if="(item == 9)">
             <pre style="word-wrap: break-word; white-space: pre-wrap;">
@@ -143,7 +155,7 @@ pages={180--186},
 year={2014},
 organization={SPIE}
 }
-        </pre>
+</pre>
         </span>
         <span v-else-if="(item == 10)">
             <pre style="word-wrap: break-word; white-space: pre-wrap;">
@@ -157,7 +169,7 @@ pages={1363--1375},
 year={2014},
 publisher={Elsevier}
 }
-        </pre>
+</pre>
         </span>
         <span v-else-if="(item == 11)">
             <pre style="word-wrap: break-word; white-space: pre-wrap;">
@@ -169,7 +181,7 @@ pages={247--251},
 year={2014},
 organization={IEEE}
 }
-        </pre>
+</pre>
         </span>
         <span v-else-if="(item == 12)">
             <pre style="word-wrap: break-word; white-space: pre-wrap;">
@@ -182,7 +194,7 @@ pages={34--41},
 year={2013},
 organization={SPIE}
 }
-        </pre>
+</pre>
         </span>
         <span v-else-if="(item == 13)">
             <pre style="word-wrap: break-word; white-space: pre-wrap;">
@@ -195,7 +207,7 @@ pages={207--214},
 year={2013},
 organization={SPIE}
 }
-        </pre>
+</pre>
         </span>
         <span v-else-if="(item == 14)">
             <pre style="word-wrap: break-word; white-space: pre-wrap;">
@@ -208,7 +220,7 @@ pages={121--130},
 year={2013},
 organization={SPIE}
 }
-        </pre>
+</pre>
         </span>
         <span v-else-if="(item == 15)">
             <pre style="word-wrap: break-word; white-space: pre-wrap;">
@@ -220,7 +232,7 @@ pages={13--22},
 year={2012},
 organization={Springer}
 }
-        </pre>
+</pre>
         </span>
         <span v-else-if="(item == 16)">
             <pre style="word-wrap: break-word; white-space: pre-wrap;">
@@ -258,7 +270,7 @@ pages={128},
 year={2012}
 }
 
-        </pre>
+</pre>
         </span>
         <span v-else-if="(item == 20)">
             <pre style="word-wrap: break-word; white-space: pre-wrap;">
@@ -271,7 +283,7 @@ pages={5--12},
 year={2012},
 publisher={Elsevier}
 }
-        </pre>
+    </pre>
         </span>
         <span v-else-if="(item == 21)">
             <pre style="word-wrap: break-word; white-space: pre-wrap;">
@@ -285,7 +297,7 @@ pages={2196--2201},
 year={2012},
 publisher={Elsevier}
 }
-        </pre>
+</pre>
         </span>
         <span v-else-if="(item == 22)">
             <pre style="word-wrap: break-word; white-space: pre-wrap;">
@@ -298,7 +310,7 @@ title = {Extraction of a region of interest using orientation feature fusion},
 volume = {39},
 journal = {Journal of Huazhong University of Science and Technology}
 }
-        </pre>
+</pre>
         </span>
         <span v-else-if="(item == 23)">
             <pre style="word-wrap: break-word; white-space: pre-wrap;">
@@ -311,7 +323,7 @@ number={12},
 pages={102--106},
 year={2011}
 }
-        </pre>
+</pre>
         </span>
         <span v-else-if="(item == 24)">
             <pre style="word-wrap: break-word; white-space: pre-wrap;">
@@ -325,21 +337,21 @@ pages={156--160},
 year={2009},
 publisher={IEEE}
 }
-        </pre>
+</pre>
         </span>
         <span v-else-if="(item == 25)">
             <pre style="word-wrap: break-word; white-space: pre-wrap;">
-        </pre>
+                                                                                                                                                                </pre>
         </span>
         <span v-else-if="(item == 26)">
             <pre style="word-wrap: break-word; white-space: pre-wrap;">
 
-        </pre>
+                                                                                                                                                                </pre>
         </span>
         <span v-else-if="(item == 27)">
             <pre style="word-wrap: break-word; white-space: pre-wrap;">
 
-        </pre>
+                                                                                                                                                                </pre>
         </span>
         <span v-else-if="(item == 28)">
             <pre style="word-wrap: break-word; white-space: pre-wrap;">
@@ -353,7 +365,7 @@ pages={1049--1057},
 year={2010},
 publisher={Springer}
 }
-        </pre>
+</pre>
         </span>
         <span v-else-if="(item == 29)">
             <pre style="word-wrap: break-word; white-space: pre-wrap;">
@@ -367,7 +379,7 @@ pages={1559--1571},
 year={2009},
 publisher={Elsevier}
 }
-        </pre>
+</pre>
         </span>
         <span v-else-if="(item == 30)">
             <pre style="word-wrap: break-word; white-space: pre-wrap;">
@@ -381,7 +393,7 @@ pages={694--699},
 year={2009},
 publisher={Elsevier}
 }
-        </pre>
+</pre>
         </span>
         <span v-else-if="(item == 31)">
             <pre style="word-wrap: break-word; white-space: pre-wrap;">
@@ -393,7 +405,7 @@ pages={2941--2945},
 year={2009},
 organization={IEEE}
 }
-        </pre>
+</pre>
         </span>
         <span v-else-if="(item == 32)">
             <pre style="word-wrap: break-word; white-space: pre-wrap;">
@@ -407,7 +419,7 @@ pages={316--322},
 year={2009},
 publisher={Wiley Online Library}
 }
-        </pre>
+</pre>
         </span>
         <span v-else-if="(item == 33)">
             <pre style="word-wrap: break-word; white-space: pre-wrap;">
@@ -420,7 +432,7 @@ number={8},
 pages={1047--1055},
 year={2008}
 }
-        </pre>
+</pre>
         </span>
         <span v-else-if="(item == 34)">
             <pre style="word-wrap: break-word; white-space: pre-wrap;">
@@ -433,7 +445,7 @@ number={8},
 pages={1047--1055},
 year={2008}
 }
-        </pre>
+</pre>
         </span>
 
 
@@ -496,6 +508,20 @@ year={2008}
                             <Link />
                         </el-icon>PDF</el-link></el-button>
                 <el-button class="button" @click="(dialogVisible = true, item = 3)">
+                    <font color='LightSkyBlue'><el-icon>
+                            <DocumentCopy />
+                        </el-icon>Bib</font>
+                </el-button>
+            </el-card>
+        </el-timeline-item>
+        <el-timeline-item timestamp="2022" placement="top" :type="randomTypes()">
+            <el-card shadow="hover">
+                <p>李玉腾,史操,许灿辉等.基于视觉和文本的多模态文档图像目标检测[J/OL].<b><em>计算机应用研究</em></b>:1-6[2023-02-21].</p>
+                <el-button class="button"><el-link href="/papers/students/基于视觉和文本的多模态文档图像目标检测_李玉腾.pdf"
+                        target="_blank"><el-icon>
+                            <Link />
+                        </el-icon>PDF</el-link></el-button>
+                <el-button class="button" @click="(dialogVisible = true, item = 35)">
                     <font color='LightSkyBlue'><el-icon>
                             <DocumentCopy />
                         </el-icon>Bib</font>
