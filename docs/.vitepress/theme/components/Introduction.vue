@@ -5,10 +5,13 @@
                 <el-col>
                     <el-avatar :size="100" src="/imgs/avatars/史操.jpg" />
                 </el-col>
+                <div align="center"><strong>史操</strong></div>
             </div>
             <div>
                 <el-col>
                     <el-avatar :size="100" src="/imgs/avatars/许灿辉.jpg" />
+                    <div align="center"><strong>许灿辉</strong></div>
+
                 </el-col>
             </div>
             <div>
