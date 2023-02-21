@@ -64,7 +64,7 @@ publisher={IEEE}
 }     
                                                                                                                                                                 </pre>
         </span>
-        <span v-else-if="(item == 35)">
+        <!-- <span v-else-if="(item == 35)">
             <pre style="word-wrap: break-word; white-space: pre-wrap;">
 @article{JSYJ2022111000E, 
 author = {李玉腾,史操,许灿辉 & 程远志}, 
@@ -77,7 +77,7 @@ issn = {1001-3695},
 doi ={10.19734/j.issn.1001-3695.2022.08.0425} 
 }
                                                                                                                                                                 </pre>
-        </span>
+        </span> -->
         <span v-else-if="(item == 4)">
             <pre style="word-wrap: break-word; white-space: pre-wrap;">
 @article{xu2021end,
@@ -514,7 +514,7 @@ year={2008}
                 </el-button>
             </el-card>
         </el-timeline-item>
-        <el-timeline-item timestamp="2022" placement="top" :type="randomTypes()">
+        <!-- <el-timeline-item timestamp="2022" placement="top" :type="randomTypes()">
             <el-card shadow="hover">
                 <p>李玉腾,史操,许灿辉等.基于视觉和文本的多模态文档图像目标检测[J/OL].<b><em>计算机应用研究</em></b>:1-6[2023-02-21].</p>
                 <el-button class="button"><el-link href="/papers/students/基于视觉和文本的多模态文档图像目标检测_李玉腾.pdf"
@@ -527,7 +527,7 @@ year={2008}
                         </el-icon>Bib</font>
                 </el-button>
             </el-card>
-        </el-timeline-item>
+        </el-timeline-item> -->
         <el-timeline-item timestamp="2021" placement="top" :type="randomTypes()">
             <el-card shadow="hover">
                 <p>Canhui Xu, Cao Shi, Yinong Chen. End-to-end dilated convolution network for document image semantic
