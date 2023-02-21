@@ -64,7 +64,7 @@ publisher={IEEE}
 }     
                                                                                                                                                                 </pre>
         </span>
-        <!-- <span v-else-if="(item == 35)">
+        <span v-else-if="(item == 4)">
             <pre style="word-wrap: break-word; white-space: pre-wrap;">
 @article{JSYJ2022111000E, 
 author = {李玉腾,史操,许灿辉 & 程远志}, 
@@ -77,8 +77,8 @@ issn = {1001-3695},
 doi ={10.19734/j.issn.1001-3695.2022.08.0425} 
 }
                                                                                                                                                                 </pre>
-        </span> -->
-        <span v-else-if="(item == 4)">
+        </span>
+        <span v-else-if="(item == 5)">
             <pre style="word-wrap: break-word; white-space: pre-wrap;">
 @article{xu2021end,
 title={End-to-end dilated convolution network for document image semantic segmentation},
@@ -92,7 +92,7 @@ publisher={Springer}
 }
 </pre>
         </span>
-        <span v-else-if="(item == 5)">
+        <span v-else-if="(item == 6)">
             <pre style="word-wrap: break-word; white-space: pre-wrap;">
 @article{xu2021page,
 title={A page object detection method based on mask R-CNN},
@@ -105,7 +105,7 @@ publisher={IEEE}
 }
 </pre>
         </span>
-        <span v-else-if="(item == 6)">
+        <span v-else-if="(item == 7)">
             <pre style="word-wrap: break-word; white-space: pre-wrap;">
 @inproceedings{tao2014document,
 title={Document page structure learning for fixed-layout e-books using conditional random fields},
@@ -118,7 +118,7 @@ organization={SPIE}
 }
 </pre>
         </span>
-        <span v-else-if="(item == 7)">
+        <span v-else-if="(item == 8)">
             <pre style="word-wrap: break-word; white-space: pre-wrap;">
 @inproceedings{shi2014visual,
 title={Visual improvement for bad handwriting based on Monte-Carlo method},
@@ -131,7 +131,7 @@ organization={SPIE}
 }
 </pre>
         </span>
-        <span v-else-if="(item == 8)">
+        <span v-else-if="(item == 9)">
             <pre style="word-wrap: break-word; white-space: pre-wrap;">
 @inproceedings{shi2014nonlinear,
 title={Nonlinear and non-gaussian bayesian based handwriting beautification},
@@ -144,7 +144,7 @@ organization={SPIE}
 }
 </pre>
         </span>
-        <span v-else-if="(item == 9)">
+        <span v-else-if="(item == 10)">
             <pre style="word-wrap: break-word; white-space: pre-wrap;">
 @inproceedings{shi2014automatic,
 title={Automatic generation of Chinese character using features fusion from calligraphy and font},
@@ -157,7 +157,7 @@ organization={SPIE}
 }
 </pre>
         </span>
-        <span v-else-if="(item == 10)">
+        <span v-else-if="(item == 11)">
             <pre style="word-wrap: break-word; white-space: pre-wrap;">
 @article{tao2014contextual,
 title={Contextual modeling for logical labeling of PDF documents},
@@ -171,7 +171,7 @@ publisher={Elsevier}
 }
 </pre>
         </span>
-        <span v-else-if="(item == 11)">
+        <span v-else-if="(item == 12)">
             <pre style="word-wrap: break-word; white-space: pre-wrap;">
 @inproceedings{tao2014ground,
 title={Ground-truth and performance evaluation for page layout analysis of born-digital documents},
@@ -183,7 +183,7 @@ organization={IEEE}
 }
 </pre>
         </span>
-        <span v-else-if="(item == 12)">
+        <span v-else-if="(item == 13)">
             <pre style="word-wrap: break-word; white-space: pre-wrap;">
 @inproceedings{xu2013graph,
 title={Graph-based layout analysis for pdf documents},
@@ -196,7 +196,7 @@ organization={SPIE}
 }
 </pre>
         </span>
-        <span v-else-if="(item == 13)">
+        <span v-else-if="(item == 14)">
             <pre style="word-wrap: break-word; white-space: pre-wrap;">
 @inproceedings{shi2013character,
 title={Character feature integration of Chinese calligraphy and font},
@@ -209,7 +209,7 @@ organization={SPIE}
 }
 </pre>
         </span>
-        <span v-else-if="(item == 14)">
+        <span v-else-if="(item == 15)">
             <pre style="word-wrap: break-word; white-space: pre-wrap;">
 @inproceedings{xu2013graphic,
 title={Graphic composite segmentation for PDF documents with complex layouts},
@@ -222,7 +222,7 @@ organization={SPIE}
 }
 </pre>
         </span>
-        <span v-else-if="(item == 15)">
+        <span v-else-if="(item == 16)">
             <pre style="word-wrap: break-word; white-space: pre-wrap;">
 @inproceedings{xu2012integration,
 title={Integration of Text Information and Graphic Composite for PDF Document Analysis},
@@ -234,7 +234,7 @@ organization={Springer}
 }
 </pre>
         </span>
-        <span v-else-if="(item == 16)">
+        <span v-else-if="(item == 17)">
             <pre style="word-wrap: break-word; white-space: pre-wrap;">
 @inproceedings{shi2012automatic,
 title={Automatic generation of Chinese character based on human vision and prior knowledge of calligraphy},
@@ -514,20 +514,20 @@ year={2008}
                 </el-button>
             </el-card>
         </el-timeline-item>
-        <!-- <el-timeline-item timestamp="2022" placement="top" :type="randomTypes()">
+        <el-timeline-item timestamp="2022" placement="top" :type="randomTypes()">
             <el-card shadow="hover">
                 <p>李玉腾,史操,许灿辉等.基于视觉和文本的多模态文档图像目标检测[J/OL].<b><em>计算机应用研究</em></b>:1-6[2023-02-21].</p>
                 <el-button class="button"><el-link href="/papers/students/基于视觉和文本的多模态文档图像目标检测_李玉腾.pdf"
                         target="_blank"><el-icon>
                             <Link />
                         </el-icon>PDF</el-link></el-button>
-                <el-button class="button" @click="(dialogVisible = true, item = 35)">
+                <el-button class="button" @click="(dialogVisible = true, item = 4)">
                     <font color='LightSkyBlue'><el-icon>
                             <DocumentCopy />
                         </el-icon>Bib</font>
                 </el-button>
             </el-card>
-        </el-timeline-item> -->
+        </el-timeline-item>
         <el-timeline-item timestamp="2021" placement="top" :type="randomTypes()">
             <el-card shadow="hover">
                 <p>Canhui Xu, Cao Shi, Yinong Chen. End-to-end dilated convolution network for document image semantic
@@ -537,7 +537,7 @@ year={2008}
                         target="_blank"><el-icon>
                             <Link />
                         </el-icon>PDF</el-link></el-button>
-                <el-button class="button" @click="(dialogVisible = true, item = 4)">
+                <el-button class="button" @click="(dialogVisible = true, item = 5)">
                     <font color='LightSkyBlue'><el-icon>
                             <DocumentCopy />
                         </el-icon>Bib</font>
@@ -553,7 +553,7 @@ year={2008}
                         target="_blank"><el-icon>
                             <Link />
                         </el-icon>PDF</el-link></el-button>
-                <el-button class="button" @click="(dialogVisible = true, item = 5)">
+                <el-button class="button" @click="(dialogVisible = true, item = 6)">
                     <font color='LightSkyBlue'><el-icon>
                             <DocumentCopy />
                         </el-icon>Bib</font>
@@ -571,7 +571,7 @@ year={2008}
                         target="_blank"><el-icon>
                             <Link />
                         </el-icon>PDF</el-link></el-button>
-                <el-button class="button" @click="(dialogVisible = true, item = 6)">
+                <el-button class="button" @click="(dialogVisible = true, item = 7)">
                     <font color='LightSkyBlue'><el-icon>
                             <DocumentCopy />
                         </el-icon>Bib</font>
@@ -589,7 +589,7 @@ year={2008}
                         target="_blank"><el-icon>
                             <Link />
                         </el-icon>PDF</el-link></el-button>
-                <el-button class="button" @click="(dialogVisible = true, item = 7)">
+                <el-button class="button" @click="(dialogVisible = true, item = 8)">
                     <font color='LightSkyBlue'><el-icon>
                             <DocumentCopy />
                         </el-icon>Bib</font>
@@ -607,7 +607,7 @@ year={2008}
                         target="_blank"><el-icon>
                             <Link />
                         </el-icon>PDF</el-link></el-button>
-                <el-button class="button" @click="(dialogVisible = true, item = 8)">
+                <el-button class="button" @click="(dialogVisible = true, item = 9)">
                     <font color='LightSkyBlue'><el-icon>
                             <DocumentCopy />
                         </el-icon>Bib</font>
@@ -625,7 +625,7 @@ year={2008}
                         target="_blank"><el-icon>
                             <Link />
                         </el-icon>PDF</el-link></el-button>
-                <el-button class="button" @click="(dialogVisible = true, item = 9)">
+                <el-button class="button" @click="(dialogVisible = true, item = 10)">
                     <font color='LightSkyBlue'><el-icon>
                             <DocumentCopy />
                         </el-icon>Bib</font>
@@ -642,7 +642,7 @@ year={2008}
                         target="_blank"><el-icon>
                             <Link />
                         </el-icon>PDF</el-link></el-button>
-                <el-button class="button" @click="(dialogVisible = true, item = 10)">
+                <el-button class="button" @click="(dialogVisible = true, item = 11)">
                     <font color='LightSkyBlue'><el-icon>
                             <DocumentCopy />
                         </el-icon>Bib</font>
@@ -660,7 +660,7 @@ year={2008}
                         target="_blank"><el-icon>
                             <Link />
                         </el-icon>PDF</el-link></el-button>
-                <el-button class="button" @click="(dialogVisible = true, item = 11)">
+                <el-button class="button" @click="(dialogVisible = true, item = 12)">
                     <font color='LightSkyBlue'><el-icon>
                             <DocumentCopy />
                         </el-icon>Bib</font>
@@ -677,7 +677,7 @@ year={2008}
                         target="_blank"><el-icon>
                             <Link />
                         </el-icon>PDF</el-link></el-button>
-                <el-button class="button" @click="(dialogVisible = true, item = 12)">
+                <el-button class="button" @click="(dialogVisible = true, item = 13)">
                     <font color='LightSkyBlue'><el-icon>
                             <DocumentCopy />
                         </el-icon>Bib</font>
@@ -695,7 +695,7 @@ year={2008}
                         target="_blank"><el-icon>
                             <Link />
                         </el-icon>PDF</el-link></el-button>
-                <el-button class="button" @click="(dialogVisible = true, item = 13)">
+                <el-button class="button" @click="(dialogVisible = true, item = 14)">
                     <font color='LightSkyBlue'><el-icon>
                             <DocumentCopy />
                         </el-icon>Bib</font>
@@ -713,7 +713,7 @@ year={2008}
                         target="_blank"><el-icon>
                             <Link />
                         </el-icon>PDF</el-link></el-button>
-                <el-button class="button" @click="(dialogVisible = true, item = 14)">
+                <el-button class="button" @click="(dialogVisible = true, item = 15)">
                     <font color='LightSkyBlue'><el-icon>
                             <DocumentCopy />
                         </el-icon>Bib</font>
@@ -731,7 +731,7 @@ year={2008}
                         target="_blank"><el-icon>
                             <Link />
                         </el-icon>PDF</el-link></el-button>
-                <el-button class="button" @click="(dialogVisible = true, item = 15)">
+                <el-button class="button" @click="(dialogVisible = true, item = 16)">
                     <font color='LightSkyBlue'><el-icon>
                             <DocumentCopy />
                         </el-icon>Bib</font>
@@ -749,7 +749,7 @@ year={2008}
                         target="_blank"><el-icon>
                             <Link />
                         </el-icon>PDF</el-link></el-button>
-                <el-button class="button" @click="(dialogVisible = true, item = 16)">
+                <el-button class="button" @click="(dialogVisible = true, item = 17)">
                     <font color='LightSkyBlue'><el-icon>
                             <DocumentCopy />
                         </el-icon>Bib</font>
