@@ -1027,7 +1027,7 @@ year={2008}
                 </el-button>
             </el-card>
         </el-timeline-item>
-        <el-timeline-item timestamp="2008" placement="top" :type="randomTypes()">
+        <!-- <el-timeline-item timestamp="2008" placement="top" :type="randomTypes()">
             <el-card shadow=" hover">
                 <p>邹北骥, 陈姝, 彭小宁, 史操. 适用于单目视频的无标记三维人体运动跟踪. <font size="4">计算机辅助设计与图形学学报</font>. 2008,20(8):1407-1055.</p>
                 <el-button class="button"><el-link
@@ -1041,7 +1041,7 @@ year={2008}
                         </el-icon>Bib</font>
                 </el-button>
             </el-card>
-        </el-timeline-item>
+        </el-timeline-item> -->
 
 
 
