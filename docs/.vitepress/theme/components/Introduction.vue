@@ -79,8 +79,8 @@
         </el-row>
     </div>
 
-    <div style="padding: 14px;padding-left:15%;padding-right:20%;font-size:20px;line-height: 40px">
-        <el-card class="box-card" shadow="always" align="left">
+    <div class="box-card">
+        <el-card style="background-image: linear-gradient(180deg, #fff, #ddd 40%, #ccc)" shadow="always" align="left">
 
             实验室学术团队近年来先后在<em><strong>IEEE Transactions on Multimedia</strong></em>、<em><strong>IEEE Transactions on
                     Instrumentation and Measurement</strong></em>、<em><strong>Simulation Modelling Practice and
@@ -92,21 +92,10 @@
 </template>
   
 <style>
-.el-row {
-    margin-bottom: 20px;
-}
-
-.el-row:last-child {
-    margin-bottom: 0;
-}
-
-.el-col {
-    border-radius: 4px;
-}
-
-.grid-content {
-    border-radius: 4px;
-    min-height: 36px;
+.box-card {
+    padding: 14px 20% 0 15%;
+    font-size: 20px;
+    line-height: 40px;
 }
 </style>
   
