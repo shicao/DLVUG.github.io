@@ -497,7 +497,7 @@ year={2008}
             </el-card>
         </el-timeline-item>
         <!--  -->
-        <!-- <el-timeline-item timestamp="2022" placement="top" :type="randomTypes()">
+        <el-timeline-item timestamp="2022" placement="top" :type="randomTypes()">
             <el-card shadow="hover">
                 <p>Hengyue Bi, Canhui Xu, Cao Shi, Guozhu Liu, Yuteng Li, Honghong Zhang, Jing Qu. SRRV: A Novel
                     Document Object Detector Based on Spatial-Related Relation and Vision[J]. <b><em>IEEE Transactions
@@ -513,11 +513,11 @@ year={2008}
                         </el-icon>Bib</font>
                 </el-button>
             </el-card>
-        </el-timeline-item> -->
+        </el-timeline-item>
         <el-timeline-item timestamp="2022" placement="top" :type="randomTypes()">
             <el-card shadow="hover">
                 <p>李玉腾,史操,许灿辉等.基于视觉和文本的多模态文档图像目标检测[J/OL].<b><em>计算机应用研究</em></b>:1-6[2023-02-21].</p>
-                <el-button class="button"><el-link href="/papers/students/基于视觉和文本的多模态文档图像目标检测_李玉腾.pdf"
+                <el-button class="button"><el-link href="/papers/students/2022 基于视觉和文本的多模态文档图像目标检测_李玉腾.pdf"
                         target="_blank"><el-icon>
                             <Link />
                         </el-icon>PDF</el-link></el-button>
