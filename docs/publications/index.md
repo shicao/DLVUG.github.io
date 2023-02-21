@@ -1,7 +1,7 @@
 ---
 lastUpdated: true
 aside: false
-title: 出版
+title: 研究成果
 ---
 <script setup>
 import TimeLine from '@theme/components/PublicationsTimeLine.vue'

@@ -1,6 +1,6 @@
 ---
 layout: page
-title: 成员
+title: 团队成员
 ---
 <script setup>
 import {
@@ -14,14 +14,14 @@ const coreMembers = [
     avatar: '/imgs/avatars/史操.jpg',
     name: '史操',
     title: '指导老师',
-    desc: '',
+    desc: 'Cao Shi received Ph. D degree in 2011 from Central South University, and now works with the School of Information Science and Technology, Qingdao University of Science and Technology, China. He was a postdoctoral research fellow at Peking University from 2011 to 2013. His research interests include image, video processing, and artificial intelligence.',
 
   },
     {
     avatar: '/imgs/avatars/许灿辉.jpg',
     name: '许灿辉',
     title: '指导老师',
-    desc: '',
+    desc: 'Canhui Xu received her Ph.D. degree from Central South University, China, in 2011. She is currently working in the School of Information Science and Technology, Qingdao University of Science and Technology, China. She was a postdoctoral research fellow at Peking University from 2012 to 2014. She was a visiting scholar at Arizona State University, USA, from 2019 to 2020, and a visiting Ph.D. student at Imperial Collage London, UK, from 2009 to 2010. Her research interests include deep learning, document layout analysis and image understanding.',
 
   },
 ]

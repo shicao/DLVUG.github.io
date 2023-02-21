@@ -1,6 +1,6 @@
 ---
 layout: home
-title: 主页
+title: 学术主页
 hero:
   name: 深度学习 & 视觉理解(DLVUG)
   text: Deep Learning and Vision Understanding Group
@@ -24,8 +24,8 @@ hero:
 }
 </style>
 
-
 <script setup>
 import Introduction from '@theme/components/Introduction.vue'
 </script>
+
 <Introduction/>
