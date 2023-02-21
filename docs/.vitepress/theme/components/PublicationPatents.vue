@@ -18,7 +18,6 @@ export default {
 
 </script>
 <template>
-    <el-card class="box-card" shadow="hover" :body-style="{ fontStyle: 'italic' }">
         <el-dialog v-model="dialogVisible" title="引用格式" width="50%" draggable>
             <span v-if="(item == 1)">
                 <pre style="word-wrap: break-word; white-space: pre-wrap;">
@@ -102,6 +101,7 @@ year={2015},
         </pre>
             </span>
         </el-dialog>
+        
         <el-card shadow="hover">
             <p>1.许灿辉，史操，孙春奇，陶冶，刘国柱，程远志.一种利用先验知识构建文档图像数据集的方法，CN111783416A</p>
             <el-button class="button"><el-link href="/papers/teachers/patents/CN111783416A一种利用先验知识构建文档图像数据集的方法.pdf"
@@ -229,7 +229,6 @@ year={2015},
                     </el-icon>引用</font>
             </el-button>
         </el-card>
-    </el-card>
 
 
 </template>
