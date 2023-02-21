@@ -514,7 +514,7 @@ year={2008}
                 </el-button>
             </el-card>
         </el-timeline-item>
-        <el-timeline-item timestamp="2022" placement="top" :type="randomTypes()">
+        <!-- <el-timeline-item timestamp="2022" placement="top" :type="randomTypes()">
             <el-card shadow="hover">
                 <p>李玉腾,史操,许灿辉等.基于视觉和文本的多模态文档图像目标检测[J/OL].<b><em>计算机应用研究</em></b>:1-6[2023-02-21].</p>
                 <el-button class="button"><el-link href="/papers/students/2022 基于视觉和文本的多模态文档图像目标检测_李玉腾.pdf"
@@ -527,7 +527,7 @@ year={2008}
                         </el-icon>Bib</font>
                 </el-button>
             </el-card>
-        </el-timeline-item>
+        </el-timeline-item> -->
         <el-timeline-item timestamp="2021" placement="top" :type="randomTypes()">
             <el-card shadow="hover">
                 <p>Canhui Xu, Cao Shi, Yinong Chen. End-to-end dilated convolution network for document image semantic

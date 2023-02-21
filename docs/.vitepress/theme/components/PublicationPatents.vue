@@ -18,7 +18,6 @@ export default {
 
 </script>
 <template>
-    <el-card class="box-card" shadow="hover" :body-style="{ fontStyle: 'italic' }">
         <el-dialog v-model="dialogVisible" title="引用格式" width="50%" draggable>
             <span v-if="(item == 1)">
                 <pre style="word-wrap: break-word; white-space: pre-wrap;">
@@ -230,7 +229,6 @@ year={2015},
                     </el-icon>引用</font>
             </el-button>
         </el-card>
-    </el-card>
 
 
 </template>
