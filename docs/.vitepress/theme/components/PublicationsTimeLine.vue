@@ -24,7 +24,7 @@ export default {
 </script>
 <template>
     <el-dialog v-model="dialogVisible" title="BibTex" width="50%" draggable>
-
+        
         <span v-if="(item == 1)">
             <pre style="word-wrap: break-word; white-space: pre-wrap;"> 
 @article{shi2022lateral,
@@ -514,7 +514,7 @@ year={2008}
                 </el-button>
             </el-card>
         </el-timeline-item>
-        <el-timeline-item timestamp="2022" placement="top" :type="randomTypes()">
+        <!-- <el-timeline-item timestamp="2022" placement="top" :type="randomTypes()">
             <el-card shadow="hover">
                 <p>李玉腾,史操,许灿辉等.基于视觉和文本的多模态文档图像目标检测[J/OL].<b><em>计算机应用研究</em></b>:1-6[2023-02-21].</p>
                 <el-button class="button"><el-link href="/papers/students/基于视觉和文本的多模态文档图像目标检测_李玉腾.pdf"
@@ -527,7 +527,7 @@ year={2008}
                         </el-icon>Bib</font>
                 </el-button>
             </el-card>
-        </el-timeline-item>
+        </el-timeline-item> -->
         <el-timeline-item timestamp="2021" placement="top" :type="randomTypes()">
             <el-card shadow="hover">
                 <p>Canhui Xu, Cao Shi, Yinong Chen. End-to-end dilated convolution network for document image semantic
@@ -1027,7 +1027,7 @@ year={2008}
                 </el-button>
             </el-card>
         </el-timeline-item>
-        <!-- <el-timeline-item timestamp="2008" placement="top" :type="randomTypes()">
+        <el-timeline-item timestamp="2008" placement="top" :type="randomTypes()">
             <el-card shadow=" hover">
                 <p>邹北骥, 陈姝, 彭小宁, 史操. 适用于单目视频的无标记三维人体运动跟踪. <font size="4">计算机辅助设计与图形学学报</font>. 2008,20(8):1407-1055.</p>
                 <el-button class="button"><el-link
@@ -1041,7 +1041,7 @@ year={2008}
                         </el-icon>Bib</font>
                 </el-button>
             </el-card>
-        </el-timeline-item> -->
+        </el-timeline-item>
 
 
 
