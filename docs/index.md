@@ -24,30 +24,32 @@ hero:
 }
 </style>
 
-<vp-doc>
-<div align="center"  class="text item"  >
+<!-- <div> -->
+<!-- <el-avatar shape="square" :size="100" :fit="none" src="/imgs/avatars/史操.jpg" />
+<el-avatar :size="100" :fit="fit" src="/imgs/avatars/史操.jpg" />
+<el-avatar :size="100" :fit="fit" src="/imgs/avatars/史操.jpg" />
+<el-avatar :size="100" :fit="fit" src="/imgs/avatars/史操.jpg" />
+<el-avatar :size="100" :fit="fit" src="/imgs/avatars/史操.jpg" />
+<el-avatar :size="100" :fit="fit" src="/imgs/avatars/史操.jpg" />
+<el-avatar :size="100" :fit="fit" src="/imgs/avatars/史操.jpg" />
+<el-avatar :size="100" :fit="fit" src="/imgs/avatars/史操.jpg" />
+<el-avatar :size="100" :fit="fit" src="/imgs/avatars/史操.jpg" />
+<el-avatar :size="100" :fit="fit" src="/imgs/avatars/史操.jpg" />
+<el-avatar :size="100" :fit="fit" src="/imgs/avatars/史操.jpg" />
+<el-avatar :size="100" :fit="fit" src="/imgs/avatars/史操.jpg" />
+<el-avatar :size="100" :fit="fit" src="/imgs/avatars/史操.jpg" />
+<el-avatar :size="100" :fit="fit" src="/imgs/avatars/史操.jpg" /> -->
+<!-- </div> -->
 
-<el-card class="box-card" shadow="hover">
+<!-- <div style="padding: 14px;padding-left:15%;padding-right:20%;font-size:20px;line-height: 40px">
+<el-card class="box-card" shadow="always" align="left">
 
 实验室学术团队近9年来先后在***IEEE Transactions on Multimedia***、***IEEE Transactions on Instrumentation and Measurement***、***Simulation Modelling Practice and Theory***等知名国际期刊及主流国际会议发表学术论文近**30**篇；主持了包括国家自然科学基金青年基金、企业委托研发课题等科研项目；获得4项发明专利授权。研发了“文档结构化信息抽取系统”、“医学图像分割系统”等完全自主知识产权系统。
 
 </el-card>
 
-
-
-<style scoped>
-    .text {
-  font-size: 20px;
-line-height: 200%
-}
-.item {
- 	 padding: 1px 0;
-}
-    .box-card {
-  width:900px;
-border: solid 1px #f00
-
-}</style>
-
-</div>
-</vp-doc>
+  </div> -->
+  <script setup>
+import Introduction from '@theme/components/Introduction.vue'
+</script>
+<Introduction/>
