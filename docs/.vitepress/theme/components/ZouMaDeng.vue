@@ -9,7 +9,7 @@ const hrefs = ['document', 'ruangu', 'cover', 'none', 'scale-down']
         <el-carousel-item v-for="(url, index) in urls" :key="index">
             <a :href=hrefs[index] target="-blank" title="查看详情">
 
-                <el-image style="width: 760px; height: 400px" :src="url" fit="fill" />
+                <el-image style="width: 940px; height: 400px" :src="url" fit="fill" />
 
 
             </a>
