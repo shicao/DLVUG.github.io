@@ -447,6 +447,18 @@ year={2008}
 }
 </pre>
         </span>
+        <span v-else-if="(item == 35)">
+            <pre style="word-wrap: break-word; white-space: pre-wrap;">
+@inproceedings{shi2019sentiment,
+title={Sentiment Analysis of Home Appliance Comment Based on Generative Probabilistic Model},
+author={Shi, Cao and Tao, Ye and Xu, Canhui and Wang, Xiaodong and Wang, Yanzhe and Wang, Zihao},
+booktitle={2019 IEEE Fourth International Conference on Data Science in Cyberspace (DSC)},
+pages={318--321},
+year={2019},
+organization={IEEE}
+}
+</pre>
+        </span>
 
 
     </el-dialog>
@@ -560,6 +572,22 @@ year={2008}
                 </el-button>
             </el-card>
         </el-timeline-item>
+        <el-timeline-item timestamp="2019" placement="top" :type="randomTypes()">
+            <el-card shadow="hover">
+                <p>C. Shi, Y. Tao, C. Xu, X. Wang, Y. Wang and Z. Wang,Sentiment Analysis of Home Appliance Comment Based on Generative Probabilistic Model,<b><em>2019 IEEE Fourth International Conference on Data Science in Cyberspace (DSC)</em></b>, Hangzhou, China, 2019, pp. 318-321.</p>
+                <!-- <el-button class="button"><el-link
+                        href="/papers/teachers/2019 Sentiment Analysis of Home Appliance Comment Based on Generative Probabilistic Model.pdf"
+                        target="_blank"><el-icon>
+                            <Link />
+                        </el-icon>PDF</el-link></el-button> -->
+                <el-button class="button" @click="(dialogVisible = true, item = 35)">
+                    <font color='LightSkyBlue'><el-icon>
+                            <DocumentCopy />
+                        </el-icon>Bib</font>
+                </el-button>
+            </el-card>
+        </el-timeline-item>
+
         <el-timeline-item timestamp="2014-02-06" placement="top" :type="randomTypes()">
             <el-card shadow="hover">
                 <p>Xin Tao, Zhi Tang, Canhui Xu. Document Page Structure Learning for Fixed-layout E-books Using
