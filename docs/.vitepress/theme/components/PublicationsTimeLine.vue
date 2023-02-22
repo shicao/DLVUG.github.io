@@ -662,7 +662,7 @@ organization={IEEE}
         </el-timeline-item>
         <el-timeline-item timestamp="2014" placement="top" :type="randomTypes()">
             <el-card shadow="hover">
-                <p>CXin Tao, Zhi Tang, Canhui Xu. Contextual Modeling for Logical Labeling of PDF Documents.
+                <p>Xin Tao, Zhi Tang, Canhui Xu. Contextual Modeling for Logical Labeling of PDF Documents.
                     <b><em>Computers and Electrical Engineering</em></b>, 2014, 40, 1363-1375. EI, SCI.
                 </p>
                 <el-button class="button"><el-link
@@ -974,7 +974,7 @@ organization={IEEE}
                     <b><em>Pattern Recognition</em></b>. 2009,42(7):1559-1571.
                 </p>
                 <el-button class="button"><el-link
-                        href="https://www.sciencedirect.com/science/article/abs/pii/S0031320308005244"
+                        href="/papers/teachers/2009 Automatic reconstruction of 3Dhuman motion pose from uncalibrated monocular video sequences based on markerless human motion tracking.pdf"
                         target="_blank"><el-icon>
                             <Link />
                         </el-icon>PDF</el-link></el-button>
@@ -1059,7 +1059,7 @@ organization={IEEE}
             <el-card shadow=" hover">
                 <p>邹北骥, 陈姝, 彭小宁, 史操. 适用于单目视频的无标记三维人体运动跟踪. <b>计算机辅助设计与图形学学报</b>. 2008,20(8):1407-1055.</p>
                 <el-button class="button"><el-link
-                        href="https://kns.cnki.net/kcms/detail/detail.aspx?dbcode=CJFD&dbname=CJFD2008&filename=JSJF200808013&uniplatform=NZKPT&v=C415ceh7kvQu39clkECtH_ps27DHLfzlE2XC76Bx-60VS1KK8bMj63Z1kl30NFCk"
+                        href="/papers/teachers/2008 适用于单目视频的无标记三维人体运动跟踪.pdf"
                         target="_blank"><el-icon>
                             <Link />
                         </el-icon>PDF</el-link></el-button>
