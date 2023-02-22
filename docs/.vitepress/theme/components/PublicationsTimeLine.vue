@@ -503,7 +503,7 @@ year={2008}
                     Document Object Detector Based on Spatial-Related Relation and Vision[J]. <b><em>IEEE Transactions
                             on
                             Multimedia</em></b>, 2022.</p>
-                <el-button class="button"><el-link href="https://ieeexplore.ieee.org/abstract/document/9751354"
+                <el-button class="button"><el-link href="/papers/students/2022 SRRV_A_Novel_Document_Object_Detector_Based_on_Spatial-Related_Relation_and_Vision.pdf"
                         target="_blank"><el-icon>
                             <Link />
                         </el-icon>PDF</el-link></el-button>
@@ -775,8 +775,8 @@ year={2008}
         </el-timeline-item>
         <el-timeline-item timestamp="2012" placement="top" :type="randomTypes()">
             <el-card shadow=" hover">
-                <p>史操, 邹北骥, 蔡美玲, 孟志刚, 陈再良. 自适应异步采样运动数据压缩算法. <font size="4">电子学报
-                    </font>
+                <p>史操, 邹北骥, 蔡美玲, 孟志刚, 陈再良. 自适应异步采样运动数据压缩算法. <b>电子学报
+                </b>
                     , 2012,40(1):128-133. ( EI )</p>
                 <el-button class="button"><el-link href="/papers/teachers/2012 自适应异步采样运动数据压缩算法.pdf"
                         target="_blank"><el-icon>
@@ -847,7 +847,7 @@ year={2008}
         </el-timeline-item>
         <el-timeline-item timestamp="2011" placement="top" :type="randomTypes()">
             <el-card shadow=" hover">
-                <p>陈再良, 邹北骥, 李海冰, 史操. 基于方向特征融合的感兴趣区域提取算法. <font size="4">华中科技大学学报(自然科学版)</font>.
+                <p>陈再良, 邹北骥, 李海冰, 史操. 基于方向特征融合的感兴趣区域提取算法. <b>华中科技大学学报(自然科学版)</b>.
                     2011,39(12):102-106.电子学报</p>
                 <el-button class="button"><el-link
                         href="https://kns.cnki.net/kcms/detail/detail.aspx?dbcode=CJFD&dbname=CJFD2011&filename=HZLG201112038&uniplatform=NZKPT&v=LEx9qAlGNqHz2WrKqijvYoEmwMXLLR5vMXfq4XNeAWU65RD10ZedipxagPojecm0"
@@ -910,11 +910,11 @@ year={2008}
         </el-timeline-item>
         <el-timeline-item timestamp="2010" placement="top" :type="randomTypes()">
             <el-card shadow=" hover">
-                <p>蔡美玲, 邹北骥, 史操, 辛国江, 李建峰. 基于样条曲线的人体运动建模. <font size="4">全国第16届计算机辅助设计与图形学学术会议（CAD/CG' 2010）</font>
+                <p>蔡美玲, 邹北骥, 史操, 辛国江, 李建峰. 基于样条曲线的人体运动建模. <b>全国第16届计算机辅助设计与图形学学术会议（CAD/CG' 2010）</b>
                     2010,7:124-131.</p>
-                <el-button class="button"><el-link href="/" target="_blank"><el-icon>
+                <!-- <el-button class="button"><el-link href="/" target="_blank"><el-icon>
                             <Link />
-                        </el-icon>PDF</el-link></el-button>
+                        </el-icon>PDF</el-link></el-button> -->
                 <el-button class="button" @click="(dialogVisible = true, item = 27)">
                     <font color='LightSkyBlue'><el-icon>
                             <DocumentCopy />
@@ -1029,7 +1029,7 @@ year={2008}
         </el-timeline-item>
         <el-timeline-item timestamp="2008" placement="top" :type="randomTypes()">
             <el-card shadow=" hover">
-                <p>邹北骥, 陈姝, 彭小宁, 史操. 适用于单目视频的无标记三维人体运动跟踪. <font size="4">计算机辅助设计与图形学学报</font>. 2008,20(8):1407-1055.</p>
+                <p>邹北骥, 陈姝, 彭小宁, 史操. 适用于单目视频的无标记三维人体运动跟踪. <b>计算机辅助设计与图形学学报</b>. 2008,20(8):1407-1055.</p>
                 <el-button class="button"><el-link
                         href="https://kns.cnki.net/kcms/detail/detail.aspx?dbcode=CJFD&dbname=CJFD2008&filename=JSJF200808013&uniplatform=NZKPT&v=C415ceh7kvQu39clkECtH_ps27DHLfzlE2XC76Bx-60VS1KK8bMj63Z1kl30NFCk"
                         target="_blank"><el-icon>
