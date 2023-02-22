@@ -10,7 +10,7 @@ async function config() {
     ignoreDeadLinks: true,
     lastUpdated: true,
     themeConfig: {
-      logo: "/imgs/logo.jpg",
+      logo: "/imgs/logo.svg",
       siteTitle: "DLVUG",
       nav,
       sidebar,

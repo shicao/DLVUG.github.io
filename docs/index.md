@@ -6,7 +6,7 @@ hero:
   text: Deep Learning and Vision Understanding Group
   tagline: 基于深度学习的计算机视觉理解系统的理论及应用实践
   image:
-    src: /imgs/c.jpg
+    src: /imgs/eye.jpg
   actions:
     - theme: brand
       text: 研究
