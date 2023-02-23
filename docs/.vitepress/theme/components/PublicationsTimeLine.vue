@@ -465,7 +465,7 @@ organization={IEEE}
 
     <!-- 时间线的每个item，后续使用v-for进行完善 -->
     <el-timeline>
-        <el-timeline-item timestamp="2022" placement="top" size="large" icon="MoreFilled" :type="randomTypes()">
+        <el-timeline-item timestamp="2023" placement="top" size="large" icon="MoreFilled" :type="randomTypes()">
             <el-card shadow="hover">
                 <p>Cao Shi, Xin Wang, Canhui Xu. Graph-based convolution feature aggregation for enhancement of pore segmentation in mineral CT image.<b><em>15th Annual International Conference on Porous Media, InterPore2023</em></b>.</p>
                 <el-button class="button"><el-link
@@ -483,7 +483,7 @@ organization={IEEE}
 
             </el-card>
         </el-timeline-item>
-        <el-timeline-item timestamp="2022" placement="top" size="large" icon="MoreFilled" :type="randomTypes()">
+        <el-timeline-item timestamp="2023" placement="top" size="large" icon="MoreFilled" :type="randomTypes()">
             <el-card shadow="hover">
                 <p>Canhui Xu, Cao Shi, Xin Wang, Zhaoyan Zhong. Borehole image reconstruction based on transformer and spatial consistency.<b><em>15th Annual International Conference on Porous Media, InterPore2023</em></b>.</p>
                 <el-button class="button"><el-link
@@ -501,7 +501,7 @@ organization={IEEE}
 
             </el-card>
         </el-timeline-item>
-        <el-timeline-item timestamp="2022" placement="top" size="large" icon="MoreFilled" :type="randomTypes()">
+        <el-timeline-item timestamp="2023" placement="top" size="large" icon="MoreFilled" :type="randomTypes()">
             <el-card shadow="hover">
                 <p>Qijie Huang, Zhaoyan Zhong, Canhui Xu, Cao Shi, Dongxing Du, Xin Wang. 3D Digtal Rocks Reconstruction with Mineral Information based on the Wasserstein-GAN Method.<b><em>15th Annual International Conference on Porous Media, InterPore2023</em></b>.</p>
                 <el-button class="button"><el-link
@@ -519,7 +519,7 @@ organization={IEEE}
 
             </el-card>
         </el-timeline-item>
-        <el-timeline-item timestamp="2022" placement="top" size="large" icon="MoreFilled" :type="randomTypes()">
+        <el-timeline-item timestamp="2023" placement="top" size="large" icon="MoreFilled" :type="randomTypes()">
             <el-card shadow="hover">
                 <p>Liguo Niu, Yingqi Zhang, Canhui Xu, Cao Shi, Dongxing Du, Xin Wang. Study on Super-resolution of Shale Images Guided by Semantic Information.<b><em>15th Annual International Conference on Porous Media, InterPore2023</em></b>.</p>
                 <el-button class="button"><el-link
