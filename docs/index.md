@@ -9,10 +9,10 @@ hero:
     src: /imgs/eye.jpg
   actions:
     - theme: brand
-      text: 研究
+      text: 研究成果
       link: /publications/
     - theme: alt
-      text: 成员 
+      text: 团队成员
       link: /members/
 ---
 <MyParticles/>
