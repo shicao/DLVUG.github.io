@@ -12,7 +12,7 @@ hero:
       text: 研究
       link: /publications/
     - theme: alt
-      text: 成员
+      text: 成员 
       link: /members/
 ---
 <MyParticles/>
