@@ -467,6 +467,78 @@ organization={IEEE}
     <el-timeline>
         <el-timeline-item timestamp="2022" placement="top" size="large" icon="MoreFilled" :type="randomTypes()">
             <el-card shadow="hover">
+                <p>Cao Shi, Xin Wang, Canhui Xu. Graph-based convolution feature aggregation for enhancement of pore segmentation in mineral CT image.<b><em>15th Annual International Conference on Porous Media, InterPore2023</em></b>.</p>
+                <el-button class="button"><el-link
+                        href="/papers/teachers/1.jpg"
+                        target="_blank"><el-icon>
+                            <Link />
+                        </el-icon>Accepted</el-link></el-button>
+                <!-- <el-button class="button" @click="dialogVisible = true, item = 36">
+                    <font color='LightSkyBlue'><el-icon>
+                            <DocumentCopy />
+                        </el-icon>Bib</font>
+                </el-button> -->
+
+
+
+            </el-card>
+        </el-timeline-item>
+        <el-timeline-item timestamp="2022" placement="top" size="large" icon="MoreFilled" :type="randomTypes()">
+            <el-card shadow="hover">
+                <p>Canhui Xu, Cao Shi, Xin Wang, Zhaoyan Zhong. Borehole image reconstruction based on transformer and spatial consistency.<b><em>15th Annual International Conference on Porous Media, InterPore2023</em></b>.</p>
+                <el-button class="button"><el-link
+                        href="/papers/teachers/2.jpg"
+                        target="_blank"><el-icon>
+                            <Link />
+                        </el-icon>Accepted</el-link></el-button>
+                <!-- <el-button class="button" @click="dialogVisible = true, item = 37">
+                    <font color='LightSkyBlue'><el-icon>
+                            <DocumentCopy />
+                        </el-icon>Bib</font>
+                </el-button> -->
+
+
+
+            </el-card>
+        </el-timeline-item>
+        <el-timeline-item timestamp="2022" placement="top" size="large" icon="MoreFilled" :type="randomTypes()">
+            <el-card shadow="hover">
+                <p>Qijie Huang, Zhaoyan Zhong, Canhui Xu, Cao Shi, Dongxing Du, Xin Wang. 3D Digtal Rocks Reconstruction with Mineral Information based on the Wasserstein-GAN Method.<b><em>15th Annual International Conference on Porous Media, InterPore2023</em></b>.</p>
+                <el-button class="button"><el-link
+                        href="/papers/teachers/3.jpg"
+                        target="_blank"><el-icon>
+                            <Link />
+                        </el-icon>Accepted</el-link></el-button>
+                <!-- <el-button class="button" @click="dialogVisible = true, item = 38">
+                    <font color='LightSkyBlue'><el-icon>
+                            <DocumentCopy />
+                        </el-icon>Bib</font>
+                </el-button> -->
+
+
+
+            </el-card>
+        </el-timeline-item>
+        <el-timeline-item timestamp="2022" placement="top" size="large" icon="MoreFilled" :type="randomTypes()">
+            <el-card shadow="hover">
+                <p>Liguo Niu, Yingqi Zhang, Canhui Xu, Cao Shi, Dongxing Du, Xin Wang. Study on Super-resolution of Shale Images Guided by Semantic Information.<b><em>15th Annual International Conference on Porous Media, InterPore2023</em></b>.</p>
+                <el-button class="button"><el-link
+                        href="/papers/teachers/4.jpg"
+                        target="_blank"><el-icon>
+                            <Link />
+                        </el-icon>Accepted</el-link></el-button>
+                <!-- <el-button class="button" @click="dialogVisible = true, item = 39">
+                    <font color='LightSkyBlue'><el-icon>
+                            <DocumentCopy />
+                        </el-icon>Bib</font>
+                </el-button> -->
+
+
+
+            </el-card>
+        </el-timeline-item>
+        <el-timeline-item timestamp="2022" placement="top" size="large" icon="MoreFilled" :type="randomTypes()">
+            <el-card shadow="hover">
                 <p>Cao Shi, Canhui Xu, Hengyue Bi, Yuanzhi Cheng, Yuteng Li, Honghong Zhang. Lateral
                     Feature
                     Enhancement Network for Page Object Detection[J]. <b><em>IEEE Transactions on Instrumentation and

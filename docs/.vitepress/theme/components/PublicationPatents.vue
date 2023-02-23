@@ -124,19 +124,7 @@ year={2015},
             </el-button>
         </el-card>
         <el-card shadow="hover">
-            <p>2.许灿辉，史操，孙春奇，陶冶，刘国柱，程远志.一种利用先验知识构建文档图像数据集的方法，CN111783416A</p>
-            <el-button class="button"><el-link href="/papers/teachers/patents/CN111783416A一种利用先验知识构建文档图像数据集的方法.pdf"
-                    target="_blank"><el-icon>
-                        <Link />
-                    </el-icon>PDF</el-link></el-button>
-            <el-button class="button" @click="dialogVisible = true, item = 1">
-                <font color='LightSkyBlue'><el-icon>
-                        <DocumentCopy />
-                    </el-icon>引用</font>
-            </el-button>
-        </el-card>
-        <el-card shadow="hover">
-            <p>3.史操;许灿辉;刘传琦;程远志;陶冶;马兴录;刘国柱.基于深度学习生成文档图像集的方法，CN112347742A</p>
+            <p>2.史操;许灿辉;刘传琦;程远志;陶冶;马兴录;刘国柱.基于深度学习生成文档图像集的方法，CN112347742A</p>
             <el-button class="button"><el-link href="/papers/teachers/patents/CN112347742A基于深度学习生成文档图像集的方法-申请公开.pdf"
                     target="_blank"><el-icon>
                         <Link />
@@ -147,6 +135,19 @@ year={2015},
                     </el-icon>引用</font>
             </el-button>
         </el-card>
+        <el-card shadow="hover">
+            <p>3.许灿辉，史操，孙春奇，陶冶，刘国柱，程远志.一种利用先验知识构建文档图像数据集的方法，CN111783416A</p>
+            <el-button class="button"><el-link href="/papers/teachers/patents/CN111783416A一种利用先验知识构建文档图像数据集的方法.pdf"
+                    target="_blank"><el-icon>
+                        <Link />
+                    </el-icon>PDF</el-link></el-button>
+            <el-button class="button" @click="dialogVisible = true, item = 1">
+                <font color='LightSkyBlue'><el-icon>
+                        <DocumentCopy />
+                    </el-icon>引用</font>
+            </el-button>
+        </el-card>
+
         
         <el-card shadow="hover">
             <p>4.许灿辉, 汤帜, 陶欣, 史操. 版式文档中复合图的逻辑处理装置和逻辑处理方法，CN104142961A</p>
