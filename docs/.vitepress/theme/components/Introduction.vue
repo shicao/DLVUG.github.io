@@ -11,7 +11,18 @@
                 <el-col>
                     <el-avatar :size="100" src="/imgs/avatars/许灿辉.jpg" />
                     <div align="center"><strong>许灿辉</strong></div>
-
+                </el-col>
+            </div>
+            <div>
+                <el-col>
+                    <el-avatar :size="100" src="/imgs/avatars/王鑫.jpg" />
+                    <div align="center"><strong>王鑫</strong></div>
+                </el-col>
+            </div>
+            <div>
+                <el-col>
+                    <el-avatar :size="100" src="/imgs/avatars/程远志.jpg" />
+                    <div align="center"><strong>程远志</strong></div>
                 </el-col>
             </div>
             <div>
@@ -34,13 +45,13 @@
                     <el-avatar :size="100" src="/imgs/avatars/李冲冲.jpg" />
                 </el-col>
             </div>
+        </el-row>     
+        <el-row :gutter="60" justify="center">
             <div>
                 <el-col>
                     <el-avatar :size="100" src="/imgs/avatars/何健飞.jpg" />
                 </el-col>
-            </div>
-        </el-row>
-        <el-row :gutter="60" justify="center">
+            </div>   
             <div>
                 <el-col>
                     <el-avatar :size="100" src="/imgs/avatars/王翔.jpg" />
@@ -78,7 +89,6 @@
             </div>
         </el-row>
     </div>
-
     <div class="box-card">
         <el-card style="background-image: linear-gradient(180deg, #fff, #ddd 40%, #ccc)" shadow="always" align="left">
 
