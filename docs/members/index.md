@@ -25,6 +25,23 @@ const coreMembers = [
 
   },
 ]
+
+const tutorsOthers = [
+  {
+    avatar: '/imgs/avatars/王鑫.jpg',
+    name: '王鑫',
+    title: '指导老师',
+    desc: 'Wang Xin received his Ph.D. degree from China University of Petroleum,China,in 2013. Currently working for School of Information Science and Technology,Qingdao University S&T, China. He was a director of Pore-scale Imaging Lab in Qingdao City from 2017 to 2020, also a doctoral supervisor of Graduate School of International Studies, Shandong Academy of Sciences in 2018-2020. He was a visiting scientist at Imperial Collage London, Herriot-Watt University and Far East Bruch Russian Academy of Sciences. He participated in the National Joint-Scientific Expedition team with Russia and Japan in the year of 2016 and 2017. His research interests include 2D&3D image processing，computer vision &artificial intelligence.',
+
+  },
+    {
+    avatar: '/imgs/avatars/程远志.jpg',
+    name: '程远志',
+    title: '指导老师',
+    desc: 'Yuanzhi Cheng received the Ph.D. degree from the Harbin Institute of Technology, Harbin, China. He was with the School of Computer Science and Technology, Harbin Institute of Technology, until 2020. He is currently a professor with the School of Information Science and Technology, Qingdao University of Science and Technology, Qingdao, China. His research interests include pattern recognition, image processing, and computer-assisted surgical system.',
+
+  },
+]
 const partners =[
   {
     avatar: '/imgs/avatars/毕恒悦.jpg',
@@ -121,6 +138,7 @@ const partners =[
     <template #lead>...</template>
   </VPTeamPageTitle>
   <VPTeamMembers size="medium" :members="coreMembers" />
+  <VPTeamMembers size="medium" :members="tutorsOthers" />  
   <VPTeamPageSection>
     <template #title>学生</template>
     <template #lead>...</template>
