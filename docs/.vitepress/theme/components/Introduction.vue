@@ -1,5 +1,6 @@
 <template>
     <div style="padding-left:10%;padding-right:15%;font-size:20px;line-height: 40px">
+        <!-- 第一行，导师 -->
         <el-row :gutter="60" justify="center">
             <div>
                 <el-col>
@@ -25,6 +26,10 @@
                     <div align="center"><strong>程远志</strong></div>
                 </el-col>
             </div>
+        </el-row>
+        
+        <!-- 第二行，7人 -->
+        <el-row :gutter="60" justify="center">
             <div>
                 <el-col>
                     <el-avatar :size="100" src="/imgs/avatars/毕恒悦.jpg" />
@@ -45,8 +50,6 @@
                     <el-avatar :size="100" src="/imgs/avatars/李冲冲.jpg" />
                 </el-col>
             </div>
-        </el-row>     
-        <el-row :gutter="60" justify="center">
             <div>
                 <el-col>
                     <el-avatar :size="100" src="/imgs/avatars/何健飞.jpg" />
@@ -62,6 +65,10 @@
                     <el-avatar :size="100" src="/imgs/avatars/陈文达.jpg" />
                 </el-col>
             </div>
+        </el-row>     
+        
+        <!-- 第三行，8人 -->
+        <el-row :gutter="60" justify="center">
             <div>
                 <el-col>
                     <el-avatar :size="100" src="/imgs/avatars/邱海韬.jpg" />
@@ -87,7 +94,146 @@
                     <el-avatar :size="100" src="/imgs/avatars/谢彧.jpg" />
                 </el-col>
             </div>
+            <div>
+                <el-col>
+                    <el-avatar :size="100" src="/imgs/avatars/王鑫01-22-牟鑫涛.jpg" />
+                </el-col>
+            </div>   
+            <div>
+                <el-col>
+                    <el-avatar :size="100" src="/imgs/avatars/王鑫02-22-刘艳霞.jpg" />
+                </el-col>
+            </div>
+            <div>
+                <el-col>
+                    <el-avatar :size="100" src="/imgs/avatars/王鑫03-22-张英琦.jpg" />
+                </el-col>
+            </div> 
         </el-row>
+
+        <!-- 第四行，7人 -->
+        <el-row :gutter="60" justify="center"> 
+
+            <div>
+                <el-col>
+                    <el-avatar :size="100" src="/imgs/avatars/王鑫04-22-牛力国.jpg" />
+                </el-col>
+            </div> 
+            <div>
+                <el-col>
+                    <el-avatar :size="100" src="/imgs/avatars/王鑫05-22-贵雪峰.jpg" />
+                </el-col>
+            </div> 
+            <div>
+                <el-col>
+                    <el-avatar :size="100" src="/imgs/avatars/王鑫06-21-仲昭岩.jpg" />
+                </el-col>
+            </div> 
+            <div>
+                <el-col>
+                    <el-avatar :size="100" src="/imgs/avatars/王鑫07-21-黄奇杰.jpg" />
+                </el-col>
+            </div> 
+            <div>
+                <el-col>
+                    <el-avatar :size="100" src="/imgs/avatars/王鑫08-21-赵相欣.jpg" />
+                </el-col>
+            </div>
+            <div>
+                <el-col>
+                    <el-avatar :size="100" src="/imgs/avatars/C01-20-潘英杰.jpg" />
+                </el-col>
+            </div>
+            <div>
+                <el-col>
+                    <el-avatar :size="100" src="/imgs/avatars/C02-20-王烨楠.jpg" />
+                </el-col>
+            </div>
+        </el-row>
+
+        <!-- 第五行，8人 -->
+        <el-row :gutter="60" justify="center">
+            <div>
+                <el-col>
+                    <el-avatar :size="100" src="/imgs/avatars/C03-20-黄长见.jpg" />
+                </el-col>
+            </div>
+            <div>
+                <el-col>
+                    <el-avatar :size="100" src="/imgs/avatars/C04-20-刘豪.jpg" />
+                </el-col>
+            </div>
+            <div>
+                <el-col>
+                    <el-avatar :size="100" src="/imgs/avatars/C05-21-赵东.jpg" />
+                </el-col>
+            </div>
+            <div>
+                <el-col>
+                    <el-avatar :size="100" src="/imgs/avatars/C06-21-王南南.jpg" />
+                </el-col>
+            </div>
+            <div>
+                <el-col>
+                    <el-avatar :size="100" src="/imgs/avatars/C07-21-任玉涛.jpg" />
+                </el-col>
+            </div>
+            <div>
+                <el-col>
+                    <el-avatar :size="100" src="/imgs/avatars/C08-21-胡帅.jpg" />
+                </el-col>
+            </div>
+            <div>
+                <el-col>
+                    <el-avatar :size="100" src="/imgs/avatars/C09-21-李忠昊.jpg" />
+                </el-col>
+            </div>
+            <div>
+                <el-col>
+                    <el-avatar :size="100" src="/imgs/avatars/C10-21-于生正.jpg" />
+                </el-col>
+            </div>
+        </el-row>
+
+        <!-- 第六行，7人 -->
+        <el-row :gutter="60" justify="center">
+            <div>
+                <el-col>
+                    <el-avatar :size="100" src="/imgs/avatars/C11-22-王子轩.jpg" />
+                </el-col>
+            </div>
+            <div>
+                <el-col>
+                    <el-avatar :size="100" src="/imgs/avatars/C12-22-朱庚鑫.jpg" />
+                </el-col>
+            </div>
+            <div>
+                <el-col>
+                    <el-avatar :size="100" src="/imgs/avatars/C13-22-许浩天.jpg" />
+                </el-col>
+            </div>
+            <div>
+                <el-col>
+                    <el-avatar :size="100" src="/imgs/avatars/C14-22-马春帅.jpg" />
+                </el-col>
+            </div>
+            <div>
+                <el-col>
+                    <el-avatar :size="100" src="/imgs/avatars/C15-22-谢培栋.jpg" />
+                </el-col>
+            </div>
+            <div>
+                <el-col>
+                    <el-avatar :size="100" src="/imgs/avatars/C16-19-王广涵.jpg" />
+                </el-col>
+            </div>
+            <div>
+                <el-col>
+                    <el-avatar :size="100" src="/imgs/avatars/C17-19-刘宇博.jpg" />
+                </el-col>
+            </div>
+        </el-row>
+
     </div>
     <div class="box-card">
         <el-card style="background-image: linear-gradient(180deg, #fff, #ddd 40%, #ccc)" shadow="always" align="left">
