@@ -42,7 +42,8 @@ const tutorsOthers = [
 
   },
 ]
-const partners =[
+
+const student20 =[
   {
     avatar: '/imgs/avatars/毕恒悦.jpg',
     name: '毕恒悦',
@@ -65,15 +66,43 @@ const partners =[
 
   },
 
-{
-
+  {
     avatar: '/imgs/avatars/李冲冲.jpg',
     name: '李冲冲',
     title: '2020级',
     desc: 'Chongchong Li received B.E. degree from Zaozhuang University in 2014. Now he is a Master student majoring in Computer technology degree at Qingdao University of Science and Technology,under the supervision of Ph.D. Cao Shi. His research interests include deep learning, computer vision, image processing.',
+  },
 
-}, 
+  {
+    avatar: '/imgs/avatars/C01-20-潘英杰.jpg',
+    name: '潘英杰',
+    title: '2020级',
+    desc: 'Yingjie Pan is currently working for a master\'s degree in the School of Information Science and Technology, Qingdao University of Science and Technology. His research interests include deep learning，computer vision, medical image registration.',
+  },
 
+  {
+    avatar: '/imgs/avatars/C02-20-王烨楠.jpg',
+    name: '王烨楠',
+    title: '2020级',
+    desc: 'Yenan Wang is currently studying for her master\'s degree in the College of Information Science and Technology at Qingdao University of Science and Technology in Qingdao, China. Her main research field is medical image processing, and the specific research direction is the classification and localization of chest radiographs.',
+  },
+
+  {
+    avatar: '/imgs/avatars/C03-20-黄长见.jpg',
+    name: '黄长见',
+    title: '2020级',
+    desc: 'Changjian Huang graduated from the Zhongyuan University of Technology in 2019 with an engineering degree. Now he is a postgraduate student in software engineering at Qingdao University of Science and Technology, and his tutor is Professor Yuanzhi Cheng. His research interests include deep learning, computer vision, and medical image processing.',
+  },
+  {
+    avatar: '/imgs/avatars/C04-20-刘豪.jpg',
+    name: '刘豪',
+    title: '2020级',
+    desc: 'Liu Hao, an outstanding graduate of Changchun University of Technology in 2020, received a bachelor\'s degree in engineering. Now he is a Master student majoring in Computer Science and Technology degree at Qingdao University of Science and Technology, under the guidance of Professor Cheng Yuanzhi. His research interests include deep learning, computer vision, and medical image segmentation.',
+  },
+
+]
+
+const student21 =[
 {
     avatar: '/imgs/avatars/何健飞.jpg',
     name: '何健飞',
@@ -130,20 +159,55 @@ const partners =[
 
   },
 ]
+
+const student19 =[
+  {
+    avatar: '/imgs/avatars/C16-19-王广涵.jpg',
+    name: '王广涵',
+    title: '2019级',
+    desc: 'Guanghan Wang, a postgraduate student, graduated from Qingdao University of Science and Technology in 2022 and currently works in Hiaser Medical Center of Qingdao. His research direction is deep learning image field -- medical image processing.',
+
+  },
+  {
+    avatar: '/imgs/avatars/C17-19-刘宇博.jpg',
+    name: '刘宇博',
+    title: '2019级',
+    desc: 'Yubo Liu received B.E. degree from Yantai University in 2019, and received Master degree from Qingdao University of Science and Technology in 2022.His supervisor is Professor Guozhu Liu. His research fields include: computer vision, medical image processing, lung disease detection, etc. Now, he works in Shandong High-speed Information Group.',
+
+  },
+]
+
+
 </script>
 
 <VPTeamPage>
   <VPTeamPageTitle>
-    <template #title>导师</template>
+    <template #title>指导老师</template>
     <template #lead>...</template>
   </VPTeamPageTitle>
   <VPTeamMembers size="medium" :members="coreMembers" />
   <VPTeamMembers size="medium" :members="tutorsOthers" />  
   <VPTeamPageSection>
-    <template #title>学生</template>
+    <template #title>20级研究生</template>
     <template #lead>...</template>
     <template #members>
-      <VPTeamMembers size="medium" :members="partners" />
+      <VPTeamMembers size="medium" :members="student20" />
+    </template>
+  </VPTeamPageSection>
+
+  <VPTeamPageSection>
+    <template #title>21级研究生</template>
+    <template #lead>...</template>
+    <template #members>
+      <VPTeamMembers size="medium" :members="student21" />
+    </template>
+  </VPTeamPageSection>
+
+  <VPTeamPageSection>
+    <template #title>毕业研究生</template>
+    <template #lead>...</template>
+    <template #members>
+      <VPTeamMembers size="medium" :members="student19" />
     </template>
   </VPTeamPageSection>
 </VPTeamPage>
