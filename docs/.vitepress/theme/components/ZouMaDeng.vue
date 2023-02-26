@@ -31,7 +31,7 @@ export default {
 <!-- https://element-plus.gitee.io/zh-CN/component/carousel.html -->
 <template>
     <!-- 设置 autoplay="false"不能停止自动播放，所以把时间间隔设置长一点-->
-    <el-carousel :interval="300000" type="card" autoplay="false" height="400px" arrow="always" @change="handleChange">
+    <el-carousel :interval="300000" trigger="click" type="card" autoplay="false" height="400px" arrow="always" @change="handleChange">
         <el-carousel-item v-for="(url, index) in urls" :key="index">
             <!-- <a :href=hrefs[index] target="-blank" title="查看详情"> -->
 
