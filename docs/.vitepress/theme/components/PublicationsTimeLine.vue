@@ -23,8 +23,14 @@ export default {
 
 </script>
 <template>
+
+<!-- 
+el-dialog 标签，是 Bi 引用，以对话框的形式弹出
+el-timeline 标签，是页面显示布局设置，以及相关网页控件 的 设置部分
+-->
+
+<!-- item == 1 -->
     <el-dialog v-model="dialogVisible" title="BibTex" width="50%" draggable>
-        
         <span v-if="(item == 1)">
             <pre style="word-wrap: break-word; white-space: pre-wrap;"> 
 @article{shi2022lateral,
@@ -36,8 +42,10 @@ pages={1--10},
 year={2022},
 publisher={IEEE}
 }
-                                                         </pre>
+            </pre>
         </span>
+
+<!-- item == 2 -->
         <span v-else-if="(item == 2)">
             <pre style="word-wrap: break-word; white-space: pre-wrap;">
 @article{shi2022graph,
@@ -49,21 +57,23 @@ journal={Simulation Modelling Practice and Theory},
 volume={121},
 pages={102653},
 year={2022},
-publisher={Elsevier}
-}
-                                                                                                                                                                </pre>
+publisher={Elsevier}}
+            </pre>
         </span>
+
+<!-- item == 3 -->
         <span v-else-if="(item == 3)">
-<pre style="word-wrap: break-word; white-space: pre-wrap;">
+            <pre style="word-wrap: break-word; white-space: pre-wrap;">
 @article{bi2022srrv,
 title={SRRV: A Novel Document Object Detector Based on Spatial-Related Relation and Vision},
 author={Bi, Hengyue and Xu, Canhui and Shi, Cao and Liu, Guozhu and Li, Yuteng and Zhang, Honghong and Qu, Jing},
 journal={IEEE Transactions on Multimedia},
 year={2022},
-publisher={IEEE}
-}     
-                                                                                                                                                                </pre>
+publisher={IEEE}}
+            </pre>
         </span>
+
+<!-- item == 4 -->
         <span v-else-if="(item == 4)">
             <pre style="word-wrap: break-word; white-space: pre-wrap;">
 @article{JSYJ2022111000E, 
@@ -74,10 +84,12 @@ volume = {},
 number = {}, 
 year = {}, 
 issn = {1001-3695}, 
-doi ={10.19734/j.issn.1001-3695.2022.08.0425} 
+doi ={10.19734/j.issn.1001-3695.2022.08.0425}
 }
-                                                                                                                                                                </pre>
+            </pre>
         </span>
+
+<!-- item == 5 -->
         <span v-else-if="(item == 5)">
             <pre style="word-wrap: break-word; white-space: pre-wrap;">
 @article{xu2021end,
@@ -90,8 +102,10 @@ pages={1765--1774},
 year={2021},
 publisher={Springer}
 }
-</pre>
+            </pre>
         </span>
+
+<!-- item == 6 -->
         <span v-else-if="(item == 6)">
             <pre style="word-wrap: break-word; white-space: pre-wrap;">
 @article{xu2021page,
@@ -103,8 +117,10 @@ pages={143448--143457},
 year={2021},
 publisher={IEEE}
 }
-</pre>
+            </pre>
         </span>
+
+<!-- item == 7 -->
         <span v-else-if="(item == 7)">
             <pre style="word-wrap: break-word; white-space: pre-wrap;">
 @inproceedings{tao2014document,
@@ -116,8 +132,10 @@ pages={158--166},
 year={2014},
 organization={SPIE}
 }
-</pre>
+            </pre>
         </span>
+
+<!-- item == 8 -->
         <span v-else-if="(item == 8)">
             <pre style="word-wrap: break-word; white-space: pre-wrap;">
 @inproceedings{shi2014visual,
@@ -129,8 +147,10 @@ pages={24--30},
 year={2014},
 organization={SPIE}
 }
-</pre>
+            </pre>
         </span>
+
+<!-- item == 9 -->
         <span v-else-if="(item == 9)">
             <pre style="word-wrap: break-word; white-space: pre-wrap;">
 @inproceedings{shi2014nonlinear,
@@ -142,8 +162,10 @@ pages={276--282},
 year={2014},
 organization={SPIE}
 }
-</pre>
+            </pre>
         </span>
+
+<!-- item == 10 -->
         <span v-else-if="(item == 10)">
             <pre style="word-wrap: break-word; white-space: pre-wrap;">
 @inproceedings{shi2014automatic,
@@ -155,8 +177,10 @@ pages={180--186},
 year={2014},
 organization={SPIE}
 }
-</pre>
+            </pre>
         </span>
+
+<!-- item == 11 -->
         <span v-else-if="(item == 11)">
             <pre style="word-wrap: break-word; white-space: pre-wrap;">
 @article{tao2014contextual,
@@ -169,8 +193,10 @@ pages={1363--1375},
 year={2014},
 publisher={Elsevier}
 }
-</pre>
+            </pre>
         </span>
+
+<!-- item == 12 -->
         <span v-else-if="(item == 12)">
             <pre style="word-wrap: break-word; white-space: pre-wrap;">
 @inproceedings{tao2014ground,
@@ -181,8 +207,10 @@ pages={247--251},
 year={2014},
 organization={IEEE}
 }
-</pre>
+            </pre>
         </span>
+
+<!-- item == 13 -->
         <span v-else-if="(item == 13)">
             <pre style="word-wrap: break-word; white-space: pre-wrap;">
 @inproceedings{xu2013graph,
@@ -194,8 +222,10 @@ pages={34--41},
 year={2013},
 organization={SPIE}
 }
-</pre>
+            </pre>
         </span>
+
+<!-- item == 14 -->
         <span v-else-if="(item == 14)">
             <pre style="word-wrap: break-word; white-space: pre-wrap;">
 @inproceedings{shi2013character,
@@ -207,8 +237,10 @@ pages={207--214},
 year={2013},
 organization={SPIE}
 }
-</pre>
+            </pre>
         </span>
+
+<!-- item == 15 -->
         <span v-else-if="(item == 15)">
             <pre style="word-wrap: break-word; white-space: pre-wrap;">
 @inproceedings{xu2013graphic,
@@ -220,8 +252,10 @@ pages={121--130},
 year={2013},
 organization={SPIE}
 }
-</pre>
+            </pre>
         </span>
+
+<!-- item == 16 -->
         <span v-else-if="(item == 16)">
             <pre style="word-wrap: break-word; white-space: pre-wrap;">
 @inproceedings{xu2012integration,
@@ -232,8 +266,10 @@ pages={13--22},
 year={2012},
 organization={Springer}
 }
-</pre>
+            </pre>
         </span>
+
+<!-- item == 17 -->
         <span v-else-if="(item == 17)">
             <pre style="word-wrap: break-word; white-space: pre-wrap;">
 @inproceedings{shi2012automatic,
@@ -244,8 +280,10 @@ pages={23--33},
 year={2012},
 organization={Springer}
 }
-</pre>
+            </pre>
         </span>
+
+<!-- item == 18 -->
         <span v-else-if="(item == 18)">
             <pre style="word-wrap: break-word; white-space: pre-wrap;">
 @incollection{zou2012pcnn,
@@ -256,8 +294,10 @@ pages={803--812},
 year={2012},
 publisher={Springer}
 }
-</pre>
+            </pre>
         </span>
+
+<!-- item == 19 -->
         <span v-else-if="(item == 19)">
             <pre style="word-wrap: break-word; white-space: pre-wrap;">
 @article{史操2012自适应异步采样运动数据压缩算法,
@@ -269,9 +309,10 @@ number={1},
 pages={128},
 year={2012}
 }
-
-</pre>
+            </pre>
         </span>
+
+<!-- item == 20 -->
         <span v-else-if="(item == 20)">
             <pre style="word-wrap: break-word; white-space: pre-wrap;">
 @article{xu2012flotation,
@@ -283,8 +324,10 @@ pages={5--12},
 year={2012},
 publisher={Elsevier}
 }
-    </pre>
+            </pre>
         </span>
+
+<!-- item == 21 -->
         <span v-else-if="(item == 21)">
             <pre style="word-wrap: break-word; white-space: pre-wrap;">
 @article{cole2012experimental,
@@ -297,8 +340,10 @@ pages={2196--2201},
 year={2012},
 publisher={Elsevier}
 }
-</pre>
+            </pre>
         </span>
+
+<!-- item == 22 -->
         <span v-else-if="(item == 22)">
             <pre style="word-wrap: break-word; white-space: pre-wrap;">
 @article{article,
@@ -310,8 +355,10 @@ title = {Extraction of a region of interest using orientation feature fusion},
 volume = {39},
 journal = {Journal of Huazhong University of Science and Technology}
 }
-</pre>
+            </pre>
         </span>
+
+<!-- item == 23 -->
         <span v-else-if="(item == 23)">
             <pre style="word-wrap: break-word; white-space: pre-wrap;">
 @article{陈再良2011基于方向特征融合的感兴趣区域提取算法,
@@ -323,8 +370,10 @@ number={12},
 pages={102--106},
 year={2011}
 }
-</pre>
+            </pre>
         </span>
+
+<!-- item == 24 -->
         <span v-else-if="(item == 24)">
             <pre style="word-wrap: break-word; white-space: pre-wrap;">
 @article{zou2009enhanced,
@@ -337,22 +386,28 @@ pages={156--160},
 year={2009},
 publisher={IEEE}
 }
-</pre>
+            </pre>
         </span>
+
+<!-- item == 25 -->
         <span v-else-if="(item == 25)">
             <pre style="word-wrap: break-word; white-space: pre-wrap;">
-                                                                                                                                                                </pre>
+            </pre>
         </span>
+
+<!-- item == 26 -->
         <span v-else-if="(item == 26)">
             <pre style="word-wrap: break-word; white-space: pre-wrap;">
-
-                                                                                                                                                                </pre>
+            </pre>
         </span>
+
+<!-- item == 27 -->
         <span v-else-if="(item == 27)">
             <pre style="word-wrap: break-word; white-space: pre-wrap;">
-
-                                                                                                                                                                </pre>
+            </pre>
         </span>
+
+<!-- item == 28 -->
         <span v-else-if="(item == 28)">
             <pre style="word-wrap: break-word; white-space: pre-wrap;">
 @article{zhou2010clustering,
@@ -365,8 +420,10 @@ pages={1049--1057},
 year={2010},
 publisher={Springer}
 }
-</pre>
+            </pre>
         </span>
+
+<!-- item == 29 -->
         <span v-else-if="(item == 29)">
             <pre style="word-wrap: break-word; white-space: pre-wrap;">
 @article{zou2009automatic,
@@ -379,8 +436,10 @@ pages={1559--1571},
 year={2009},
 publisher={Elsevier}
 }
-</pre>
+            </pre>
         </span>
+
+<!-- item == 30 -->
         <span v-else-if="(item == 30)">
             <pre style="word-wrap: break-word; white-space: pre-wrap;">
 @article{yang2009bubble,
@@ -393,8 +452,10 @@ pages={694--699},
 year={2009},
 publisher={Elsevier}
 }
-</pre>
+            </pre>
         </span>
+
+<!-- item == 31 -->
         <span v-else-if="(item == 31)">
             <pre style="word-wrap: break-word; white-space: pre-wrap;">
 @inproceedings{yang2009nonparametric,
@@ -405,8 +466,10 @@ pages={2941--2945},
 year={2009},
 organization={IEEE}
 }
-</pre>
+            </pre>
         </span>
+
+<!-- item == 32 -->
         <span v-else-if="(item == 32)">
             <pre style="word-wrap: break-word; white-space: pre-wrap;">
 @article{yang2009application,
@@ -419,8 +482,10 @@ pages={316--322},
 year={2009},
 publisher={Wiley Online Library}
 }
-</pre>
+            </pre>
         </span>
+
+<!-- item == 33 -->
         <span v-else-if="(item == 33)">
             <pre style="word-wrap: break-word; white-space: pre-wrap;">
 @article{zou2008markerless,
@@ -434,6 +499,8 @@ year={2008}
 }
 </pre>
         </span>
+
+<!-- item == 34 -->
         <span v-else-if="(item == 34)">
             <pre style="word-wrap: break-word; white-space: pre-wrap;">
 @article{邹北骥2008适用于单目视频的无标记三维人体运动跟踪,
@@ -445,8 +512,10 @@ number={8},
 pages={1047--1055},
 year={2008}
 }
-</pre>
+            </pre>
         </span>
+
+<!-- item == 35 -->
         <span v-else-if="(item == 35)">
             <pre style="word-wrap: break-word; white-space: pre-wrap;">
 @inproceedings{shi2019sentiment,
@@ -457,14 +526,40 @@ pages={318--321},
 year={2019},
 organization={IEEE}
 }
-</pre>
+            </pre>
         </span>
 
 
+<!-- （以下）王鑫 papers -->
+
+<!-- item == wx01 -->
+        <span v-else-if="(item == wx01)">
+            <pre style="word-wrap: break-word; white-space: pre-wrap;">
+@inproceedings{shi2019sentiment,
+title={Sentiment Analysis of Home Appliance Comment Based on Generative Probabilistic Model},
+author={Shi, Cao and Tao, Ye and Xu, Canhui and Wang, Xiaodong and Wang, Yanzhe and Wang, Zihao},
+booktitle={2019 IEEE Fourth International Conference on Data Science in Cyberspace (DSC)},
+pages={318--321},
+year={2019},
+organization={IEEE}
+}
+            </pre>
+        </span>
+
+<!-- （以上）王鑫 papers===== ===== ===== ===== ===== -->
+
     </el-dialog>
 
+
+
+
+<!-- =============================================================== -->
+<!-- =============================================================== -->
+<!-- real view in the webpage -->
     <!-- 时间线的每个item，后续使用v-for进行完善 -->
     <el-timeline>
+
+<!-- 2023 InterPore 史操 -->
         <el-timeline-item timestamp="2023" placement="top" size="large" icon="MoreFilled" :type="randomTypes()">
             <el-card shadow="hover">
                 <p>Cao Shi, Xin Wang, Canhui Xu. Graph-based convolution feature aggregation for enhancement of pore segmentation in mineral CT image.<b><em>15th Annual International Conference on Porous Media, InterPore2023</em></b>.</p>
@@ -478,11 +573,27 @@ organization={IEEE}
                             <DocumentCopy />
                         </el-icon>Bib</font>
                 </el-button> -->
-
-
-
             </el-card>
         </el-timeline-item>
+
+<!-- 2023 InterPore 史操 -->
+        <el-timeline-item timestamp="2023" placement="top" size="large" icon="MoreFilled" :type="randomTypes()">
+            <el-card shadow="hover">
+                <p>Cao Shi, Xin Wang, Canhui Xu. Graph-based convolution feature aggregation for enhancement of pore segmentation in mineral CT image.<b><em>15th Annual International Conference on Porous Media, InterPore2023</em></b>.</p>
+                <el-button class="button"><el-link
+                        href="/papers/teachers/1.jpg"
+                        target="_blank"><el-icon>
+                            <Link />
+                        </el-icon>Accepted</el-link></el-button>
+                <!-- <el-button class="button" @click="dialogVisible = true, item = 36">
+                    <font color='LightSkyBlue'><el-icon>
+                            <DocumentCopy />
+                        </el-icon>Bib</font>
+                </el-button> -->
+            </el-card>
+        </el-timeline-item>
+
+<!-- 2023 InterPore 许灿辉 -->
         <el-timeline-item timestamp="2023" placement="top" size="large" icon="MoreFilled" :type="randomTypes()">
             <el-card shadow="hover">
                 <p>Canhui Xu, Cao Shi, Xin Wang, Zhaoyan Zhong. Borehole image reconstruction based on transformer and spatial consistency.<b><em>15th Annual International Conference on Porous Media, InterPore2023</em></b>.</p>
@@ -496,11 +607,10 @@ organization={IEEE}
                             <DocumentCopy />
                         </el-icon>Bib</font>
                 </el-button> -->
-
-
-
             </el-card>
         </el-timeline-item>
+
+<!-- 2023 InterPore 王鑫 -->
         <el-timeline-item timestamp="2023" placement="top" size="large" icon="MoreFilled" :type="randomTypes()">
             <el-card shadow="hover">
                 <p>Qijie Huang, Zhaoyan Zhong, Canhui Xu, Cao Shi, Dongxing Du, Xin Wang. 3D Digtal Rocks Reconstruction with Mineral Information based on the Wasserstein-GAN Method.<b><em>15th Annual International Conference on Porous Media, InterPore2023</em></b>.</p>
@@ -514,11 +624,10 @@ organization={IEEE}
                             <DocumentCopy />
                         </el-icon>Bib</font>
                 </el-button> -->
-
-
-
             </el-card>
         </el-timeline-item>
+
+<!-- 2023 InterPore 王鑫 -->
         <el-timeline-item timestamp="2023" placement="top" size="large" icon="MoreFilled" :type="randomTypes()">
             <el-card shadow="hover">
                 <p>Liguo Niu, Yingqi Zhang, Canhui Xu, Cao Shi, Dongxing Du, Xin Wang. Study on Super-resolution of Shale Images Guided by Semantic Information.<b><em>15th Annual International Conference on Porous Media, InterPore2023</em></b>.</p>
@@ -532,11 +641,10 @@ organization={IEEE}
                             <DocumentCopy />
                         </el-icon>Bib</font>
                 </el-button> -->
-
-
-
             </el-card>
         </el-timeline-item>
+
+<!-- 2022 史操 TIM -->
         <el-timeline-item timestamp="2022" placement="top" size="large" icon="MoreFilled" :type="randomTypes()">
             <el-card shadow="hover">
                 <p>Cao Shi, Canhui Xu, Hengyue Bi, Yuanzhi Cheng, Yuteng Li, Honghong Zhang. Lateral
@@ -553,13 +661,10 @@ organization={IEEE}
                             <DocumentCopy />
                         </el-icon>Bib</font>
                 </el-button>
-
-
-
             </el-card>
         </el-timeline-item>
 
-        <!--  -->
+<!-- 2022 史操 retianl vessel segmentation -->
         <el-timeline-item timestamp="2022" placement="top" :type="randomTypes()">
             <el-card shadow="hover">
                 <p>Cao Shi, Canhui Xu, Jianfei He, Yinong Chen, Yuanzhi Cheng, Qi Yang, Haitao Qiu. Graph-based
@@ -575,12 +680,10 @@ organization={IEEE}
                             <DocumentCopy />
                         </el-icon>Bib</font>
                 </el-button>
-
-
-
             </el-card>
         </el-timeline-item>
-        <!--  -->
+
+<!-- 2022 毕 TMM SRRV -->
         <el-timeline-item timestamp="2022" placement="top" :type="randomTypes()">
             <el-card shadow="hover">
                 <p>Hengyue Bi, Canhui Xu, Cao Shi, Guozhu Liu, Yuteng Li, Honghong Zhang, Jing Qu. SRRV: A Novel
@@ -598,6 +701,8 @@ organization={IEEE}
                 </el-button>
             </el-card>
         </el-timeline-item>
+
+<!-- 2022 李玉腾 -->
         <el-timeline-item timestamp="2022" placement="top" :type="randomTypes()">
             <el-card shadow="hover">
                 <p>李玉腾,史操,许灿辉等.基于视觉和文本的多模态文档图像目标检测[J/OL].<b><em>计算机应用研究</em></b>:1-6[2023-02-21].</p>
@@ -612,6 +717,8 @@ organization={IEEE}
                 </el-button>
             </el-card>
         </el-timeline-item>
+
+<!-- 2021 许灿辉 JCSU -->
         <el-timeline-item timestamp="2021" placement="top" :type="randomTypes()">
             <el-card shadow="hover">
                 <p>Canhui Xu, Cao Shi, Yinong Chen. End-to-end dilated convolution network for document image semantic
@@ -628,6 +735,8 @@ organization={IEEE}
                 </el-button>
             </el-card>
         </el-timeline-item>
+
+<!-- 2021 许灿辉 Access -->
         <el-timeline-item timestamp="2021" placement="top" :type="randomTypes()">
             <el-card shadow="hover">
                 <p>Canhui Xu, Cao Shi, Hengyue Bi, Chuanqi Liu, Yongfeng Yuan, Haoyan Guo, Yinong Chen. A Page Object
@@ -644,6 +753,8 @@ organization={IEEE}
                 </el-button>
             </el-card>
         </el-timeline-item>
+
+<!-- 2019 史操 -->
         <el-timeline-item timestamp="2019" placement="top" :type="randomTypes()">
             <el-card shadow="hover">
                 <p>C. Shi, Y. Tao, C. Xu, X. Wang, Y. Wang and Z. Wang,Sentiment Analysis of Home Appliance Comment Based on Generative Probabilistic Model,<b><em>2019 IEEE Fourth International Conference on Data Science in Cyberspace (DSC)</em></b>, Hangzhou, China, 2019, pp. 318-321.</p>
@@ -660,24 +771,6 @@ organization={IEEE}
             </el-card>
         </el-timeline-item>
 
-        <el-timeline-item timestamp="2014-02-06" placement="top" :type="randomTypes()">
-            <el-card shadow="hover">
-                <p>Xin Tao, Zhi Tang, Canhui Xu. Document Page Structure Learning for Fixed-layout E-books Using
-                    Conditional Random Fields. SPIE 9021, <b><em>Document Recognition and Retrieval XXI</em></b>,
-                    90210I-(1~9). 6 Feb
-                    2014, Oral, U.S. San Francisco . (EI)</p>
-                <el-button class="button"><el-link
-                        href="/papers/teachers/2014 Document Page Structure Learning for Fixed-layout E-books Using Conditional Random Fields.PDF"
-                        target="_blank"><el-icon>
-                            <Link />
-                        </el-icon>PDF</el-link></el-button>
-                <el-button class="button" @click="(dialogVisible = true, item = 7)">
-                    <font color='LightSkyBlue'><el-icon>
-                            <DocumentCopy />
-                        </el-icon>Bib</font>
-                </el-button>
-            </el-card>
-        </el-timeline-item>
         <el-timeline-item timestamp="2014-02-05" placement="top" :type="randomTypes()">
             <el-card shadow="hover">
                 <p>Cao Shi, Jianguo Xiao, Canhui Xu, Wenhua Jia. Visual improvement for bad handwriting based on
@@ -696,6 +789,7 @@ organization={IEEE}
                 </el-button>
             </el-card>
         </el-timeline-item>
+
         <el-timeline-item timestamp="2014-02-05" placement="top" :type="randomTypes()">
             <el-card shadow="hover">
                 <p>Cao Shi, Jianguo Xiao, Canhui Xu, Wenhua Jia. Nonlinear and non-Gaussian Bayesian-based handwriting
@@ -714,6 +808,7 @@ organization={IEEE}
                 </el-button>
             </el-card>
         </el-timeline-item>
+
         <el-timeline-item timestamp="2014-01-06" placement="top" :type="randomTypes()">
             <el-card shadow="hover">
                 <p>Cao Shi, Jianguo Xiao, Canhui Xu, Wenhua Jia. Automatic generation of Chinese character using
@@ -732,6 +827,7 @@ organization={IEEE}
                 </el-button>
             </el-card>
         </el-timeline-item>
+
         <el-timeline-item timestamp="2014" placement="top" :type="randomTypes()">
             <el-card shadow="hover">
                 <p>Xin Tao, Zhi Tang, Canhui Xu. Contextual Modeling for Logical Labeling of PDF Documents.
@@ -749,6 +845,7 @@ organization={IEEE}
                 </el-button>
             </el-card>
         </el-timeline-item>
+
         <el-timeline-item timestamp="2014" placement="top" :type="randomTypes()">
             <el-card shadow="hover">
                 <p>Xin Tao, Zhi Tang, Canhui Xu, Liangcai Gao. Ground-truth and Performance Evaluation for Page Layout
@@ -767,6 +864,27 @@ organization={IEEE}
                 </el-button>
             </el-card>
         </el-timeline-item>
+
+<!-- 2014 许灿辉 合作作者 -->
+        <el-timeline-item timestamp="2014-02-06" placement="top" :type="randomTypes()">
+            <el-card shadow="hover">
+                <p>Xin Tao, Zhi Tang, Canhui Xu. Document Page Structure Learning for Fixed-layout E-books Using
+                    Conditional Random Fields. SPIE 9021, <b><em>Document Recognition and Retrieval XXI</em></b>,
+                    90210I-(1~9). 6 Feb
+                    2014, Oral, U.S. San Francisco . (EI)</p>
+                <el-button class="button"><el-link
+                        href="/papers/teachers/2014 Document Page Structure Learning for Fixed-layout E-books Using Conditional Random Fields.PDF"
+                        target="_blank"><el-icon>
+                            <Link />
+                        </el-icon>PDF</el-link></el-button>
+                <el-button class="button" @click="(dialogVisible = true, item = 7)">
+                    <font color='LightSkyBlue'><el-icon>
+                            <DocumentCopy />
+                        </el-icon>Bib</font>
+                </el-button>
+            </el-card>
+        </el-timeline-item>
+
         <el-timeline-item timestamp="2013-03-21" placement="top" :type="randomTypes()">
             <el-card shadow=" hover">
                 <p>Canhui xu, zhi Tang, Xin Tao, Cao Shi. Graph-based layout analysis for PDF documents. Proc. SPIE
@@ -784,6 +902,7 @@ organization={IEEE}
                 </el-button>
             </el-card>
         </el-timeline-item>
+
         <el-timeline-item timestamp="2013-02-04" placement="top" :type="randomTypes()">
             <el-card shadow=" hover">
                 <p>Cao Shi, Jianguo Xiao, Wenhua Jia, Canhui Xu. Character Feature Integration of Chinese Calligraphy
@@ -802,6 +921,7 @@ organization={IEEE}
                 </el-button>
             </el-card>
         </el-timeline-item>
+
         <el-timeline-item timestamp="2013-02-04" placement="top" :type="randomTypes()">
             <el-card shadow=" hover">
                 <p>Canhui xu, zhi Tang, Xin Tao, Cao Shi. Graphic Composite Segmentation for PDF Documents with Complex
@@ -820,6 +940,7 @@ organization={IEEE}
                 </el-button>
             </el-card>
         </el-timeline-item>
+
         <el-timeline-item timestamp="2013" placement="top" :type="randomTypes()">
             <el-card shadow=" hover">
                 <p>Canhui xu, zhi Tang, Xin Tao, Cao Shi. Integration of Text Information and Graphic Composite for PDF
@@ -838,6 +959,7 @@ organization={IEEE}
                 </el-button>
             </el-card>
         </el-timeline-item>
+
         <el-timeline-item timestamp="2012" placement="top" :type="randomTypes()">
             <el-card shadow=" hover">
                 <p>Cao Shi, Jianguo Xiao, Wenhua Jia, Canhui Xu. Automatic Generation of Chinese Character Based on
@@ -873,6 +995,7 @@ organization={IEEE}
                 </el-button>
             </el-card>
         </el-timeline-item>
+
         <el-timeline-item timestamp="2012" placement="top" :type="randomTypes()">
             <el-card shadow=" hover">
                 <p>史操, 邹北骥, 蔡美玲, 孟志刚, 陈再良. 自适应异步采样运动数据压缩算法. <b>电子学报
@@ -908,6 +1031,7 @@ organization={IEEE}
                 </el-button>
             </el-card>
         </el-timeline-item>
+
         <el-timeline-item timestamp="2012" placement="top" :type="randomTypes()">
             <el-card shadow=" hover">
                 <p>K.E. Cole, P.R. Brito-Parada, Canhui Xu, S.J. Neethling, J.J. Cilliers. Experimental Studies and
@@ -927,6 +1051,7 @@ organization={IEEE}
                 </el-button>
             </el-card>
         </el-timeline-item>
+
         <el-timeline-item timestamp="2011" placement="top" :type="randomTypes()">
             <el-card shadow=" hover">
                 <p>Zailiang Chen, Beiji Zou, Haibing Li, Cao Shi. Extraction of Region of Interest Using Orientation
@@ -945,6 +1070,7 @@ organization={IEEE}
                 </el-button>
             </el-card>
         </el-timeline-item>
+
         <el-timeline-item timestamp="2011" placement="top" :type="randomTypes()">
             <el-card shadow=" hover">
                 <p>陈再良, 邹北骥, 李海冰, 史操. 基于方向特征融合的感兴趣区域提取算法. <b>华中科技大学学报(自然科学版)</b>.
@@ -961,6 +1087,7 @@ organization={IEEE}
                 </el-button>
             </el-card>
         </el-timeline-item>
+
         <el-timeline-item timestamp="2010" placement="top" :type="randomTypes()">
             <el-card shadow=" hover">
                 <p>Bei-Ji Zou, Cao Shi, Can-Hui Xu, Shu Chen. Enhanced Hexagonal-Based Search Using Direction-Oriented
@@ -978,6 +1105,7 @@ organization={IEEE}
                 </el-button>
             </el-card>
         </el-timeline-item>
+
         <el-timeline-item timestamp="2010" placement="top" :type="randomTypes()">
             <el-card shadow=" hover">
                 <p>Zhigang Meng, Beiji Zou, Cao Shi. Introducing Direct Interaction Mechanism of Ant Colony Foraging
@@ -993,6 +1121,7 @@ organization={IEEE}
                 </el-button>
             </el-card>
         </el-timeline-item>
+
         <el-timeline-item timestamp="2010" placement="top" :type="randomTypes()">
             <el-card shadow=" hover">
                 <p>Meiling Cai, Beiji Zou, Cao Shi, Guojiang Xin, Jianfeng Li. Modeling Human Motion Based on Spline
@@ -1008,6 +1137,7 @@ organization={IEEE}
                 </el-button>
             </el-card>
         </el-timeline-item>
+
         <el-timeline-item timestamp="2010" placement="top" :type="randomTypes()">
             <el-card shadow=" hover">
                 <p>蔡美玲, 邹北骥, 史操, 辛国江, 李建峰. 基于样条曲线的人体运动建模. <b>全国第16届计算机辅助设计与图形学学术会议（CAD/CG' 2010）</b>
@@ -1022,6 +1152,7 @@ organization={IEEE}
                 </el-button>
             </el-card>
         </el-timeline-item>
+
         <el-timeline-item timestamp="2010" placement="top" :type="randomTypes()">
             <el-card shadow=" hover">
                 <p>Kaijun Zhou, Chunhua Yang, Weihua Gui, Canhui Xu. Clustering-driven Watershed Adaptive Segmentation
@@ -1039,6 +1170,7 @@ organization={IEEE}
                 </el-button>
             </el-card>
         </el-timeline-item>
+
         <el-timeline-item timestamp="2009" placement="top" :type="randomTypes()">
             <el-card shadow=" hover">
                 <p>Beiji Zou, Shu Chen, Cao Shi, Umugwaneza Marie Providence. Automatic Reconstruction of 3D Human
@@ -1057,6 +1189,7 @@ organization={IEEE}
                 </el-button>
             </el-card>
         </el-timeline-item>
+
         <el-timeline-item timestamp="2009" placement="top" :type="randomTypes()">
             <el-card shadow=" hover">
                 <p>Yang Chunhua, Xu Canhui, Mu Xueming and Zhou Kaijun. Bubble Size Estimation Using Interfacial
@@ -1075,6 +1208,7 @@ organization={IEEE}
                 </el-button>
             </el-card>
         </el-timeline-item>
+
         <el-timeline-item timestamp="2009" placement="top" :type="randomTypes()">
             <el-card shadow=" hover">
                 <p>Yang Chunhua, Xu Canhui, Weihua Gui, Du Jianjiang. Nonparametric Density Estimation of Bubble Size
@@ -1093,6 +1227,7 @@ organization={IEEE}
                 </el-button>
             </el-card>
         </el-timeline-item>
+
         <el-timeline-item timestamp="2009" placement="top" :type="randomTypes()">
             <el-card shadow=" hover">
                 <p>YChunhua Yang, Canhui Xu, Weihua Gui, Kaijun Zhou. Application of Highlight Removal and Multivariate
@@ -1111,6 +1246,7 @@ organization={IEEE}
                 </el-button>
             </el-card>
         </el-timeline-item>
+
         <el-timeline-item timestamp="2008" placement="top" :type="randomTypes()">
             <el-card shadow=" hover">
                 <p>Beiji Zou, Shu Chen, Xiaoning Peng, Cao Shi. Markerless 3D Human Motion Tracking for Monocular Video
@@ -1127,6 +1263,7 @@ organization={IEEE}
                 </el-button>
             </el-card>
         </el-timeline-item>
+
         <el-timeline-item timestamp="2008" placement="top" :type="randomTypes()">
             <el-card shadow=" hover">
                 <p>邹北骥, 陈姝, 彭小宁, 史操. 适用于单目视频的无标记三维人体运动跟踪. <b>计算机辅助设计与图形学学报</b>. 2008,20(8):1407-1055.</p>
