@@ -30,20 +30,23 @@ export default {
 </script>
 <!-- https://element-plus.gitee.io/zh-CN/component/carousel.html -->
 <template>
-    <el-carousel :interval="3000" type="card" height="400px" @change="handleChange">
+    <!-- 设置 autoplay="false"不能停止自动播放，所以把时间间隔设置长一点-->
+    <el-carousel :interval="300000" type="card" autoplay="false" height="400px" arrow="always" @change="handleChange">
         <el-carousel-item v-for="(url, index) in urls" :key="index">
-            <a :href=hrefs[index] target="-blank" title="查看详情">
+            <!-- <a :href=hrefs[index] target="-blank" title="查看详情"> -->
 
                 <el-image style="width: 940px; height: 400px" :src="url" fit="fill" />
 
 
-            </a>
+            <!-- </a> -->
             <!-- 走马灯的每个子项都是940*400 -->
         </el-carousel-item>
     </el-carousel>
     <div class="index-container">
         <transition name="fade">
-          <div class="index" v-if="currentIndex === 0"><el-card class="box-card">   <h1>PDF文档结构信息提取系统</h1>
+          <div class="index" v-if="currentIndex === 0"><el-card class="box-card">   <h1>PDF文档结构信息提取系统</h1><div style="text-align:center;">
+            <el-link type="danger">详细内容>></el-link>
+</div>
       <p>随着移动阅读终端种类的多样化，如手机、电子阅读器、GPS等，电子文档在不同移动设备平台上的自适应显示，要求文档内容根据屏幕进行流式化重排和自适应调整，从而保证舒适的阅读体验。为满足移动阅读可读性需求，保证文档内容显示方式的重新调整，其关键在于获得原文档的物理逻辑结构和顺序信息。此外，电子文档结构化信息提取直接影响着信息检索、文本挖掘、搜索引擎、机器翻译、信息存储和管理等应用领域的发展和进步。</p>
       <p>综上所述，研究团队研发了“PDF文档结构信息提取系统”。该系统能够提取结构化PDF文档中的文本、图片、图表、公式信息。</p>
       <p>To ensure comfortable reading experience the adaptive display of electronic documents on different mobile devices requires the document content to be streamed rearranged and adaptive adjusted according to the screen. In order to meet the readability requirements of mobile reading and ensure the readjustment of document content display mode, the key is to obtain the physical logical structure and sequence information of the original document. In addition, the structural information extraction of electronic documents directly affects the development and progress of information retrieval, text mining, search engine, machine translation, information storage and management and other application fields.</p>
